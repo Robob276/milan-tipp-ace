@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import PlayerDetail from './PlayerDetail';
 
 const Leaderboard: React.FC = () => {
-  const { getLeaderboard, predictions, results } = usePredictions();
+  const { getLeaderboard, predictions, results, getVisiblePrediction, isEventStarted } = usePredictions();
   const { currentPlayer } = usePlayer();
   const leaderboard = getLeaderboard();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
@@ -23,10 +23,15 @@ const Leaderboard: React.FC = () => {
     return Object.keys(predictions[userId] || {}).length;
   };
 
-  const getEventScore = (userId: string, eventId: number): number => {
+  const getEventScore = (userId: string, eventId: number): number | null => {
+    // Only show scores if event has started or it's the current user
+    if (!isEventStarted(eventId) && userId !== currentPlayer?.id) {
+      return null;
+    }
+    
     const prediction = predictions[userId]?.[eventId];
     const result = results[eventId];
-    if (!prediction || !result) return 0;
+    if (!prediction || !result) return null;
     
     let score = 0;
     if (prediction.gold === result.gold) score += 3;
@@ -158,10 +163,11 @@ const Leaderboard: React.FC = () => {
                     {displayedEvents.map(event => {
                       const score = getEventScore(player.playerId, event.id);
                       const hasPrediction = predictions[player.playerId]?.[event.id];
+                      const canSeeScore = isEventStarted(event.id) || player.playerId === currentPlayer?.id;
                       
                       return (
                         <td key={event.id} className="py-3 px-2 text-center">
-                          {hasPrediction ? (
+                          {hasPrediction && canSeeScore && score !== null ? (
                             <span className={`text-sm font-medium ${
                               score >= 5 ? 'text-green-600 font-bold' :
                               score >= 3 ? 'text-primary font-semibold' :
@@ -170,6 +176,8 @@ const Leaderboard: React.FC = () => {
                             }`}>
                               {score}
                             </span>
+                          ) : hasPrediction && !canSeeScore ? (
+                            <span className="text-muted-foreground text-sm">●</span>
                           ) : (
                             <span className="text-muted-foreground text-sm">-:-</span>
                           )}

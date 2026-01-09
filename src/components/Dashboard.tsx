@@ -4,7 +4,6 @@ import EventsList from './EventsList';
 import Leaderboard from './Leaderboard';
 import Statistics from './Statistics';
 import ResultsAdmin from './ResultsAdmin';
-import Chat from './Chat';
 import { usePlayer } from '@/contexts/PlayerContext';
 
 interface DashboardProps {
@@ -16,7 +15,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode }) => {
   const { isAdmin } = usePlayer();
   
   // Admin starts at leaderboard, players at events
-  const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats' | 'chat'>(
+  const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats'>(
     isAdmin ? 'leaderboard' : 'events'
   );
   const [showResultsAdmin, setShowResultsAdmin] = useState(false);
@@ -39,7 +38,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode }) => {
         {activeTab === 'events' && isAdmin && <Leaderboard />}
         {activeTab === 'leaderboard' && <Leaderboard />}
         {activeTab === 'stats' && <Statistics />}
-        {activeTab === 'chat' && <Chat />}
       </main>
     </div>
   );
