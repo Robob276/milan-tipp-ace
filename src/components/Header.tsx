@@ -45,17 +45,20 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
 
           {/* Navigation */}
           <nav className="flex items-center gap-1 bg-secondary/50 p-1 rounded-lg">
-            <button
-              onClick={() => setActiveTab('events')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'events'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-              }`}
-            >
-              <Calendar className="w-4 h-4" />
-              <span className="hidden sm:inline">Events</span>
-            </button>
+            {/* Events tab - only for non-admin players */}
+            {!isAdmin && (
+              <button
+                onClick={() => setActiveTab('events')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  activeTab === 'events'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">Tippen</span>
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('leaderboard')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
