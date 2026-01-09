@@ -1,15 +1,21 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Medal, LogOut, Trophy, Calendar, BarChart3 } from 'lucide-react';
+import { Medal, LogOut, Trophy, Calendar, BarChart3, Home } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'events' | 'leaderboard' | 'stats';
   setActiveTab: (tab: 'events' | 'leaderboard' | 'stats') => void;
+  onBackToHome?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
+const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome }) => {
   const { currentUser, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    onBackToHome?.();
+  };
 
   return (
     <header className="glass sticky top-0 z-50 border-b border-border/50">
@@ -17,6 +23,16 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
+            {onBackToHome && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBackToHome}
+                className="text-muted-foreground hover:text-foreground mr-1"
+              >
+                <Home className="w-5 h-5" />
+              </Button>
+            )}
             <div className="w-10 h-10 rounded-full gradient-olympic flex items-center justify-center shadow-md">
               <Medal className="w-5 h-5 text-primary-foreground" />
             </div>
@@ -72,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={logout}
+              onClick={handleLogout}
               className="text-muted-foreground hover:text-foreground"
             >
               <LogOut className="w-5 h-5" />

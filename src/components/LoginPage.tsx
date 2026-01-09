@@ -4,9 +4,13 @@ import { users } from '@/data/olympicEvents';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mountain, Snowflake, Medal } from 'lucide-react';
+import { Mountain, Snowflake, Medal, ArrowLeft } from 'lucide-react';
 
-const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  onBackToHome?: () => void;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
   const [selectedName, setSelectedName] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
@@ -29,6 +33,18 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen gradient-olympic flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Back Button */}
+      {onBackToHome && (
+        <Button
+          variant="ghost"
+          onClick={onBackToHome}
+          className="absolute top-4 left-4 text-white/80 hover:text-white hover:bg-white/10 z-20"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Zurück
+        </Button>
+      )}
+
       {/* Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <Snowflake className="absolute top-20 left-10 w-16 h-16 text-white/20 animate-float" />
