@@ -96,9 +96,9 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
                 <SelectValue placeholder="Wähle deinen Namen..." />
               </SelectTrigger>
               <SelectContent className="bg-background border shadow-lg z-50">
-                {players.filter(p => !p.is_admin).map(player => (
+                {players.map(player => (
                   <SelectItem key={player.id} value={player.id}>
-                    {player.name} {!player.has_pin && '(Neu)'}
+                    {player.name} {player.is_admin ? '(Admin)' : ''} {!player.has_pin && '(Neu)'}
                   </SelectItem>
                 ))}
               </SelectContent>
