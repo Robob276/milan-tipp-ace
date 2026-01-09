@@ -199,8 +199,8 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                           </SelectTrigger>
                           <SelectContent>
                             {countries.map(country => (
-                              <SelectItem key={country.id} value={country.code}>
-                                {country.name} ({country.code})
+                              <SelectItem key={country.id} value={country.name}>
+                                {country.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -216,8 +216,8 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                           </SelectTrigger>
                           <SelectContent>
                             {countries.map(country => (
-                              <SelectItem key={country.id} value={country.code}>
-                                {country.name} ({country.code})
+                              <SelectItem key={country.id} value={country.name}>
+                                {country.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -233,8 +233,8 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                           </SelectTrigger>
                           <SelectContent>
                             {countries.map(country => (
-                              <SelectItem key={country.id} value={country.code}>
-                                {country.name} ({country.code})
+                              <SelectItem key={country.id} value={country.name}>
+                                {country.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
