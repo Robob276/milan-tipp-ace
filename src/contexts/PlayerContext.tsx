@@ -47,22 +47,29 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const fetchPlayers = async () => {
-    const { data, error } = await supabase
-      .from('players')
-      .select('id, name, is_admin, pin')
+    // Fetch regular players from public view (doesn't expose is_admin)
+    const { data: regularPlayers, error: regularError } = await supabase
+      .from('players_public')
+      .select('id, name, has_pin')
       .order('name');
     
-    if (error) {
-      console.error('Error fetching players:', error);
+    // Fetch admin players from admin view
+    const { data: adminPlayers, error: adminError } = await supabase
+      .from('players_admin')
+      .select('id, name, has_pin')
+      .order('name');
+    
+    if (regularError || adminError) {
+      console.error('Error fetching players:', regularError || adminError);
       return;
     }
 
-    setPlayers(data?.map(p => ({
-      id: p.id,
-      name: p.name,
-      is_admin: p.is_admin,
-      has_pin: !!p.pin
-    })) || []);
+    const allPlayers = [
+      ...(regularPlayers?.map(p => ({ ...p, is_admin: false })) || []),
+      ...(adminPlayers?.map(p => ({ ...p, is_admin: true })) || [])
+    ];
+
+    setPlayers(allPlayers);
   };
 
   const restoreSession = async (playerId: string) => {
