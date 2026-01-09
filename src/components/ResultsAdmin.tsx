@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, Trophy, Check, Search, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResultsAdminProps {
   onBack: () => void;
@@ -14,6 +15,7 @@ interface ResultsAdminProps {
 
 const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   const { results, setResult } = usePredictions();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Alle');
   const [editingEvent, setEditingEvent] = useState<number | null>(null);
@@ -39,16 +41,28 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
     setEditingEvent(eventId);
   };
 
-  const handleSave = (eventId: number) => {
+  const handleSave = async (eventId: number) => {
     if (tempResult.gold && tempResult.silver && tempResult.bronze) {
-      setResult(eventId, {
-        eventId,
+      const { error } = await setResult(eventId, {
         gold: tempResult.gold,
         silver: tempResult.silver,
         bronze: tempResult.bronze
       });
-      setEditingEvent(null);
-      setTempResult({ gold: '', silver: '', bronze: '' });
+      
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Fehler",
+          description: "Ergebnis konnte nicht gespeichert werden: " + error
+        });
+      } else {
+        toast({
+          title: "Gespeichert",
+          description: "Ergebnis wurde erfolgreich eingetragen."
+        });
+        setEditingEvent(null);
+        setTempResult({ gold: '', silver: '', bronze: '' });
+      }
     }
   };
 

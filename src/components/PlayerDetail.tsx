@@ -1,30 +1,21 @@
 import React from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
-import { olympicEvents, users, sportIcons } from '@/data/olympicEvents';
+import { olympicEvents, sportIcons } from '@/data/olympicEvents';
 import { ArrowLeft, Trophy, Medal, Check, X, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface PlayerDetailProps {
-  userId: number;
+  userId: string;
   onBack: () => void;
 }
 
 const PlayerDetail: React.FC<PlayerDetailProps> = ({ userId, onBack }) => {
-  const { predictions, results, calculateScore } = usePredictions();
-  const user = users.find(u => u.id === userId);
+  const { predictions, results, profiles, calculateScore } = usePredictions();
+  const displayName = profiles[userId] || 'Unbekannt';
   const userPredictions = predictions[userId] || {};
   const score = calculateScore(userId);
-
-  const getPredictionStatus = (eventId: number, medalType: 'gold' | 'silver' | 'bronze') => {
-    const prediction = userPredictions[eventId];
-    const result = results[eventId];
-    
-    if (!prediction || !result) return 'pending';
-    
-    return prediction[medalType] === result[medalType] ? 'correct' : 'wrong';
-  };
 
   const getEventPredictions = () => {
     return Object.entries(userPredictions).map(([eventIdStr, prediction]) => {
@@ -83,7 +74,7 @@ const PlayerDetail: React.FC<PlayerDetailProps> = ({ userId, onBack }) => {
             <Trophy className="w-8 h-8 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{user?.name}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{displayName}</h2>
             <p className="text-muted-foreground">
               {eventPredictions.length} Tipps abgegeben • {score} Punkte
             </p>

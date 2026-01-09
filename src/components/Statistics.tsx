@@ -1,19 +1,20 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePredictions } from '@/contexts/PredictionContext';
-import { olympicEvents, users, sportCategories, countries } from '@/data/olympicEvents';
+import { olympicEvents, sportCategories } from '@/data/olympicEvents';
 import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart } from 'lucide-react';
 
 const Statistics: React.FC = () => {
-  const { currentUser } = useAuth();
-  const { predictions, calculateScore } = usePredictions();
+  const { user } = useAuth();
+  const { predictions, profiles, calculateScore } = usePredictions();
 
   // Calculate statistics
-  const userPredictions = currentUser ? predictions[currentUser.id] || {} : {};
+  const userPredictions = user ? predictions[user.id] || {} : {};
   const totalTipps = Object.keys(userPredictions).length;
   const totalEvents = olympicEvents.length;
   const completionRate = Math.round((totalTipps / totalEvents) * 100);
-  const myScore = currentUser ? calculateScore(currentUser.id) : 0;
+  const myScore = user ? calculateScore(user.id) : 0;
+  const totalPlayers = Object.keys(profiles).length;
 
   // Most picked countries
   const countryPicks: Record<string, number> = {};
@@ -71,7 +72,7 @@ const Statistics: React.FC = () => {
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
           <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{users.length}</p>
+          <p className="text-2xl font-bold text-foreground">{totalPlayers}</p>
           <p className="text-sm text-muted-foreground">Spieler</p>
         </div>
       </div>

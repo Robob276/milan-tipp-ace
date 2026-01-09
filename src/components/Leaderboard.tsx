@@ -6,9 +6,9 @@ import PlayerDetail from './PlayerDetail';
 
 const Leaderboard: React.FC = () => {
   const { getLeaderboard, predictions } = usePredictions();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const leaderboard = getLeaderboard();
-  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   const getMedalStyle = (index: number) => {
     switch (index) {
@@ -36,7 +36,7 @@ const Leaderboard: React.FC = () => {
     }
   };
 
-  const getTippCount = (userId: number) => {
+  const getTippCount = (userId: string) => {
     return Object.keys(predictions[userId] || {}).length;
   };
 
@@ -63,7 +63,7 @@ const Leaderboard: React.FC = () => {
             key={player.userId}
             onClick={() => setSelectedPlayerId(player.userId)}
             className={`w-full flex items-center gap-4 p-4 border-b border-border/50 last:border-b-0 transition-all hover:bg-secondary/50 text-left ${
-              player.userId === currentUser?.id ? 'bg-primary/5' : ''
+              player.userId === user?.id ? 'bg-primary/5' : ''
             }`}
           >
             {/* Rank */}
@@ -75,7 +75,7 @@ const Leaderboard: React.FC = () => {
             <div className="flex-1">
               <p className="font-semibold text-foreground">
                 {player.name}
-                {player.userId === currentUser?.id && (
+                {player.userId === user?.id && (
                   <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                     Du
                   </span>
