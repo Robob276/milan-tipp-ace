@@ -4,12 +4,16 @@ import EventsList from './EventsList';
 import Leaderboard from './Leaderboard';
 import Statistics from './Statistics';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onBackToHome?: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onBackToHome }) => {
   const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats'>('events');
 
   return (
     <div className="min-h-screen bg-background">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} onBackToHome={onBackToHome} />
       
       <main className="container mx-auto px-4 py-6 max-w-6xl">
         {activeTab === 'events' && <EventsList />}
