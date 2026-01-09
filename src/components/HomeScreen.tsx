@@ -76,10 +76,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
             className="w-32 h-32 object-contain mb-4 animate-fade-in"
           />
           
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3 animate-fade-in">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-1 animate-fade-in">
             Opodium
           </h1>
-          <p className="text-muted-foreground text-lg max-w-md mx-auto animate-fade-in">
+          <p className="text-xl text-muted-foreground mb-3 animate-fade-in">
+            Olympisches Tippspiel
+          </p>
+          <p className="text-muted-foreground text-base max-w-md mx-auto animate-fade-in">
             Wähle ein Turnier und tippe auf deine Favoriten
           </p>
           
