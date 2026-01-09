@@ -6,6 +6,7 @@ interface PredictionContextType {
   results: Record<number, Result>; // eventId -> Result
   setPrediction: (userId: number, eventId: number, prediction: Prediction) => void;
   getPrediction: (userId: number, eventId: number) => Prediction | null;
+  setResult: (eventId: number, result: Result) => void;
   calculateScore: (userId: number) => number;
   getLeaderboard: () => { userId: number; name: string; score: number }[];
 }
@@ -20,23 +21,31 @@ export const usePredictions = () => {
   return context;
 };
 
-// Demo-Ergebnisse (können später durch echte ersetzt werden)
-const demoResults: Record<number, Result> = {};
-
 export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [predictions, setPredictions] = useState<Record<number, Record<number, Prediction>>>({});
-  const [results] = useState<Record<number, Result>>(demoResults);
+  const [results, setResults] = useState<Record<number, Result>>({});
 
+  // Load predictions from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('olympia_predictions');
-    if (saved) {
-      setPredictions(JSON.parse(saved));
+    const savedPredictions = localStorage.getItem('olympia_predictions');
+    if (savedPredictions) {
+      setPredictions(JSON.parse(savedPredictions));
+    }
+    
+    const savedResults = localStorage.getItem('olympia_results');
+    if (savedResults) {
+      setResults(JSON.parse(savedResults));
     }
   }, []);
 
   const savePredictions = (newPredictions: Record<number, Record<number, Prediction>>) => {
     localStorage.setItem('olympia_predictions', JSON.stringify(newPredictions));
     setPredictions(newPredictions);
+  };
+
+  const saveResults = (newResults: Record<number, Result>) => {
+    localStorage.setItem('olympia_results', JSON.stringify(newResults));
+    setResults(newResults);
   };
 
   const setPrediction = (userId: number, eventId: number, prediction: Prediction) => {
@@ -52,6 +61,14 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const getPrediction = (userId: number, eventId: number): Prediction | null => {
     return predictions[userId]?.[eventId] || null;
+  };
+
+  const setResult = (eventId: number, result: Result) => {
+    const newResults = {
+      ...results,
+      [eventId]: result
+    };
+    saveResults(newResults);
   };
 
   const calculateScore = (userId: number): number => {
@@ -85,6 +102,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       results,
       setPrediction,
       getPrediction,
+      setResult,
       calculateScore,
       getLeaderboard
     }}>
