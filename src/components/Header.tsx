@@ -1,7 +1,8 @@
 import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from '@/components/ui/button';
-import { Medal, LogOut, Trophy, Calendar, BarChart3, Home, Settings } from 'lucide-react';
+import { LogOut, Trophy, Calendar, BarChart3, Home, Settings } from 'lucide-react';
+import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
 interface HeaderProps {
   activeTab: 'events' | 'leaderboard' | 'stats';
@@ -34,12 +35,14 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
                 <Home className="w-5 h-5" />
               </Button>
             )}
-            <div className="w-10 h-10 rounded-full gradient-olympic flex items-center justify-center shadow-md">
-              <Medal className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img 
+              src={opodiumLogo} 
+              alt="Opodium Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <div className="hidden sm:block">
-              <h1 className="font-bold text-foreground leading-tight">Olympia 2026</h1>
-              <p className="text-xs text-muted-foreground">Mailand-Cortina</p>
+              <h1 className="font-bold text-foreground leading-tight">Opodium</h1>
+              <p className="text-xs text-muted-foreground">Olympic Podium</p>
             </div>
           </div>
 
