@@ -4,13 +4,14 @@ import EventsList from './EventsList';
 import Leaderboard from './Leaderboard';
 import Statistics from './Statistics';
 import ResultsAdmin from './ResultsAdmin';
+import Chat from './Chat';
 
 interface DashboardProps {
   onBackToHome?: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onBackToHome }) => {
-  const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats'>('events');
+  const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats' | 'chat'>('events');
   const [showResultsAdmin, setShowResultsAdmin] = useState(false);
 
   if (showResultsAdmin) {
@@ -30,6 +31,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome }) => {
         {activeTab === 'events' && <EventsList />}
         {activeTab === 'leaderboard' && <Leaderboard />}
         {activeTab === 'stats' && <Statistics />}
+        {activeTab === 'chat' && <Chat />}
       </main>
     </div>
   );
