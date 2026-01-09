@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trophy, Medal, TrendingUp } from 'lucide-react';
+import { Trophy, Medal, TrendingUp, ChevronRight } from 'lucide-react';
+import PlayerDetail from './PlayerDetail';
 
 const Leaderboard: React.FC = () => {
   const { getLeaderboard, predictions } = usePredictions();
   const { currentUser } = useAuth();
   const leaderboard = getLeaderboard();
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
 
   const getMedalStyle = (index: number) => {
     switch (index) {
@@ -38,6 +40,11 @@ const Leaderboard: React.FC = () => {
     return Object.keys(predictions[userId] || {}).length;
   };
 
+  // Show player detail view if a player is selected
+  if (selectedPlayerId !== null) {
+    return <PlayerDetail userId={selectedPlayerId} onBack={() => setSelectedPlayerId(null)} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Card */}
@@ -52,9 +59,10 @@ const Leaderboard: React.FC = () => {
       {/* Leaderboard */}
       <div className="glass-card rounded-xl overflow-hidden">
         {leaderboard.map((player, index) => (
-          <div
+          <button
             key={player.userId}
-            className={`flex items-center gap-4 p-4 border-b border-border/50 last:border-b-0 transition-all ${
+            onClick={() => setSelectedPlayerId(player.userId)}
+            className={`w-full flex items-center gap-4 p-4 border-b border-border/50 last:border-b-0 transition-all hover:bg-secondary/50 text-left ${
               player.userId === currentUser?.id ? 'bg-primary/5' : ''
             }`}
           >
@@ -79,11 +87,14 @@ const Leaderboard: React.FC = () => {
             </div>
 
             {/* Score */}
-            <div className="text-right">
+            <div className="text-right mr-2">
               <p className="text-2xl font-bold text-foreground">{player.score}</p>
               <p className="text-xs text-muted-foreground">Punkte</p>
             </div>
-          </div>
+
+            {/* Arrow */}
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
         ))}
       </div>
 
