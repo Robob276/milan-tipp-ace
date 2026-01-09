@@ -207,12 +207,21 @@ export type Database = {
       }
     }
     Functions: {
+      current_player_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      set_config: {
+        Args: {
+          is_local?: boolean
+          setting_name: string
+          setting_value: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
