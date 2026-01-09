@@ -35,15 +35,39 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchPlayers();
-    
-    // Check for stored session
-    const storedPlayerId = localStorage.getItem('currentPlayerId');
-    if (storedPlayerId) {
-      restoreSession(storedPlayerId);
-    } else {
+    const init = async () => {
+      await fetchPlayers();
+      
+      // Check for stored session after players are loaded
+      const storedPlayerId = localStorage.getItem('currentPlayerId');
+      if (storedPlayerId) {
+        // We need to wait for players to be set, so we check directly
+        const { data: regularPlayers } = await supabase
+          .from('players_public')
+          .select('id, name, has_pin')
+          .eq('id', storedPlayerId)
+          .maybeSingle();
+        
+        const { data: adminPlayer } = await supabase
+          .from('players_admin')
+          .select('id, name, has_pin')
+          .eq('id', storedPlayerId)
+          .maybeSingle();
+        
+        const playerData = regularPlayers || adminPlayer;
+        if (playerData) {
+          setCurrentPlayer({
+            ...playerData,
+            is_admin: !!adminPlayer
+          });
+        } else {
+          localStorage.removeItem('currentPlayerId');
+        }
+      }
       setIsLoading(false);
-    }
+    };
+    
+    init();
   }, []);
 
   const fetchPlayers = async () => {
@@ -72,51 +96,29 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setPlayers(allPlayers);
   };
 
-  const restoreSession = async (playerId: string) => {
-    const { data, error } = await supabase
-      .from('players')
-      .select('id, name, is_admin, pin')
-      .eq('id', playerId)
-      .single();
-    
-    if (error || !data) {
-      localStorage.removeItem('currentPlayerId');
-      setIsLoading(false);
-      return;
-    }
-
-    setCurrentPlayer({
-      id: data.id,
-      name: data.name,
-      is_admin: data.is_admin,
-      has_pin: !!data.pin
-    });
-    setIsLoading(false);
-  };
-
   const login = async (playerId: string, pin: string): Promise<{ error: string | null }> => {
+    // Use secure RPC function to verify PIN without exposing it
     const { data, error } = await supabase
-      .from('players')
-      .select('id, name, is_admin, pin')
-      .eq('id', playerId)
-      .single();
+      .rpc('verify_player_pin', { 
+        player_id: playerId, 
+        pin_attempt: pin 
+      });
     
-    if (error || !data) {
+    if (error || !data || data.length === 0) {
+      console.error('Login error:', error);
       return { error: 'Spieler nicht gefunden.' };
     }
 
-    if (!data.pin) {
-      return { error: 'Bitte zuerst eine PIN setzen.' };
-    }
-
-    if (data.pin !== pin) {
+    const result = data[0];
+    
+    if (!result.valid) {
       return { error: 'Falsche PIN.' };
     }
 
     const player: Player = {
-      id: data.id,
-      name: data.name,
-      is_admin: data.is_admin,
+      id: result.id,
+      name: result.name,
+      is_admin: result.is_admin,
       has_pin: true
     };
 
@@ -130,34 +132,30 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return { error: 'PIN muss 4 Ziffern haben.' };
     }
 
-    const { data: playerData, error: fetchError } = await supabase
-      .from('players')
-      .select('id, name, is_admin, pin')
-      .eq('id', playerId)
-      .single();
-
-    if (fetchError || !playerData) {
-      return { error: 'Spieler nicht gefunden.' };
-    }
-
-    if (playerData.pin) {
-      return { error: 'PIN bereits gesetzt. Bitte anmelden.' };
-    }
-
-    const { error } = await supabase
-      .from('players')
-      .update({ pin })
-      .eq('id', playerId);
+    // Use secure RPC function to set PIN
+    const { data, error } = await supabase
+      .rpc('setup_player_pin', {
+        player_id: playerId,
+        new_pin: pin
+      });
 
     if (error) {
       console.error('Error setting PIN:', error);
       return { error: 'Fehler beim Setzen der PIN.' };
     }
 
+    if (!data || data.length === 0 || !data[0].success) {
+      if (data?.[0]?.player_name) {
+        return { error: 'PIN bereits gesetzt. Bitte anmelden.' };
+      }
+      return { error: 'Spieler nicht gefunden.' };
+    }
+
+    const result = data[0];
     const player: Player = {
-      id: playerData.id,
-      name: playerData.name,
-      is_admin: playerData.is_admin,
+      id: playerId,
+      name: result.player_name,
+      is_admin: result.player_is_admin,
       has_pin: true
     };
 

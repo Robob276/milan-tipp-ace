@@ -207,6 +207,7 @@ export type Database = {
       }
     }
     Functions: {
+      check_player_has_pin: { Args: { player_id: string }; Returns: boolean }
       current_player_id: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -222,6 +223,23 @@ export type Database = {
           setting_value: string
         }
         Returns: undefined
+      }
+      setup_player_pin: {
+        Args: { new_pin: string; player_id: string }
+        Returns: {
+          player_is_admin: boolean
+          player_name: string
+          success: boolean
+        }[]
+      }
+      verify_player_pin: {
+        Args: { pin_attempt: string; player_id: string }
+        Returns: {
+          id: string
+          is_admin: boolean
+          name: string
+          valid: boolean
+        }[]
       }
     }
     Enums: {
