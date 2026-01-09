@@ -169,7 +169,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      players_admin: {
+        Row: {
+          has_pin: boolean | null
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
+      players_public: {
+        Row: {
+          has_pin: boolean | null
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
