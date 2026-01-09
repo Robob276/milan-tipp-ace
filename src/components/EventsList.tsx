@@ -153,9 +153,11 @@ const EventsList: React.FC = () => {
               <span className={`text-xs px-2 py-0.5 rounded-full ${
                 isCompleted 
                   ? 'bg-muted text-muted-foreground' 
-                  : 'bg-green-500/20 text-green-600'
+                  : hasPrediction
+                    ? 'bg-green-500/20 text-green-600'
+                    : 'bg-orange-500/20 text-orange-600'
               }`}>
-                {isCompleted ? 'Abgeschlossen' : 'Offen'}
+                {isCompleted ? 'Abgeschlossen' : hasPrediction ? 'Getippt' : 'Offen'}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -196,10 +198,10 @@ const EventsList: React.FC = () => {
                 Kein Tipp
               </span>
             )}
-            {status.type === 'tipped' && (
+            {hasPrediction && !isCompleted && status.type !== 'scored' && (
               <Check className="w-5 h-5 text-green-500" />
             )}
-            {status.type === 'open' && !isCompleted && (
+            {!hasPrediction && !isCompleted && (
               isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
           </div>
