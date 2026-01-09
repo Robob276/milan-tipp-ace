@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from '@/components/ui/button';
 import { Medal, LogOut, Trophy, Calendar, BarChart3, Home, Settings, MessageCircle } from 'lucide-react';
 
@@ -11,10 +11,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, onOpenResultsAdmin }) => {
-  const { user, displayName, isAdmin, logout } = useAuth();
+  const { currentPlayer, isAdmin, logout } = usePlayer();
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
     onBackToHome?.();
   };
 
@@ -105,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
               </Button>
             )}
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-foreground">{displayName || user?.email}</p>
+              <p className="text-sm font-medium text-foreground">{currentPlayer?.name}</p>
               <p className="text-xs text-muted-foreground">
                 {isAdmin ? 'Admin' : 'Angemeldet'}
               </p>

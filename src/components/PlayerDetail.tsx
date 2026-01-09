@@ -7,15 +7,15 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface PlayerDetailProps {
-  userId: string;
+  odplayerId: string;
   onBack: () => void;
 }
 
-const PlayerDetail: React.FC<PlayerDetailProps> = ({ userId, onBack }) => {
+const PlayerDetail: React.FC<PlayerDetailProps> = ({ odplayerId, onBack }) => {
   const { predictions, results, profiles, calculateScore } = usePredictions();
-  const displayName = profiles[userId] || 'Unbekannt';
-  const userPredictions = predictions[userId] || {};
-  const score = calculateScore(userId);
+  const displayName = profiles[odplayerId] || 'Unbekannt';
+  const userPredictions = predictions[odplayerId] || {};
+  const score = calculateScore(odplayerId);
 
   const getEventPredictions = () => {
     return Object.entries(userPredictions).map(([eventIdStr, prediction]) => {

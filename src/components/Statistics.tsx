@@ -1,19 +1,19 @@
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, sportCategories } from '@/data/olympicEvents';
 import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart } from 'lucide-react';
 
 const Statistics: React.FC = () => {
-  const { user } = useAuth();
+  const { currentPlayer } = usePlayer();
   const { predictions, profiles, calculateScore } = usePredictions();
 
   // Calculate statistics
-  const userPredictions = user ? predictions[user.id] || {} : {};
+  const userPredictions = currentPlayer ? predictions[currentPlayer.id] || {} : {};
   const totalTipps = Object.keys(userPredictions).length;
   const totalEvents = olympicEvents.length;
   const completionRate = Math.round((totalTipps / totalEvents) * 100);
-  const myScore = user ? calculateScore(user.id) : 0;
+  const myScore = currentPlayer ? calculateScore(currentPlayer.id) : 0;
   const totalPlayers = Object.keys(profiles).length;
 
   // Most picked countries

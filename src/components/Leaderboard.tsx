@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { Trophy, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import PlayerDetail from './PlayerDetail';
 
 const Leaderboard: React.FC = () => {
   const { getLeaderboard, predictions, results } = usePredictions();
-  const { user } = useAuth();
+  const { currentPlayer } = usePlayer();
   const leaderboard = getLeaderboard();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [eventPage, setEventPage] = useState(0);
@@ -49,7 +49,7 @@ const Leaderboard: React.FC = () => {
 
   // Show player detail view if a player is selected
   if (selectedPlayerId !== null) {
-    return <PlayerDetail userId={selectedPlayerId} onBack={() => setSelectedPlayerId(null)} />;
+    return <PlayerDetail odplayerId={selectedPlayerId} onBack={() => setSelectedPlayerId(null)} />;
   }
 
   return (
@@ -116,13 +116,13 @@ const Leaderboard: React.FC = () => {
             </thead>
             <tbody>
               {leaderboard.map((player, index) => {
-                const isCurrentUser = player.userId === user?.id;
-                const positionChange = getPositionChange(player.userId);
+                const isCurrentUser = player.playerId === currentPlayer?.id;
+                const positionChange = getPositionChange(player.playerId);
                 
                 return (
                   <tr
-                    key={player.userId}
-                    onClick={() => setSelectedPlayerId(player.userId)}
+                    key={player.playerId}
+                    onClick={() => setSelectedPlayerId(player.playerId)}
                     className={`border-b border-border/30 last:border-b-0 cursor-pointer transition-colors hover:bg-secondary/30 ${
                       isCurrentUser ? 'bg-gold/20' : ''
                     }`}
@@ -156,8 +156,8 @@ const Leaderboard: React.FC = () => {
 
                     {/* Event Scores */}
                     {displayedEvents.map(event => {
-                      const score = getEventScore(player.userId, event.id);
-                      const hasPrediction = predictions[player.userId]?.[event.id];
+                      const score = getEventScore(player.playerId, event.id);
+                      const hasPrediction = predictions[player.playerId]?.[event.id];
                       
                       return (
                         <td key={event.id} className="py-3 px-2 text-center">
@@ -179,7 +179,7 @@ const Leaderboard: React.FC = () => {
 
                     {/* Tips Count */}
                     <td className="py-3 px-2 text-center text-sm text-muted-foreground">
-                      {getTippCount(player.userId)}
+                      {getTippCount(player.playerId)}
                     </td>
 
                     {/* Total Score */}

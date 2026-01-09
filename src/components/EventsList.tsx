@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { olympicEvents, sportCategories, sportIcons, countries } from '@/data/olympicEvents';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +11,7 @@ import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 
 const EventsList: React.FC = () => {
-  const { user } = useAuth();
+  const { currentPlayer } = usePlayer();
   const { getPrediction, setPrediction, results } = usePredictions();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,7 +42,7 @@ const EventsList: React.FC = () => {
     if (expandedEvent === eventId) {
       setExpandedEvent(null);
     } else {
-      const existing = user ? getPrediction(user.id, eventId) : null;
+      const existing = currentPlayer ? getPrediction(currentPlayer.id, eventId) : null;
       setTempPredictions(prev => ({
         ...prev,
         [eventId]: {
@@ -68,7 +68,7 @@ const EventsList: React.FC = () => {
   };
 
   const getEventStatus = (eventId: number) => {
-    const prediction = user ? getPrediction(user.id, eventId) : null;
+    const prediction = currentPlayer ? getPrediction(currentPlayer.id, eventId) : null;
     const result = results[eventId];
     
     if (result && prediction) {

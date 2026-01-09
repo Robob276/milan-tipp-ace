@@ -57,9 +57,10 @@ const olympicGames: OlympicGame[] = [
 
 interface HomeScreenProps {
   onSelectGame: (gameId: string) => void;
+  onAdminLogin?: () => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -171,8 +172,20 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
           ))}
         </div>
 
+        {/* Admin Login Button */}
+        {onAdminLogin && (
+          <div className="text-center mt-8">
+            <button
+              onClick={onAdminLogin}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              Admin-Login
+            </button>
+          </div>
+        )}
+
         {/* Footer Note */}
-        <p className="text-center text-sm text-muted-foreground mt-8">
+        <p className="text-center text-sm text-muted-foreground mt-4">
           Weitere Turniere werden freigeschaltet, sobald sie verfügbar sind.
         </p>
       </div>

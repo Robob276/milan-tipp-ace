@@ -35,6 +35,33 @@ export type Database = {
         }
         Relationships: []
       }
+      players: {
+        Row: {
+          created_at: string
+          id: string
+          is_admin: boolean
+          name: string
+          pin: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          name: string
+          pin?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          name?: string
+          pin?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       predictions: {
         Row: {
           bronze: string
