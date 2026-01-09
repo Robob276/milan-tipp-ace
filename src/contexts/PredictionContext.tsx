@@ -135,14 +135,19 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const setResult = async (eventId: number, result: Omit<Result, 'eventId'>): Promise<{ error: string | null }> => {
-    const { error } = await supabase
+    console.log('setResult called with:', { eventId, result });
+    
+    const { data, error } = await supabase
       .from('results')
       .upsert({
         event_id: eventId,
         gold: result.gold,
         silver: result.silver,
         bronze: result.bronze
-      }, { onConflict: 'event_id' });
+      }, { onConflict: 'event_id' })
+      .select();
+
+    console.log('setResult response:', { data, error });
 
     if (error) {
       console.error('Error saving result:', error);
@@ -154,6 +159,9 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       ...prev,
       [eventId]: { eventId, ...result }
     }));
+
+    // Refetch all results to ensure sync
+    await fetchResults();
 
     return { error: null };
   };
