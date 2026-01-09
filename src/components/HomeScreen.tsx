@@ -1,5 +1,6 @@
 import React from 'react';
-import { Medal, Snowflake, Sun, MapPin, Calendar } from 'lucide-react';
+import { Snowflake, Sun, MapPin, Calendar } from 'lucide-react';
+import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
 interface OlympicGame {
   id: string;
@@ -69,12 +70,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
         
         <div className="relative container mx-auto px-4 pt-12 pb-8 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-olympic mb-6 shadow-xl animate-fade-in">
-            <Medal className="w-10 h-10 text-primary-foreground" />
-          </div>
+          <img 
+            src={opodiumLogo} 
+            alt="Opodium Logo" 
+            className="w-32 h-32 object-contain mb-4 animate-fade-in"
+          />
           
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3 animate-fade-in">
-            Olympia Tippspiel
+            Opodium
           </h1>
           <p className="text-muted-foreground text-lg max-w-md mx-auto animate-fade-in">
             Wähle ein Turnier und tippe auf deine Favoriten
