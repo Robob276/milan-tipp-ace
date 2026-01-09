@@ -4,7 +4,7 @@ import { olympicEvents, countries, sportCategories, sportIcons } from '@/data/ol
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Trophy, Check, Search, Filter } from 'lucide-react';
+import { ArrowLeft, Trophy, Check, Search, Filter, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -14,7 +14,7 @@ interface ResultsAdminProps {
 }
 
 const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
-  const { results, setResult } = usePredictions();
+  const { results, setResult, deleteResult } = usePredictions();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Alle');
@@ -243,6 +243,22 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                     </div>
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" onClick={handleCancel}>Abbrechen</Button>
+                      {hasResult && (
+                        <Button 
+                          variant="ghost"
+                          onClick={async () => {
+                            await deleteResult(event.id);
+                            toast({
+                              title: "Gelöscht",
+                              description: "Ergebnis wurde gelöscht."
+                            });
+                            setEditingEvent(null);
+                          }}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button 
                         onClick={() => handleSave(event.id)}
                         disabled={!tempResult.gold || !tempResult.silver || !tempResult.bronze}
