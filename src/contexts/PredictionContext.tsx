@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePlayer } from './PlayerContext';
-import type { Result, Prediction } from '@/data/olympicEvents';
+import type { Result, Prediction, OlympicEvent } from '@/data/olympicEvents';
+import { olympicEvents } from '@/data/olympicEvents';
 
 interface PredictionContextType {
   predictions: Record<string, Record<number, Prediction>>; // playerId -> eventId -> Prediction
@@ -9,10 +10,13 @@ interface PredictionContextType {
   profiles: Record<string, string>; // playerId -> displayName
   isLoading: boolean;
   setPrediction: (eventId: number, prediction: Omit<Prediction, 'eventId'>) => Promise<void>;
+  deletePrediction: (eventId: number) => Promise<void>;
   getPrediction: (playerId: string, eventId: number) => Prediction | null;
+  getVisiblePrediction: (playerId: string, eventId: number) => Prediction | null;
   setResult: (eventId: number, result: Omit<Result, 'eventId'>) => Promise<{ error: string | null }>;
   calculateScore: (playerId: string) => number;
   getLeaderboard: () => { playerId: string; name: string; score: number }[];
+  isEventStarted: (eventId: number) => boolean;
 }
 
 const PredictionContext = createContext<PredictionContextType | null>(null);
@@ -102,6 +106,13 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setProfiles(profilesMap);
   };
 
+  const isEventStarted = (eventId: number): boolean => {
+    const event = olympicEvents.find(e => e.id === eventId);
+    if (!event) return true; // If event not found, assume started for safety
+    const eventDate = new Date(event.date + 'T' + event.time);
+    return eventDate < new Date();
+  };
+
   const setPrediction = async (eventId: number, prediction: Omit<Prediction, 'eventId'>) => {
     if (!currentPlayer) return;
 
@@ -130,8 +141,48 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   };
 
+  const deletePrediction = async (eventId: number) => {
+    if (!currentPlayer) return;
+
+    const { error } = await supabase
+      .from('predictions')
+      .delete()
+      .eq('user_id', currentPlayer.id)
+      .eq('event_id', eventId);
+
+    if (error) {
+      console.error('Error deleting prediction:', error);
+      return;
+    }
+
+    // Update local state
+    setPredictions(prev => {
+      const newPredictions = { ...prev };
+      if (newPredictions[currentPlayer.id]) {
+        const playerPredictions = { ...newPredictions[currentPlayer.id] };
+        delete playerPredictions[eventId];
+        newPredictions[currentPlayer.id] = playerPredictions;
+      }
+      return newPredictions;
+    });
+  };
+
   const getPrediction = (playerId: string, eventId: number): Prediction | null => {
     return predictions[playerId]?.[eventId] || null;
+  };
+
+  // Get prediction only if it should be visible (own prediction or event has started)
+  const getVisiblePrediction = (playerId: string, eventId: number): Prediction | null => {
+    const prediction = predictions[playerId]?.[eventId];
+    if (!prediction) return null;
+    
+    // Always show own predictions
+    if (currentPlayer && playerId === currentPlayer.id) return prediction;
+    
+    // Show other players' predictions only if event has started
+    if (isEventStarted(eventId)) return prediction;
+    
+    return null;
   };
 
   const setResult = async (eventId: number, result: Omit<Result, 'eventId'>): Promise<{ error: string | null }> => {
@@ -198,10 +249,13 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       profiles,
       isLoading,
       setPrediction,
+      deletePrediction,
       getPrediction,
+      getVisiblePrediction,
       setResult,
       calculateScore,
-      getLeaderboard
+      getLeaderboard,
+      isEventStarted
     }}>
       {children}
     </PredictionContext.Provider>

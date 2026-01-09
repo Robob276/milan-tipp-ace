@@ -1,11 +1,11 @@
 import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from '@/components/ui/button';
-import { Medal, LogOut, Trophy, Calendar, BarChart3, Home, Settings, MessageCircle } from 'lucide-react';
+import { Medal, LogOut, Trophy, Calendar, BarChart3, Home, Settings } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'events' | 'leaderboard' | 'stats' | 'chat';
-  setActiveTab: (tab: 'events' | 'leaderboard' | 'stats' | 'chat') => void;
+  activeTab: 'events' | 'leaderboard' | 'stats';
+  setActiveTab: (tab: 'events' | 'leaderboard' | 'stats') => void;
   onBackToHome?: () => void;
   onOpenResultsAdmin?: () => void;
 }
@@ -80,17 +80,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
             >
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Statistiken</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'chat'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-              }`}
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Chat</span>
             </button>
           </nav>
 

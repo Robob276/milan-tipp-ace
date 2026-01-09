@@ -3,21 +3,26 @@ import { olympicEvents, sportCategories, sportIcons, countries } from '@/data/ol
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, Check, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 
 const EventsList: React.FC = () => {
   const { currentPlayer } = usePlayer();
-  const { getPrediction, setPrediction, results } = usePredictions();
+  const { getPrediction, setPrediction, deletePrediction, results } = usePredictions();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Alle');
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
+
+  const countryOptions = useMemo(() => 
+    countries.map(c => ({ value: c.name, label: c.name })), 
+    []
+  );
 
   const filteredEvents = useMemo(() => {
     return olympicEvents.filter(event => {
@@ -65,6 +70,21 @@ const EventsList: React.FC = () => {
       description: "Dein Tipp wurde erfolgreich gespeichert."
     });
     setExpandedEvent(null);
+  };
+
+  const handleDelete = async (eventId: number) => {
+    await deletePrediction(eventId);
+    toast({
+      title: "Gelöscht!",
+      description: "Dein Tipp wurde gelöscht."
+    });
+    setExpandedEvent(null);
+    // Clear temp predictions for this event
+    setTempPredictions(prev => {
+      const newPreds = { ...prev };
+      delete newPreds[eventId];
+      return newPreds;
+    });
   };
 
   const getEventStatus = (eventId: number) => {
@@ -139,6 +159,7 @@ const EventsList: React.FC = () => {
               const temp = tempPredictions[event.id] || { gold: '', silver: '', bronze: '' };
               const eventDate = new Date(event.date + 'T' + event.time);
               const isPast = eventDate < new Date();
+              const hasPrediction = status.type === 'tipped' || status.type === 'scored';
 
               return (
                 <div key={event.id} className="transition-all">
@@ -204,22 +225,18 @@ const EventsList: React.FC = () => {
                           <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                             <div className="w-3 h-3 rounded-full gradient-gold" /> Gold
                           </label>
-                          <Select 
-                            value={temp.gold} 
+                          <SearchableSelect
+                            value={temp.gold}
                             onValueChange={(v) => setTempPredictions(prev => ({
                               ...prev,
                               [event.id]: { ...prev[event.id], gold: v }
                             }))}
-                          >
-                            <SelectTrigger className="h-9 text-xs">
-                              <SelectValue placeholder="Wählen" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {countries.map(c => (
-                                <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            options={countryOptions}
+                            placeholder="Wählen"
+                            searchPlaceholder="Land suchen..."
+                            emptyText="Kein Land gefunden."
+                            className="h-9 text-xs w-full"
+                          />
                         </div>
 
                         {/* Silver */}
@@ -227,22 +244,18 @@ const EventsList: React.FC = () => {
                           <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                             <div className="w-3 h-3 rounded-full gradient-silver" /> Silber
                           </label>
-                          <Select 
-                            value={temp.silver} 
+                          <SearchableSelect
+                            value={temp.silver}
                             onValueChange={(v) => setTempPredictions(prev => ({
                               ...prev,
                               [event.id]: { ...prev[event.id], silver: v }
                             }))}
-                          >
-                            <SelectTrigger className="h-9 text-xs">
-                              <SelectValue placeholder="Wählen" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {countries.map(c => (
-                                <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            options={countryOptions}
+                            placeholder="Wählen"
+                            searchPlaceholder="Land suchen..."
+                            emptyText="Kein Land gefunden."
+                            className="h-9 text-xs w-full"
+                          />
                         </div>
 
                         {/* Bronze */}
@@ -250,34 +263,33 @@ const EventsList: React.FC = () => {
                           <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                             <div className="w-3 h-3 rounded-full gradient-bronze" /> Bronze
                           </label>
-                          <Select 
-                            value={temp.bronze} 
+                          <SearchableSelect
+                            value={temp.bronze}
                             onValueChange={(v) => setTempPredictions(prev => ({
                               ...prev,
                               [event.id]: { ...prev[event.id], bronze: v }
                             }))}
-                          >
-                            <SelectTrigger className="h-9 text-xs">
-                              <SelectValue placeholder="Wählen" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {countries.map(c => (
-                                <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            options={countryOptions}
+                            placeholder="Wählen"
+                            searchPlaceholder="Land suchen..."
+                            emptyText="Kein Land gefunden."
+                            className="h-9 text-xs w-full"
+                          />
                         </div>
                       </div>
 
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => setExpandedEvent(null)}
-                          className="flex-1"
-                        >
-                          Abbrechen
-                        </Button>
+                        {/* Delete button - only show if prediction exists */}
+                        {hasPrediction && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(event.id)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                         <Button 
                           size="sm"
                           onClick={() => handleSave(event.id)}
