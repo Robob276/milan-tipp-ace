@@ -14,6 +14,7 @@ interface PredictionContextType {
   getPrediction: (playerId: string, eventId: number) => Prediction | null;
   getVisiblePrediction: (playerId: string, eventId: number) => Prediction | null;
   setResult: (eventId: number, result: Omit<Result, 'eventId'>) => Promise<{ error: string | null }>;
+  deleteResult: (eventId: number) => Promise<void>;
   calculateScore: (playerId: string) => number;
   getLeaderboard: () => { playerId: string; name: string; score: number }[];
   isEventStarted: (eventId: number) => boolean;
@@ -217,6 +218,25 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return { error: null };
   };
 
+  const deleteResult = async (eventId: number) => {
+    const { error } = await supabase
+      .from('results')
+      .delete()
+      .eq('event_id', eventId);
+
+    if (error) {
+      console.error('Error deleting result:', error);
+      return;
+    }
+
+    // Update local state
+    setResults(prev => {
+      const newResults = { ...prev };
+      delete newResults[eventId];
+      return newResults;
+    });
+  };
+
   const calculateScore = (playerId: string): number => {
     const playerPredictions = predictions[playerId] || {};
     let score = 0;
@@ -253,6 +273,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       getPrediction,
       getVisiblePrediction,
       setResult,
+      deleteResult,
       calculateScore,
       getLeaderboard,
       isEventStarted
