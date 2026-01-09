@@ -1,15 +1,16 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Medal, LogOut, Trophy, Calendar, BarChart3, Home } from 'lucide-react';
+import { Medal, LogOut, Trophy, Calendar, BarChart3, Home, Settings } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'events' | 'leaderboard' | 'stats';
   setActiveTab: (tab: 'events' | 'leaderboard' | 'stats') => void;
   onBackToHome?: () => void;
+  onOpenResultsAdmin?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome }) => {
+const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, onOpenResultsAdmin }) => {
   const { currentUser, logout } = useAuth();
 
   const handleLogout = () => {
@@ -79,8 +80,19 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome }
             </button>
           </nav>
 
-          {/* User Info */}
-          <div className="flex items-center gap-3">
+          {/* User Info & Admin */}
+          <div className="flex items-center gap-2">
+            {onOpenResultsAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onOpenResultsAdmin}
+                className="text-muted-foreground hover:text-foreground"
+                title="Ergebnisse eintragen"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+            )}
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-foreground">{currentUser?.name}</p>
               <p className="text-xs text-muted-foreground">Angemeldet</p>
