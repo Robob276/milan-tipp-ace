@@ -93,7 +93,29 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "players_admin"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "players_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
