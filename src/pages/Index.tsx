@@ -6,17 +6,28 @@ import Dashboard from '@/components/Dashboard';
 import HomeScreen from '@/components/HomeScreen';
 
 const AppContent = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   
-  // Show home screen first to select a game
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full gradient-olympic mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Laden...</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (!selectedGame) {
     return <HomeScreen onSelectGame={setSelectedGame} />;
   }
   
-  // Then show login or dashboard based on auth status
   return isAuthenticated ? (
-    <Dashboard onBackToHome={() => setSelectedGame(null)} />
+    <PredictionProvider>
+      <Dashboard onBackToHome={() => setSelectedGame(null)} />
+    </PredictionProvider>
   ) : (
     <LoginPage onBackToHome={() => setSelectedGame(null)} />
   );
@@ -25,9 +36,7 @@ const AppContent = () => {
 const Index = () => {
   return (
     <AuthProvider>
-      <PredictionProvider>
-        <AppContent />
-      </PredictionProvider>
+      <AppContent />
     </AuthProvider>
   );
 };

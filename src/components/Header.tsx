@@ -11,10 +11,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, onOpenResultsAdmin }) => {
-  const { currentUser, logout } = useAuth();
+  const { user, displayName, isAdmin, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     onBackToHome?.();
   };
 
@@ -82,20 +82,22 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
 
           {/* User Info & Admin */}
           <div className="flex items-center gap-2">
-            {onOpenResultsAdmin && (
+            {isAdmin && onOpenResultsAdmin && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onOpenResultsAdmin}
                 className="text-muted-foreground hover:text-foreground"
-                title="Ergebnisse eintragen"
+                title="Ergebnisse eintragen (Admin)"
               >
                 <Settings className="w-5 h-5" />
               </Button>
             )}
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-foreground">{currentUser?.name}</p>
-              <p className="text-xs text-muted-foreground">Angemeldet</p>
+              <p className="text-sm font-medium text-foreground">{displayName || user?.email}</p>
+              <p className="text-xs text-muted-foreground">
+                {isAdmin ? 'Admin' : 'Angemeldet'}
+              </p>
             </div>
             <Button
               variant="ghost"

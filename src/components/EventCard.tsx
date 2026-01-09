@@ -11,10 +11,10 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const { getPrediction, setPrediction } = usePredictions();
   
-  const existingPrediction = currentUser ? getPrediction(currentUser.id, event.id) : null;
+  const existingPrediction = user ? getPrediction(user.id, event.id) : null;
   
   const [gold, setGold] = useState(existingPrediction?.gold || '');
   const [silver, setSilver] = useState(existingPrediction?.silver || '');
@@ -33,11 +33,10 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     });
   };
 
-  const handleSave = () => {
-    if (!currentUser || !gold || !silver || !bronze) return;
+  const handleSave = async () => {
+    if (!user || !gold || !silver || !bronze) return;
     
-    setPrediction(currentUser.id, event.id, {
-      eventId: event.id,
+    await setPrediction(event.id, {
       gold,
       silver,
       bronze
