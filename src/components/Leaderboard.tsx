@@ -1,43 +1,50 @@
 import React, { useState } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trophy, Medal, TrendingUp, ChevronRight } from 'lucide-react';
+import { olympicEvents } from '@/data/olympicEvents';
+import { Trophy, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import PlayerDetail from './PlayerDetail';
 
 const Leaderboard: React.FC = () => {
-  const { getLeaderboard, predictions } = usePredictions();
+  const { getLeaderboard, predictions, results } = usePredictions();
   const { user } = useAuth();
   const leaderboard = getLeaderboard();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [eventPage, setEventPage] = useState(0);
+  const eventsPerPage = 3;
 
-  const getMedalStyle = (index: number) => {
-    switch (index) {
-      case 0:
-        return 'gradient-gold text-white shadow-lg';
-      case 1:
-        return 'gradient-silver text-white';
-      case 2:
-        return 'gradient-bronze text-white';
-      default:
-        return 'bg-secondary text-secondary-foreground';
-    }
-  };
-
-  const getMedalIcon = (index: number) => {
-    switch (index) {
-      case 0:
-        return <Trophy className="w-5 h-5" />;
-      case 1:
-        return <Medal className="w-5 h-5" />;
-      case 2:
-        return <Medal className="w-5 h-5" />;
-      default:
-        return <span className="text-sm font-bold">{index + 1}</span>;
-    }
-  };
+  // Get events that have results
+  const eventsWithResults = olympicEvents.filter(e => results[e.id]);
+  const totalPages = Math.ceil(eventsWithResults.length / eventsPerPage);
+  const displayedEvents = eventsWithResults.slice(eventPage * eventsPerPage, (eventPage + 1) * eventsPerPage);
 
   const getTippCount = (userId: string) => {
     return Object.keys(predictions[userId] || {}).length;
+  };
+
+  const getEventScore = (userId: string, eventId: number): number => {
+    const prediction = predictions[userId]?.[eventId];
+    const result = results[eventId];
+    if (!prediction || !result) return 0;
+    
+    let score = 0;
+    if (prediction.gold === result.gold) score += 3;
+    if (prediction.silver === result.silver) score += 2;
+    if (prediction.bronze === result.bronze) score += 1;
+    return score;
+  };
+
+  const getPositionChange = (userId: string): number => {
+    // This would need historical data to calculate properly
+    // For now, return 0 (no change)
+    return 0;
+  };
+
+  const getPositionIcon = (change: number) => {
+    if (change > 0) return <TrendingUp className="w-3 h-3 text-green-500" />;
+    if (change < 0) return <TrendingDown className="w-3 h-3 text-red-500" />;
+    return <Minus className="w-3 h-3 text-muted-foreground" />;
   };
 
   // Show player detail view if a player is selected
@@ -52,50 +59,146 @@ const Leaderboard: React.FC = () => {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-olympic mb-4">
           <Trophy className="w-8 h-8 text-primary-foreground" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">Rangliste</h2>
+        <h2 className="text-2xl font-bold text-foreground">Tippübersicht</h2>
         <p className="text-muted-foreground mt-2">Wer wird Olympia-Tippmeister 2026?</p>
       </div>
 
-      {/* Leaderboard */}
+      {/* Kicktipp-style Table */}
       <div className="glass-card rounded-xl overflow-hidden">
-        {leaderboard.map((player, index) => (
-          <button
-            key={player.userId}
-            onClick={() => setSelectedPlayerId(player.userId)}
-            className={`w-full flex items-center gap-4 p-4 border-b border-border/50 last:border-b-0 transition-all hover:bg-secondary/50 text-left ${
-              player.userId === user?.id ? 'bg-primary/5' : ''
-            }`}
-          >
-            {/* Rank */}
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getMedalStyle(index)}`}>
-              {getMedalIcon(index)}
+        {/* Table Header with Event Navigation */}
+        {eventsWithResults.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-2 bg-secondary/50 border-b border-border/50">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEventPage(Math.max(0, eventPage - 1))}
+              disabled={eventPage === 0}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <div className="flex gap-2 text-xs text-muted-foreground">
+              {displayedEvents.map(event => (
+                <div key={event.id} className="text-center min-w-[50px]">
+                  <div className="font-medium text-foreground">{event.discipline.slice(0, 6)}</div>
+                  <div className="text-[10px]">{event.gender.slice(0, 1)}</div>
+                </div>
+              ))}
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEventPage(Math.min(totalPages - 1, eventPage + 1))}
+              disabled={eventPage >= totalPages - 1}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
 
-            {/* Player Info */}
-            <div className="flex-1">
-              <p className="font-semibold text-foreground">
-                {player.name}
-                {player.userId === user?.id && (
-                  <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                    Du
-                  </span>
-                )}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {getTippCount(player.userId)} Tipps abgegeben
-              </p>
-            </div>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border/50 bg-muted/30">
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground w-12">Pos</th>
+                <th className="text-center py-3 px-1 text-xs font-medium text-muted-foreground w-8">+/-</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
+                {displayedEvents.map(event => (
+                  <th key={event.id} className="text-center py-3 px-2 text-xs font-medium text-muted-foreground min-w-[40px]">
+                    -:-
+                  </th>
+                ))}
+                <th className="text-center py-3 px-2 text-xs font-medium text-muted-foreground w-10">T</th>
+                <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground w-14">Ges</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboard.map((player, index) => {
+                const isCurrentUser = player.userId === user?.id;
+                const positionChange = getPositionChange(player.userId);
+                
+                return (
+                  <tr
+                    key={player.userId}
+                    onClick={() => setSelectedPlayerId(player.userId)}
+                    className={`border-b border-border/30 last:border-b-0 cursor-pointer transition-colors hover:bg-secondary/30 ${
+                      isCurrentUser ? 'bg-gold/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <td className="py-3 px-3">
+                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                        index === 0 ? 'gradient-gold text-white' :
+                        index === 1 ? 'gradient-silver text-white' :
+                        index === 2 ? 'gradient-bronze text-white' :
+                        'bg-secondary text-secondary-foreground'
+                      }`}>
+                        {index + 1}
+                      </span>
+                    </td>
 
-            {/* Score */}
-            <div className="text-right mr-2">
-              <p className="text-2xl font-bold text-foreground">{player.score}</p>
-              <p className="text-xs text-muted-foreground">Punkte</p>
-            </div>
+                    {/* Position Change */}
+                    <td className="py-3 px-1 text-center">
+                      {getPositionIcon(positionChange)}
+                    </td>
 
-            {/* Arrow */}
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
-        ))}
+                    {/* Name */}
+                    <td className="py-3 px-3">
+                      <span className="font-medium text-foreground">
+                        {player.name}
+                        {isCurrentUser && (
+                          <span className="ml-1 text-xs text-muted-foreground">(Du)</span>
+                        )}
+                      </span>
+                    </td>
+
+                    {/* Event Scores */}
+                    {displayedEvents.map(event => {
+                      const score = getEventScore(player.userId, event.id);
+                      const hasPrediction = predictions[player.userId]?.[event.id];
+                      
+                      return (
+                        <td key={event.id} className="py-3 px-2 text-center">
+                          {hasPrediction ? (
+                            <span className={`text-sm font-medium ${
+                              score >= 5 ? 'text-green-600 font-bold' :
+                              score >= 3 ? 'text-primary font-semibold' :
+                              score > 0 ? 'text-foreground' :
+                              'text-muted-foreground'
+                            }`}>
+                              {score}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">-:-</span>
+                          )}
+                        </td>
+                      );
+                    })}
+
+                    {/* Tips Count */}
+                    <td className="py-3 px-2 text-center text-sm text-muted-foreground">
+                      {getTippCount(player.userId)}
+                    </td>
+
+                    {/* Total Score */}
+                    <td className="py-3 px-3 text-right">
+                      <span className="text-lg font-bold text-foreground">{player.score}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Empty State */}
+        {leaderboard.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">
+            Noch keine Spieler registriert
+          </div>
+        )}
       </div>
 
       {/* Scoring Info */}
