@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePlayer } from './PlayerContext';
 import type { Result, Prediction } from '@/data/olympicEvents';
-import { withPlayerSession } from '@/lib/supabaseSession';
 
 interface PredictionContextType {
   predictions: Record<string, Record<number, Prediction>>; // playerId -> eventId -> Prediction
@@ -106,32 +105,29 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const setPrediction = async (eventId: number, prediction: Omit<Prediction, 'eventId'>) => {
     if (!currentPlayer) return;
 
-    // Use withPlayerSession to set the session variable before the operation
-    await withPlayerSession(currentPlayer.id, async () => {
-      const { error } = await supabase
-        .from('predictions')
-        .upsert({
-          user_id: currentPlayer.id,
-          event_id: eventId,
-          gold: prediction.gold,
-          silver: prediction.silver,
-          bronze: prediction.bronze
-        }, { onConflict: 'user_id,event_id' });
+    const { error } = await supabase
+      .from('predictions')
+      .upsert({
+        user_id: currentPlayer.id,
+        event_id: eventId,
+        gold: prediction.gold,
+        silver: prediction.silver,
+        bronze: prediction.bronze
+      }, { onConflict: 'user_id,event_id' });
 
-      if (error) {
-        console.error('Error saving prediction:', error);
-        return;
+    if (error) {
+      console.error('Error saving prediction:', error);
+      return;
+    }
+
+    // Update local state
+    setPredictions(prev => ({
+      ...prev,
+      [currentPlayer.id]: {
+        ...prev[currentPlayer.id],
+        [eventId]: { eventId, ...prediction }
       }
-
-      // Update local state
-      setPredictions(prev => ({
-        ...prev,
-        [currentPlayer.id]: {
-          ...prev[currentPlayer.id],
-          [eventId]: { eventId, ...prediction }
-        }
-      }));
-    });
+    }));
   };
 
   const getPrediction = (playerId: string, eventId: number): Prediction | null => {
