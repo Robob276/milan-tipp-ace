@@ -5,14 +5,15 @@ import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SearchableSelect } from '@/components/ui/searchable-select';
-import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import Countdown from './Countdown';
 
 const EventsList: React.FC = () => {
   const { currentPlayer } = usePlayer();
-  const { getPrediction, setPrediction, deletePrediction, results } = usePredictions();
+  const { getPrediction, setPrediction, deletePrediction, results, isEventStarted } = usePredictions();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Alle');
@@ -24,24 +25,45 @@ const EventsList: React.FC = () => {
     []
   );
 
-  const filteredEvents = useMemo(() => {
-    return olympicEvents.filter(event => {
+  // Split events into upcoming and completed
+  const { upcomingEvents, completedEvents } = useMemo(() => {
+    const filtered = olympicEvents.filter(event => {
       const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            event.discipline.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'Alle' || event.category === selectedCategory;
       return matchesSearch && matchesCategory;
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [searchTerm, selectedCategory]);
+    });
+
+    const upcoming: typeof olympicEvents = [];
+    const completed: typeof olympicEvents = [];
+
+    filtered.forEach(event => {
+      if (isEventStarted(event.id)) {
+        completed.push(event);
+      } else {
+        upcoming.push(event);
+      }
+    });
+
+    // Sort upcoming by date ascending, completed by date descending
+    upcoming.sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime());
+    completed.sort((a, b) => new Date(b.date + 'T' + b.time).getTime() - new Date(a.date + 'T' + a.time).getTime());
+
+    return { upcomingEvents: upcoming, completedEvents: completed };
+  }, [searchTerm, selectedCategory, isEventStarted]);
 
   // Group events by date
-  const groupedEvents = useMemo(() => {
+  const groupEventsByDate = (events: typeof olympicEvents) => {
     const groups: Record<string, typeof olympicEvents> = {};
-    filteredEvents.forEach(event => {
+    events.forEach(event => {
       if (!groups[event.date]) groups[event.date] = [];
       groups[event.date].push(event);
     });
     return groups;
-  }, [filteredEvents]);
+  };
+
+  const upcomingGrouped = useMemo(() => groupEventsByDate(upcomingEvents), [upcomingEvents]);
+  const completedGrouped = useMemo(() => groupEventsByDate(completedEvents), [completedEvents]);
 
   const handleExpand = (eventId: number) => {
     if (expandedEvent === eventId) {
@@ -79,7 +101,6 @@ const EventsList: React.FC = () => {
       description: "Dein Tipp wurde gelöscht."
     });
     setExpandedEvent(null);
-    // Clear temp predictions for this event
     setTempPredictions(prev => {
       const newPreds = { ...prev };
       delete newPreds[eventId];
@@ -102,6 +123,178 @@ const EventsList: React.FC = () => {
     if (prediction) return { type: 'tipped', points: 0 };
     return { type: 'open', points: 0 };
   };
+
+  const renderEventCard = (event: typeof olympicEvents[0], isCompleted: boolean) => {
+    const status = getEventStatus(event.id);
+    const isExpanded = expandedEvent === event.id;
+    const temp = tempPredictions[event.id] || { gold: '', silver: '', bronze: '' };
+    const eventDate = new Date(event.date + 'T' + event.time);
+    const hasPrediction = status.type === 'tipped' || status.type === 'scored';
+
+    return (
+      <div key={event.id} className="transition-all">
+        {/* Compact Row */}
+        <button
+          onClick={() => !isCompleted && handleExpand(event.id)}
+          disabled={isCompleted && status.type === 'open'}
+          className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
+            isExpanded ? 'bg-primary/5' : 'hover:bg-secondary/30'
+          } ${isCompleted && status.type === 'open' ? 'opacity-50' : ''}`}
+        >
+          {/* Sport Icon */}
+          <span className="text-xl shrink-0">{sportIcons[event.category] || '🏅'}</span>
+
+          {/* Event Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-foreground truncate">
+                {event.sport}
+              </p>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                isCompleted 
+                  ? 'bg-muted text-muted-foreground' 
+                  : 'bg-green-500/20 text-green-600'
+              }`}>
+                {isCompleted ? 'Abgeschlossen' : 'Offen'}
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {event.discipline} / {event.gender}
+            </p>
+            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                {format(new Date(event.date), 'EEEE, dd.MM.yyyy', { locale: de })}
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {event.time} Uhr
+              </span>
+            </div>
+            {/* Countdown for upcoming events */}
+            {!isCompleted && (
+              <div className="mt-2">
+                <Countdown targetDate={eventDate} />
+              </div>
+            )}
+          </div>
+
+          {/* Status Badge */}
+          <div className="shrink-0">
+            {status.type === 'scored' && (
+              <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                status.points >= 5 ? 'bg-green-500 text-white' :
+                status.points >= 3 ? 'gradient-gold text-white' :
+                status.points > 0 ? 'bg-primary/20 text-primary' :
+                'bg-muted text-muted-foreground'
+              }`}>
+                {status.points}
+              </span>
+            )}
+            {status.type === 'result' && (
+              <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+                Kein Tipp
+              </span>
+            )}
+            {status.type === 'tipped' && (
+              <Check className="w-5 h-5 text-green-500" />
+            )}
+            {status.type === 'open' && !isCompleted && (
+              isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            )}
+          </div>
+        </button>
+
+        {/* Expanded Form */}
+        {isExpanded && !isCompleted && (
+          <div className="px-4 pb-4 space-y-3 animate-fade-in">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Gold */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-gold" /> Gold
+                </label>
+                <SearchableSelect
+                  value={temp.gold}
+                  onValueChange={(v) => setTempPredictions(prev => ({
+                    ...prev,
+                    [event.id]: { ...prev[event.id], gold: v }
+                  }))}
+                  options={countryOptions}
+                  placeholder="Wählen"
+                  searchPlaceholder="Land suchen..."
+                  emptyText="Kein Land gefunden."
+                  className="h-9 text-xs w-full"
+                />
+              </div>
+
+              {/* Silver */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-silver" /> Silber
+                </label>
+                <SearchableSelect
+                  value={temp.silver}
+                  onValueChange={(v) => setTempPredictions(prev => ({
+                    ...prev,
+                    [event.id]: { ...prev[event.id], silver: v }
+                  }))}
+                  options={countryOptions}
+                  placeholder="Wählen"
+                  searchPlaceholder="Land suchen..."
+                  emptyText="Kein Land gefunden."
+                  className="h-9 text-xs w-full"
+                />
+              </div>
+
+              {/* Bronze */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-bronze" /> Bronze
+                </label>
+                <SearchableSelect
+                  value={temp.bronze}
+                  onValueChange={(v) => setTempPredictions(prev => ({
+                    ...prev,
+                    [event.id]: { ...prev[event.id], bronze: v }
+                  }))}
+                  options={countryOptions}
+                  placeholder="Wählen"
+                  searchPlaceholder="Land suchen..."
+                  emptyText="Kein Land gefunden."
+                  className="h-9 text-xs w-full"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {/* Delete button - only show if prediction exists */}
+              {hasPrediction && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleDelete(event.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+              <Button 
+                size="sm"
+                onClick={() => handleSave(event.id)}
+                disabled={!temp.gold || !temp.silver || !temp.bronze}
+                className="flex-1 gradient-olympic text-primary-foreground"
+              >
+                Tipp abgeben
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const totalEvents = upcomingEvents.length + completedEvents.length;
 
   return (
     <div className="space-y-6">
@@ -137,178 +330,36 @@ const EventsList: React.FC = () => {
 
       {/* Events Count */}
       <p className="text-sm text-muted-foreground">
-        {filteredEvents.length} von {olympicEvents.length} Entscheidungen
+        {totalEvents} Entscheidungen ({upcomingEvents.length} anstehend, {completedEvents.length} abgeschlossen)
       </p>
 
-      {/* Events by Date */}
-      {Object.entries(groupedEvents).map(([date, events]) => (
-        <div key={date} className="space-y-2">
-          {/* Date Header */}
-          <div className="sticky top-16 z-10 bg-background/95 backdrop-blur py-2">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full gradient-olympic" />
-              {format(new Date(date), 'EEEE, dd. MMMM', { locale: de })}
-            </h3>
-          </div>
-
-          {/* Event List - Kicktipp Style */}
+      {/* Upcoming Events */}
+      {upcomingEvents.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-green-500" />
+            Anstehende Events
+          </h2>
           <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
-            {events.map(event => {
-              const status = getEventStatus(event.id);
-              const isExpanded = expandedEvent === event.id;
-              const temp = tempPredictions[event.id] || { gold: '', silver: '', bronze: '' };
-              const eventDate = new Date(event.date + 'T' + event.time);
-              const isPast = eventDate < new Date();
-              const hasPrediction = status.type === 'tipped' || status.type === 'scored';
-
-              return (
-                <div key={event.id} className="transition-all">
-                  {/* Compact Row */}
-                  <button
-                    onClick={() => !isPast && handleExpand(event.id)}
-                    disabled={isPast && status.type === 'open'}
-                    className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
-                      isExpanded ? 'bg-primary/5' : 'hover:bg-secondary/30'
-                    } ${isPast && status.type === 'open' ? 'opacity-50' : ''}`}
-                  >
-                    {/* Sport Icon */}
-                    <span className="text-xl shrink-0">{sportIcons[event.category] || '🏅'}</span>
-
-                    {/* Event Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">
-                        {event.discipline}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {event.sport} • {event.gender}
-                      </p>
-                    </div>
-
-                    {/* Time */}
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-                      <Clock className="w-3 h-3" />
-                      {event.time}
-                    </div>
-
-                    {/* Status Badge */}
-                    <div className="shrink-0">
-                      {status.type === 'scored' && (
-                        <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                          status.points >= 5 ? 'bg-green-500 text-white' :
-                          status.points >= 3 ? 'gradient-gold text-white' :
-                          status.points > 0 ? 'bg-primary/20 text-primary' :
-                          'bg-muted text-muted-foreground'
-                        }`}>
-                          {status.points}
-                        </span>
-                      )}
-                      {status.type === 'result' && (
-                        <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
-                          Kein Tipp
-                        </span>
-                      )}
-                      {status.type === 'tipped' && (
-                        <Check className="w-5 h-5 text-green-500" />
-                      )}
-                      {status.type === 'open' && !isPast && (
-                        isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                      )}
-                    </div>
-                  </button>
-
-                  {/* Expanded Form */}
-                  {isExpanded && (
-                    <div className="px-4 pb-4 space-y-3 animate-fade-in">
-                      <div className="grid grid-cols-3 gap-2">
-                        {/* Gold */}
-                        <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                            <div className="w-3 h-3 rounded-full gradient-gold" /> Gold
-                          </label>
-                          <SearchableSelect
-                            value={temp.gold}
-                            onValueChange={(v) => setTempPredictions(prev => ({
-                              ...prev,
-                              [event.id]: { ...prev[event.id], gold: v }
-                            }))}
-                            options={countryOptions}
-                            placeholder="Wählen"
-                            searchPlaceholder="Land suchen..."
-                            emptyText="Kein Land gefunden."
-                            className="h-9 text-xs w-full"
-                          />
-                        </div>
-
-                        {/* Silver */}
-                        <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                            <div className="w-3 h-3 rounded-full gradient-silver" /> Silber
-                          </label>
-                          <SearchableSelect
-                            value={temp.silver}
-                            onValueChange={(v) => setTempPredictions(prev => ({
-                              ...prev,
-                              [event.id]: { ...prev[event.id], silver: v }
-                            }))}
-                            options={countryOptions}
-                            placeholder="Wählen"
-                            searchPlaceholder="Land suchen..."
-                            emptyText="Kein Land gefunden."
-                            className="h-9 text-xs w-full"
-                          />
-                        </div>
-
-                        {/* Bronze */}
-                        <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                            <div className="w-3 h-3 rounded-full gradient-bronze" /> Bronze
-                          </label>
-                          <SearchableSelect
-                            value={temp.bronze}
-                            onValueChange={(v) => setTempPredictions(prev => ({
-                              ...prev,
-                              [event.id]: { ...prev[event.id], bronze: v }
-                            }))}
-                            options={countryOptions}
-                            placeholder="Wählen"
-                            searchPlaceholder="Land suchen..."
-                            emptyText="Kein Land gefunden."
-                            className="h-9 text-xs w-full"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        {/* Delete button - only show if prediction exists */}
-                        {hasPrediction && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDelete(event.id)}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                        <Button 
-                          size="sm"
-                          onClick={() => handleSave(event.id)}
-                          disabled={!temp.gold || !temp.silver || !temp.bronze}
-                          className="flex-1 gradient-olympic text-primary-foreground"
-                        >
-                          Speichern
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {upcomingEvents.map(event => renderEventCard(event, false))}
           </div>
         </div>
-      ))}
+      )}
 
-      {filteredEvents.length === 0 && (
+      {/* Completed Events */}
+      {completedEvents.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-muted-foreground" />
+            Abgeschlossene Events
+          </h2>
+          <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
+            {completedEvents.map(event => renderEventCard(event, true))}
+          </div>
+        </div>
+      )}
+
+      {totalEvents === 0 && (
         <div className="glass-card rounded-xl p-8 text-center text-muted-foreground">
           Keine Events gefunden
         </div>
