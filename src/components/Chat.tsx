@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePlayer } from '@/contexts/PlayerContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ interface ChatMessage {
 }
 
 const Chat: React.FC = () => {
-  const { user } = useAuth();
+  const { currentPlayer } = usePlayer();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -39,14 +39,14 @@ const Chat: React.FC = () => {
         },
         async (payload) => {
           const newMsg = payload.new as ChatMessage;
-          // Fetch display name for the new message
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('user_id', newMsg.user_id)
+          // Fetch display name for the new message from players
+          const { data: player } = await supabase
+            .from('players')
+            .select('name')
+            .eq('id', newMsg.user_id)
             .single();
           
-          setMessages((prev) => [...prev, { ...newMsg, display_name: profile?.display_name }]);
+          setMessages((prev) => [...prev, { ...newMsg, display_name: player?.name }]);
         }
       )
       .subscribe();
@@ -73,18 +73,18 @@ const Chat: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch profiles for all unique user_ids
+      // Fetch player names for all unique user_ids
       const userIds = [...new Set(messagesData?.map((m) => m.user_id) || [])];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .in('user_id', userIds);
+      const { data: players } = await supabase
+        .from('players')
+        .select('id, name')
+        .in('id', userIds);
 
-      const profileMap = new Map(profiles?.map((p) => [p.user_id, p.display_name]));
+      const playerMap = new Map(players?.map((p) => [p.id, p.name]));
 
       const messagesWithNames = messagesData?.map((m) => ({
         ...m,
-        display_name: profileMap.get(m.user_id) || 'Unbekannt',
+        display_name: playerMap.get(m.user_id) || 'Unbekannt',
       })) || [];
 
       setMessages(messagesWithNames);
@@ -97,12 +97,12 @@ const Chat: React.FC = () => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || sending) return;
+    if (!newMessage.trim() || !currentPlayer || sending) return;
 
     setSending(true);
     try {
       const { error } = await supabase.from('chat_messages').insert({
-        user_id: user.id,
+        user_id: currentPlayer.id,
         message: newMessage.trim(),
       });
 
@@ -155,7 +155,7 @@ const Chat: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     {msgs.map((msg) => {
-                      const isOwn = msg.user_id === user?.id;
+                      const isOwn = msg.user_id === currentPlayer?.id;
                       return (
                         <div
                           key={msg.id}

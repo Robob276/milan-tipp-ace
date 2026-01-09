@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './AuthContext';
+import { usePlayer } from './PlayerContext';
 import type { Result, Prediction } from '@/data/olympicEvents';
 
 interface PredictionContextType {
-  predictions: Record<string, Record<number, Prediction>>; // userId -> eventId -> Prediction
+  predictions: Record<string, Record<number, Prediction>>; // playerId -> eventId -> Prediction
   results: Record<number, Result>; // eventId -> Result
-  profiles: Record<string, string>; // userId -> displayName
+  profiles: Record<string, string>; // playerId -> displayName
   isLoading: boolean;
   setPrediction: (eventId: number, prediction: Omit<Prediction, 'eventId'>) => Promise<void>;
-  getPrediction: (userId: string, eventId: number) => Prediction | null;
+  getPrediction: (playerId: string, eventId: number) => Prediction | null;
   setResult: (eventId: number, result: Omit<Result, 'eventId'>) => Promise<{ error: string | null }>;
-  calculateScore: (userId: string) => number;
-  getLeaderboard: () => { userId: string; name: string; score: number }[];
+  calculateScore: (playerId: string) => number;
+  getLeaderboard: () => { playerId: string; name: string; score: number }[];
 }
 
 const PredictionContext = createContext<PredictionContextType | null>(null);
@@ -26,7 +26,7 @@ export const usePredictions = () => {
 };
 
 export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { currentPlayer, players } = usePlayer();
   const [predictions, setPredictions] = useState<Record<string, Record<number, Prediction>>>({});
   const [results, setResults] = useState<Record<number, Result>>({});
   const [profiles, setProfiles] = useState<Record<string, string>>({});
@@ -35,12 +35,12 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Fetch all data on mount
   useEffect(() => {
     fetchAllData();
-  }, [user]);
+  }, [currentPlayer, players]);
 
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      await Promise.all([fetchPredictions(), fetchResults(), fetchProfiles()]);
+      await Promise.all([fetchPredictions(), fetchResults(), buildProfiles()]);
     } finally {
       setIsLoading(false);
     }
@@ -93,30 +93,22 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setResults(resultsMap);
   };
 
-  const fetchProfiles = async () => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('user_id, display_name');
-    
-    if (error) {
-      console.error('Error fetching profiles:', error);
-      return;
-    }
-
+  const buildProfiles = () => {
+    // Build profiles from players list (non-admin players)
     const profilesMap: Record<string, string> = {};
-    data?.forEach((p) => {
-      profilesMap[p.user_id] = p.display_name;
+    players.filter(p => !p.is_admin).forEach((p) => {
+      profilesMap[p.id] = p.name;
     });
     setProfiles(profilesMap);
   };
 
   const setPrediction = async (eventId: number, prediction: Omit<Prediction, 'eventId'>) => {
-    if (!user) return;
+    if (!currentPlayer) return;
 
     const { error } = await supabase
       .from('predictions')
       .upsert({
-        user_id: user.id,
+        user_id: currentPlayer.id,
         event_id: eventId,
         gold: prediction.gold,
         silver: prediction.silver,
@@ -131,15 +123,15 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Update local state
     setPredictions(prev => ({
       ...prev,
-      [user.id]: {
-        ...prev[user.id],
+      [currentPlayer.id]: {
+        ...prev[currentPlayer.id],
         [eventId]: { eventId, ...prediction }
       }
     }));
   };
 
-  const getPrediction = (userId: string, eventId: number): Prediction | null => {
-    return predictions[userId]?.[eventId] || null;
+  const getPrediction = (playerId: string, eventId: number): Prediction | null => {
+    return predictions[playerId]?.[eventId] || null;
   };
 
   const setResult = async (eventId: number, result: Omit<Result, 'eventId'>): Promise<{ error: string | null }> => {
@@ -166,11 +158,11 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return { error: null };
   };
 
-  const calculateScore = (userId: string): number => {
-    const userPredictions = predictions[userId] || {};
+  const calculateScore = (playerId: string): number => {
+    const playerPredictions = predictions[playerId] || {};
     let score = 0;
 
-    Object.entries(userPredictions).forEach(([eventIdStr, prediction]) => {
+    Object.entries(playerPredictions).forEach(([eventIdStr, prediction]) => {
       const eventId = Number(eventIdStr);
       const result = results[eventId];
       if (result) {
@@ -184,10 +176,10 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const getLeaderboard = () => {
-    return Object.entries(profiles).map(([userId, name]) => ({
-      userId,
+    return Object.entries(profiles).map(([playerId, name]) => ({
+      playerId,
       name,
-      score: calculateScore(userId)
+      score: calculateScore(playerId)
     })).sort((a, b) => b.score - a.score);
   };
 

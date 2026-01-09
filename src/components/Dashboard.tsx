@@ -8,9 +8,10 @@ import Chat from './Chat';
 
 interface DashboardProps {
   onBackToHome?: () => void;
+  isAdminMode?: boolean;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onBackToHome }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode }) => {
   const [activeTab, setActiveTab] = useState<'events' | 'leaderboard' | 'stats' | 'chat'>('events');
   const [showResultsAdmin, setShowResultsAdmin] = useState(false);
 
