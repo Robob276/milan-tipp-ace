@@ -101,31 +101,6 @@ const Statistics: React.FC = () => {
         </div>
       </div>
 
-      {/* Top Countries */}
-      {topCountries.length > 0 && (
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-gold" />
-            Meistgetippte Länder (alle Spieler)
-          </h3>
-          <div className="space-y-3">
-            {topCountries.map(([country, points], index) => (
-              <div key={country} className="flex items-center gap-3">
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  index === 0 ? 'gradient-gold text-white' :
-                  index === 1 ? 'gradient-silver text-white' :
-                  index === 2 ? 'gradient-bronze text-white' :
-                  'bg-secondary text-secondary-foreground'
-                }`}>
-                  {index + 1}
-                </span>
-                <span className="flex-1 font-medium text-foreground">{country}</span>
-                <span className="text-sm text-muted-foreground">{points} Punkte</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Event Timeline Info */}
       <div className="glass-card rounded-xl p-6">
