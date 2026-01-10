@@ -36,8 +36,8 @@ export interface Result {
 
 // Test Events für Live-Test
 export const olympicEvents: OlympicEvent[] = [
-  { id: 1, date: "2026-01-10", time: "11:30", sport: "Biathlon", discipline: "Verfolgung", gender: "Männer", category: "Biathlon" },
-  { id: 2, date: "2026-01-10", time: "14:15", sport: "Biathlon", discipline: "Staffel", gender: "Frauen", category: "Biathlon" },
+  { id: 1, date: "2026-01-10", time: "12:00", sport: "Biathlon", discipline: "Verfolgung", gender: "Männer", category: "Biathlon" },
+  { id: 2, date: "2026-01-10", time: "14:25", sport: "Biathlon", discipline: "Staffel", gender: "Frauen", category: "Biathlon" },
 ];
 
 export const countries: Country[] = [
@@ -84,6 +84,8 @@ export const users: User[] = [
   { id: 3, name: "Marcel Käding", pin: "1234" },
   { id: 4, name: "Marcus Benoit", pin: "1234" },
   { id: 5, name: "Sebastian Schilling", pin: "1234" },
+  { id: 6, name: "Aurore", pin: "1234" },
+  { id: 7, name: "Andrew", pin: "1234" },
 ];
 
 export const sportCategories = [
