@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, countries, sportCategories, sportIcons } from '@/data/olympicEvents';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Trophy, Check, Search, Filter, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -20,6 +21,11 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   const [selectedCategory, setSelectedCategory] = useState('Alle');
   const [editingEvent, setEditingEvent] = useState<number | null>(null);
   const [tempResult, setTempResult] = useState({ gold: '', silver: '', bronze: '' });
+
+  const countryOptions = useMemo(() => 
+    countries.map(c => ({ value: c.name, label: c.name })), 
+    []
+  );
 
   const filteredEvents = olympicEvents.filter(event => {
     const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,52 +199,40 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                         <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                           <div className="w-4 h-4 rounded-full gradient-gold" /> Gold
                         </label>
-                        <Select value={tempResult.gold} onValueChange={(v) => setTempResult(prev => ({ ...prev, gold: v }))}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Land wählen" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countries.map(country => (
-                              <SelectItem key={country.id} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <SearchableSelect
+                          value={tempResult.gold}
+                          onValueChange={(v) => setTempResult(prev => ({ ...prev, gold: v }))}
+                          options={countryOptions}
+                          placeholder="Land wählen"
+                          searchPlaceholder="Land suchen..."
+                          className="w-full"
+                        />
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                           <div className="w-4 h-4 rounded-full gradient-silver" /> Silber
                         </label>
-                        <Select value={tempResult.silver} onValueChange={(v) => setTempResult(prev => ({ ...prev, silver: v }))}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Land wählen" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countries.map(country => (
-                              <SelectItem key={country.id} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <SearchableSelect
+                          value={tempResult.silver}
+                          onValueChange={(v) => setTempResult(prev => ({ ...prev, silver: v }))}
+                          options={countryOptions}
+                          placeholder="Land wählen"
+                          searchPlaceholder="Land suchen..."
+                          className="w-full"
+                        />
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                           <div className="w-4 h-4 rounded-full gradient-bronze" /> Bronze
                         </label>
-                        <Select value={tempResult.bronze} onValueChange={(v) => setTempResult(prev => ({ ...prev, bronze: v }))}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Land wählen" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countries.map(country => (
-                              <SelectItem key={country.id} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <SearchableSelect
+                          value={tempResult.bronze}
+                          onValueChange={(v) => setTempResult(prev => ({ ...prev, bronze: v }))}
+                          options={countryOptions}
+                          placeholder="Land wählen"
+                          searchPlaceholder="Land suchen..."
+                          className="w-full"
+                        />
                       </div>
                     </div>
                     <div className="flex justify-end gap-2">
