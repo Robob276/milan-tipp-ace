@@ -35,11 +35,8 @@ export interface Result {
   bronze: string;
 }
 
-// Test Events für Live-Test
-export const olympicEvents: OlympicEvent[] = [
-  { id: 1, date: "2026-01-10", time: "12:00", sport: "Biathlon", discipline: "Verfolgung", gender: "Männer", category: "Biathlon" },
-  { id: 2, date: "2026-01-10", time: "14:25", sport: "Biathlon", discipline: "Staffel", gender: "Frauen", category: "Biathlon" },
-];
+// Events werden später hinzugefügt
+export const olympicEvents: OlympicEvent[] = [];
 
 export const countries: Country[] = [
   { id: 1, name: "Norwegen", code: "NOR" },
