@@ -2,7 +2,30 @@ import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, sportCategories } from '@/data/olympicEvents';
-import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart } from 'lucide-react';
+import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart, Medal } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+// Historische Daten seit 2016
+const allTimeMedalStandings = [
+  { name: 'Robert B', gold: 2, silver: 2, bronze: 1, participations: 5 },
+  { name: 'Marcus G', gold: 2, silver: 1, bronze: 0, participations: 3 },
+  { name: 'Marcel K', gold: 1, silver: 1, bronze: 2, participations: 5 },
+  { name: 'Marcus B', gold: 0, silver: 1, bronze: 2, participations: 4 },
+  { name: 'Sebastian S', gold: 0, silver: 0, bronze: 0, participations: 5 },
+  { name: 'Domi N', gold: 0, silver: 0, bronze: 0, participations: 2 },
+].sort((a, b) => {
+  // Sort by gold, then silver, then bronze
+  if (b.gold !== a.gold) return b.gold - a.gold;
+  if (b.silver !== a.silver) return b.silver - a.silver;
+  return b.bronze - a.bronze;
+});
 
 const Statistics: React.FC = () => {
   const { currentPlayer } = usePlayer();
@@ -75,6 +98,48 @@ const Statistics: React.FC = () => {
           <p className="text-2xl font-bold text-foreground">{totalPlayers}</p>
           <p className="text-sm text-muted-foreground">Spieler</p>
         </div>
+      </div>
+
+      {/* All-Time Medal Standings */}
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Medal className="w-5 h-5 text-gold" />
+          Ewiger Medaillenspiegel (seit 2016)
+        </h3>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead className="text-center">🥇</TableHead>
+                <TableHead className="text-center">🥈</TableHead>
+                <TableHead className="text-center">🥉</TableHead>
+                <TableHead className="text-center">Teilnahmen</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {allTimeMedalStandings.map((player, index) => (
+                <TableRow key={player.name}>
+                  <TableCell className="font-medium">
+                    {index === 0 && '🏆'}
+                    {index === 1 && '🥈'}
+                    {index === 2 && '🥉'}
+                    {index > 2 && (index + 1)}
+                  </TableCell>
+                  <TableCell className="font-medium">{player.name}</TableCell>
+                  <TableCell className="text-center font-bold text-gold">{player.gold}</TableCell>
+                  <TableCell className="text-center font-bold text-silver">{player.silver}</TableCell>
+                  <TableCell className="text-center font-bold text-bronze">{player.bronze}</TableCell>
+                  <TableCell className="text-center text-muted-foreground">{player.participations}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4 text-center">
+          5 Olympische Spiele: Rio 2016, PyeongChang 2018, Tokio 2020, Peking 2022, Paris 2024
+        </p>
       </div>
 
       {/* Progress by Category */}
