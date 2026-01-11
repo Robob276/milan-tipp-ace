@@ -2,7 +2,7 @@ import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, sportCategories } from '@/data/olympicEvents';
-import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart, Medal } from 'lucide-react';
+import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart, Medal, ChevronDown } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -11,6 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // Historische Daten seit 2016
 const allTimeMedalStandings = [
@@ -21,11 +27,80 @@ const allTimeMedalStandings = [
   { name: 'Sebastian S', gold: 0, silver: 0, bronze: 0, participations: 5 },
   { name: 'Domi N', gold: 0, silver: 0, bronze: 0, participations: 2 },
 ].sort((a, b) => {
-  // Sort by gold, then silver, then bronze
   if (b.gold !== a.gold) return b.gold - a.gold;
   if (b.silver !== a.silver) return b.silver - a.silver;
   return b.bronze - a.bronze;
 });
+
+// Jahres-Ergebnisse
+const yearlyResults = [
+  {
+    year: 2024,
+    name: 'Paris 2024',
+    type: 'Sommer',
+    results: [
+      { place: 1, name: 'Robert B' },
+      { place: 2, name: 'Marcel K' },
+      { place: 3, name: 'Marcus B' },
+      { place: 4, name: 'Sebastian S' },
+    ]
+  },
+  {
+    year: 2022,
+    name: 'Peking 2022',
+    type: 'Winter',
+    results: [
+      { place: 1, name: 'Marcel K' },
+      { place: 2, name: 'Robert B' },
+      { place: 3, name: 'Marcus B' },
+      { place: 4, name: 'Sebastian S' },
+    ]
+  },
+  {
+    year: 2021,
+    name: 'Tokio 2020',
+    type: 'Sommer',
+    results: [
+      { place: 1, name: 'Robert B' },
+      { place: 2, name: 'Marcus G' },
+      { place: 3, name: 'Marcel K' },
+      { place: 4, name: 'Sebastian S' },
+    ]
+  },
+  {
+    year: 2018,
+    name: 'PyeongChang 2018',
+    type: 'Winter',
+    results: [
+      { place: 1, name: 'Marcus G' },
+      { place: 2, name: 'Robert B' },
+      { place: 3, name: 'Marcel K' },
+      { place: 4, name: 'Marcus B' },
+      { place: 5, name: 'Domi N' },
+      { place: 6, name: 'Sebastian S' },
+    ]
+  },
+  {
+    year: 2016,
+    name: 'Rio 2016',
+    type: 'Sommer',
+    results: [
+      { place: 1, name: 'Marcus G' },
+      { place: 2, name: 'Marcus B' },
+      { place: 3, name: 'Robert B' },
+      { place: 4, name: 'Sebastian S' },
+      { place: 5, name: 'Domi N' },
+      { place: 6, name: 'Marcel K' },
+    ]
+  },
+];
+
+const getMedalEmoji = (place: number) => {
+  if (place === 1) return '🥇';
+  if (place === 2) return '🥈';
+  if (place === 3) return '🥉';
+  return `${place}.`;
+};
 
 const Statistics: React.FC = () => {
   const { currentPlayer } = usePlayer();
@@ -137,9 +212,48 @@ const Statistics: React.FC = () => {
             </TableBody>
           </Table>
         </div>
-        <p className="text-xs text-muted-foreground mt-4 text-center">
-          5 Olympische Spiele: Rio 2016, PyeongChang 2018, Tokio 2020, Peking 2022, Paris 2024
-        </p>
+        
+        {/* Yearly Results Accordion */}
+        <Accordion type="single" collapsible className="mt-6">
+          <AccordionItem value="yearly-details" className="border-none">
+            <AccordionTrigger className="text-sm text-muted-foreground hover:text-foreground py-2">
+              📅 Alle Jahres-Ergebnisse anzeigen
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4 pt-2">
+                {yearlyResults.map((year) => (
+                  <div key={year.year} className="bg-secondary/50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-foreground">{year.name}</h4>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        year.type === 'Sommer' 
+                          ? 'bg-orange-500/20 text-orange-400' 
+                          : 'bg-blue-500/20 text-blue-400'
+                      }`}>
+                        {year.type}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {year.results.map((result) => (
+                        <div 
+                          key={result.name} 
+                          className={`flex items-center gap-2 text-sm py-1 px-2 rounded ${
+                            result.place <= 3 ? 'bg-background/50' : ''
+                          }`}
+                        >
+                          <span className="w-8 text-center">{getMedalEmoji(result.place)}</span>
+                          <span className={result.place <= 3 ? 'font-medium text-foreground' : 'text-muted-foreground'}>
+                            {result.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       {/* Progress by Category */}
