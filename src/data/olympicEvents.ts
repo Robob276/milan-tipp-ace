@@ -35,7 +35,7 @@ export interface Result {
   bronze: string;
 }
 
-// Milano Cortina 2026 - Alle 117 Medaillenentscheidungen (116 offiziell + Curling Männer am 20.2.)
+// Milano Cortina 2026 - Alle 116 Medaillenentscheidungen
 export const olympicEvents: OlympicEvent[] = [
   // Samstag, 7. Februar (5 Entscheidungen)
   { id: 1, date: "2026-02-07", time: "11:30", sport: "Ski Alpin", discipline: "Abfahrt", gender: "Männer", category: "Ski Alpin" },
@@ -168,7 +168,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 102, date: "2026-02-20", time: "20:30", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
   { id: 103, date: "2026-02-20", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
   
-  // Samstag, 21. Februar (10 Entscheidungen)
+  // Samstag, 21. Februar (9 Entscheidungen)
   { id: 104, date: "2026-02-21", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Männer", category: "Langlauf" },
   { id: 105, date: "2026-02-21", time: "10:45", sport: "Freestyle", discipline: "Mixed-Team Aerials", gender: "Mixed", category: "Freestyle" },
   { id: 106, date: "2026-02-21", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Männer", category: "Freestyle" },
@@ -178,13 +178,12 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 110, date: "2026-02-21", time: "16:00", sport: "Eisschnelllauf", discipline: "Massenstart", gender: "Männer", category: "Eisschnelllauf" },
   { id: 111, date: "2026-02-21", time: "19:00", sport: "Bob", discipline: "Zweier", gender: "Frauen", category: "Bob" },
   { id: 112, date: "2026-02-21", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Frauen", category: "Freestyle" },
-  { id: 113, date: "2026-02-21", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
   
   // Sonntag, 22. Februar (4 Entscheidungen)
-  { id: 114, date: "2026-02-22", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Frauen", category: "Langlauf" },
-  { id: 115, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling" },
-  { id: 116, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey" },
-  { id: 117, date: "2026-02-22", time: "19:00", sport: "Bob", discipline: "Vierer", gender: "Männer", category: "Bob" },
+  { id: 113, date: "2026-02-22", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Frauen", category: "Langlauf" },
+  { id: 114, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling" },
+  { id: 115, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey" },
+  { id: 116, date: "2026-02-22", time: "19:00", sport: "Bob", discipline: "Vierer", gender: "Männer", category: "Bob" },
 ];
 
 // Olympische Winterspiele 2026 Milano-Cortina - Alle 92 teilnehmenden Nationen (alphabetisch nach deutschem Namen)
