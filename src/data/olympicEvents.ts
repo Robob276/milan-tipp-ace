@@ -35,147 +35,156 @@ export interface Result {
   bronze: string;
 }
 
-// Milano Cortina 2026 - Alle Medaillenentscheidungen
+// Milano Cortina 2026 - Alle 117 Medaillenentscheidungen (116 offiziell + Curling Männer am 20.2.)
 export const olympicEvents: OlympicEvent[] = [
-  // Samstag, 7. Februar
+  // Samstag, 7. Februar (5 Entscheidungen)
   { id: 1, date: "2026-02-07", time: "11:30", sport: "Ski Alpin", discipline: "Abfahrt", gender: "Männer", category: "Ski Alpin" },
-  { id: 2, date: "2026-02-07", time: "13:00", sport: "Skilanglauf", discipline: "Skiathlon", gender: "Frauen", category: "Langlauf" },
+  { id: 2, date: "2026-02-07", time: "13:00", sport: "Skilanglauf", discipline: "Skiathlon 20 km", gender: "Frauen", category: "Langlauf" },
   { id: 3, date: "2026-02-07", time: "16:00", sport: "Eisschnelllauf", discipline: "3000 m", gender: "Frauen", category: "Eisschnelllauf" },
-  { id: 4, date: "2026-02-07", time: "18:45", sport: "Skispringen", discipline: "Normalschanze", gender: "Frauen", category: "Skispringen" },
+  { id: 4, date: "2026-02-07", time: "18:45", sport: "Skispringen", discipline: "Normalschanze Einzel", gender: "Frauen", category: "Skispringen" },
   { id: 5, date: "2026-02-07", time: "19:30", sport: "Snowboard", discipline: "Big Air", gender: "Männer", category: "Snowboard" },
   
-  // Sonntag, 8. Februar
+  // Sonntag, 8. Februar (8 Entscheidungen)
   { id: 6, date: "2026-02-08", time: "11:30", sport: "Ski Alpin", discipline: "Abfahrt", gender: "Frauen", category: "Ski Alpin" },
-  { id: 7, date: "2026-02-08", time: "12:30", sport: "Skilanglauf", discipline: "Skiathlon", gender: "Männer", category: "Langlauf" },
-  { id: 8, date: "2026-02-08", time: "13:00", sport: "Snowboard", discipline: "Parallel-Riesenslalom", gender: "Mixed", category: "Snowboard" },
-  { id: 9, date: "2026-02-08", time: "14:00", sport: "Biathlon", discipline: "Mixed-Staffel", gender: "Mixed", category: "Biathlon" },
-  { id: 10, date: "2026-02-08", time: "16:00", sport: "Eisschnelllauf", discipline: "5000 m", gender: "Männer", category: "Eisschnelllauf" },
-  { id: 11, date: "2026-02-08", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Männer", category: "Rodeln" },
-  { id: 12, date: "2026-02-08", time: "19:30", sport: "Eiskunstlauf", discipline: "Team-Event", gender: "Mixed", category: "Eiskunstlauf" },
+  { id: 7, date: "2026-02-08", time: "12:30", sport: "Skilanglauf", discipline: "Skiathlon 30 km", gender: "Männer", category: "Langlauf" },
+  { id: 8, date: "2026-02-08", time: "13:00", sport: "Snowboard", discipline: "Parallel-Riesenslalom", gender: "Frauen", category: "Snowboard" },
+  { id: 9, date: "2026-02-08", time: "13:30", sport: "Snowboard", discipline: "Parallel-Riesenslalom", gender: "Männer", category: "Snowboard" },
+  { id: 10, date: "2026-02-08", time: "14:00", sport: "Biathlon", discipline: "Mixed-Staffel", gender: "Mixed", category: "Biathlon" },
+  { id: 11, date: "2026-02-08", time: "16:00", sport: "Eisschnelllauf", discipline: "5000 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 12, date: "2026-02-08", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Männer", category: "Rodeln" },
+  { id: 13, date: "2026-02-08", time: "19:30", sport: "Eiskunstlauf", discipline: "Team-Event", gender: "Mixed", category: "Eiskunstlauf" },
   
-  // Montag, 9. Februar
-  { id: 13, date: "2026-02-09", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Männer", category: "Ski Alpin" },
-  { id: 14, date: "2026-02-09", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Frauen", category: "Freestyle" },
-  { id: 15, date: "2026-02-09", time: "17:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Frauen", category: "Eisschnelllauf" },
-  { id: 16, date: "2026-02-09", time: "19:00", sport: "Skispringen", discipline: "Normalschanze", gender: "Männer", category: "Skispringen" },
-  { id: 17, date: "2026-02-09", time: "19:30", sport: "Snowboard", discipline: "Big Air", gender: "Frauen", category: "Snowboard" },
+  // Montag, 9. Februar (5 Entscheidungen)
+  { id: 14, date: "2026-02-09", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Männer", category: "Ski Alpin" },
+  { id: 15, date: "2026-02-09", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Frauen", category: "Freestyle" },
+  { id: 16, date: "2026-02-09", time: "17:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 17, date: "2026-02-09", time: "19:00", sport: "Skispringen", discipline: "Normalschanze Einzel", gender: "Männer", category: "Skispringen" },
+  { id: 18, date: "2026-02-09", time: "19:30", sport: "Snowboard", discipline: "Big Air", gender: "Frauen", category: "Snowboard" },
   
-  // Dienstag, 10. Februar
-  { id: 18, date: "2026-02-10", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Frauen", category: "Ski Alpin" },
-  { id: 19, date: "2026-02-10", time: "10:30", sport: "Short Track", discipline: "Mixed-Staffel", gender: "Mixed", category: "Short Track" },
-  { id: 20, date: "2026-02-10", time: "11:45", sport: "Skilanglauf", discipline: "Sprint", gender: "Mixed", category: "Langlauf" },
-  { id: 21, date: "2026-02-10", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Männer", category: "Freestyle" },
-  { id: 22, date: "2026-02-10", time: "13:30", sport: "Biathlon", discipline: "Einzel", gender: "Männer", category: "Biathlon" },
-  { id: 23, date: "2026-02-10", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Frauen", category: "Rodeln" },
-  { id: 24, date: "2026-02-10", time: "18:00", sport: "Curling", discipline: "Mixed", gender: "Mixed", category: "Curling" },
-  { id: 25, date: "2026-02-10", time: "18:45", sport: "Skispringen", discipline: "Mixed-Team", gender: "Mixed", category: "Skispringen" },
+  // Dienstag, 10. Februar (9 Entscheidungen)
+  { id: 19, date: "2026-02-10", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Frauen", category: "Ski Alpin" },
+  { id: 20, date: "2026-02-10", time: "10:30", sport: "Short Track", discipline: "Mixed-Staffel", gender: "Mixed", category: "Short Track" },
+  { id: 21, date: "2026-02-10", time: "11:45", sport: "Skilanglauf", discipline: "Sprint Freistil", gender: "Frauen", category: "Langlauf" },
+  { id: 22, date: "2026-02-10", time: "12:15", sport: "Skilanglauf", discipline: "Sprint Freistil", gender: "Männer", category: "Langlauf" },
+  { id: 23, date: "2026-02-10", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Männer", category: "Freestyle" },
+  { id: 24, date: "2026-02-10", time: "13:30", sport: "Biathlon", discipline: "Einzel 20 km", gender: "Männer", category: "Biathlon" },
+  { id: 25, date: "2026-02-10", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Frauen", category: "Rodeln" },
+  { id: 26, date: "2026-02-10", time: "18:00", sport: "Curling", discipline: "Mixed Doubles", gender: "Mixed", category: "Curling" },
+  { id: 27, date: "2026-02-10", time: "18:45", sport: "Skispringen", discipline: "Mixed-Team", gender: "Mixed", category: "Skispringen" },
   
-  // Mittwoch, 11. Februar
-  { id: 26, date: "2026-02-11", time: "10:00", sport: "Nordische Kombination", discipline: "Gundersen", gender: "Männer", category: "Nordische Kombination" },
-  { id: 27, date: "2026-02-11", time: "11:30", sport: "Ski Alpin", discipline: "Super-G", gender: "Männer", category: "Ski Alpin" },
-  { id: 28, date: "2026-02-11", time: "14:15", sport: "Biathlon", discipline: "Einzel", gender: "Frauen", category: "Biathlon" },
-  { id: 29, date: "2026-02-11", time: "14:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Frauen", category: "Freestyle" },
-  { id: 30, date: "2026-02-11", time: "17:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Mixed", category: "Rodeln" },
-  { id: 31, date: "2026-02-11", time: "18:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
-  { id: 32, date: "2026-02-11", time: "19:30", sport: "Eiskunstlauf", discipline: "Eistanz Kür", gender: "Mixed", category: "Eiskunstlauf" },
+  // Mittwoch, 11. Februar (8 Entscheidungen)
+  { id: 28, date: "2026-02-11", time: "10:00", sport: "Nordische Kombination", discipline: "Einzel Normalschanze/10 km", gender: "Männer", category: "Nordische Kombination" },
+  { id: 29, date: "2026-02-11", time: "11:30", sport: "Ski Alpin", discipline: "Super-G", gender: "Männer", category: "Ski Alpin" },
+  { id: 30, date: "2026-02-11", time: "14:15", sport: "Biathlon", discipline: "Einzel 15 km", gender: "Frauen", category: "Biathlon" },
+  { id: 31, date: "2026-02-11", time: "14:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Frauen", category: "Freestyle" },
+  { id: 32, date: "2026-02-11", time: "17:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Männer", category: "Rodeln" },
+  { id: 33, date: "2026-02-11", time: "18:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Frauen", category: "Rodeln" },
+  { id: 34, date: "2026-02-11", time: "18:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 35, date: "2026-02-11", time: "19:30", sport: "Eiskunstlauf", discipline: "Eistanz Kür", gender: "Mixed", category: "Eiskunstlauf" },
   
-  // Donnerstag, 12. Februar
-  { id: 33, date: "2026-02-12", time: "11:30", sport: "Ski Alpin", discipline: "Super-G", gender: "Frauen", category: "Ski Alpin" },
-  { id: 34, date: "2026-02-12", time: "12:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Männer", category: "Freestyle" },
-  { id: 35, date: "2026-02-12", time: "13:00", sport: "Skilanglauf", discipline: "10 km", gender: "Frauen", category: "Langlauf" },
-  { id: 36, date: "2026-02-12", time: "13:45", sport: "Snowboard", discipline: "Snowboardcross", gender: "Männer", category: "Snowboard" },
-  { id: 37, date: "2026-02-12", time: "16:30", sport: "Eisschnelllauf", discipline: "5000 m", gender: "Frauen", category: "Eisschnelllauf" },
-  { id: 38, date: "2026-02-12", time: "18:30", sport: "Rodeln", discipline: "Team-Staffel", gender: "Mixed", category: "Rodeln" },
-  { id: 39, date: "2026-02-12", time: "19:30", sport: "Snowboard", discipline: "Halfpipe", gender: "Frauen", category: "Snowboard" },
-  { id: 40, date: "2026-02-12", time: "20:15", sport: "Short Track", discipline: "500 m", gender: "Frauen", category: "Short Track" },
-  { id: 41, date: "2026-02-12", time: "20:15", sport: "Short Track", discipline: "1000 m", gender: "Männer", category: "Short Track" },
+  // Donnerstag, 12. Februar (9 Entscheidungen)
+  { id: 36, date: "2026-02-12", time: "11:30", sport: "Ski Alpin", discipline: "Super-G", gender: "Frauen", category: "Ski Alpin" },
+  { id: 37, date: "2026-02-12", time: "12:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Männer", category: "Freestyle" },
+  { id: 38, date: "2026-02-12", time: "13:00", sport: "Skilanglauf", discipline: "10 km Klassisch", gender: "Frauen", category: "Langlauf" },
+  { id: 39, date: "2026-02-12", time: "13:45", sport: "Snowboard", discipline: "Snowboardcross", gender: "Männer", category: "Snowboard" },
+  { id: 40, date: "2026-02-12", time: "16:30", sport: "Eisschnelllauf", discipline: "5000 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 41, date: "2026-02-12", time: "18:30", sport: "Rodeln", discipline: "Team-Staffel", gender: "Mixed", category: "Rodeln" },
+  { id: 42, date: "2026-02-12", time: "19:30", sport: "Snowboard", discipline: "Halfpipe", gender: "Frauen", category: "Snowboard" },
+  { id: 43, date: "2026-02-12", time: "20:00", sport: "Short Track", discipline: "500 m", gender: "Frauen", category: "Short Track" },
+  { id: 44, date: "2026-02-12", time: "20:30", sport: "Short Track", discipline: "1000 m", gender: "Männer", category: "Short Track" },
   
-  // Freitag, 13. Februar
-  { id: 42, date: "2026-02-13", time: "11:45", sport: "Skilanglauf", discipline: "10 km", gender: "Männer", category: "Langlauf" },
-  { id: 43, date: "2026-02-13", time: "13:30", sport: "Snowboard", discipline: "Snowboardcross", gender: "Frauen", category: "Snowboard" },
-  { id: 44, date: "2026-02-13", time: "14:00", sport: "Biathlon", discipline: "Sprint", gender: "Männer", category: "Biathlon" },
-  { id: 45, date: "2026-02-13", time: "16:00", sport: "Eisschnelllauf", discipline: "10000 m", gender: "Männer", category: "Eisschnelllauf" },
-  { id: 46, date: "2026-02-13", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Männer", category: "Eiskunstlauf" },
-  { id: 47, date: "2026-02-13", time: "19:30", sport: "Skeleton", discipline: "Einzel", gender: "Männer", category: "Skeleton" },
-  { id: 48, date: "2026-02-13", time: "19:30", sport: "Snowboard", discipline: "Halfpipe", gender: "Männer", category: "Snowboard" },
+  // Freitag, 13. Februar (7 Entscheidungen)
+  { id: 45, date: "2026-02-13", time: "11:45", sport: "Skilanglauf", discipline: "10 km Klassisch", gender: "Männer", category: "Langlauf" },
+  { id: 46, date: "2026-02-13", time: "13:30", sport: "Snowboard", discipline: "Snowboardcross", gender: "Frauen", category: "Snowboard" },
+  { id: 47, date: "2026-02-13", time: "14:00", sport: "Biathlon", discipline: "Sprint 10 km", gender: "Männer", category: "Biathlon" },
+  { id: 48, date: "2026-02-13", time: "16:00", sport: "Eisschnelllauf", discipline: "10000 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 49, date: "2026-02-13", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Männer", category: "Eiskunstlauf" },
+  { id: 50, date: "2026-02-13", time: "19:30", sport: "Skeleton", discipline: "Einzel", gender: "Männer", category: "Skeleton" },
+  { id: 51, date: "2026-02-13", time: "19:30", sport: "Snowboard", discipline: "Halfpipe", gender: "Männer", category: "Snowboard" },
   
-  // Samstag, 14. Februar
-  { id: 49, date: "2026-02-14", time: "10:00", sport: "Ski Alpin", discipline: "Riesenslalom", gender: "Männer", category: "Ski Alpin" },
-  { id: 50, date: "2026-02-14", time: "10:30", sport: "Freestyle", discipline: "Synchron-Buckelpiste", gender: "Frauen", category: "Freestyle" },
-  { id: 51, date: "2026-02-14", time: "12:00", sport: "Skilanglauf", discipline: "Staffel", gender: "Frauen", category: "Langlauf" },
-  { id: 52, date: "2026-02-14", time: "14:00", sport: "Biathlon", discipline: "Sprint", gender: "Frauen", category: "Biathlon" },
-  { id: 53, date: "2026-02-14", time: "16:00", sport: "Eisschnelllauf", discipline: "500 m", gender: "Männer", category: "Eisschnelllauf" },
-  { id: 54, date: "2026-02-14", time: "18:00", sport: "Skeleton", discipline: "Einzel", gender: "Frauen", category: "Skeleton" },
-  { id: 55, date: "2026-02-14", time: "18:45", sport: "Skispringen", discipline: "Großschanze", gender: "Männer", category: "Skispringen" },
-  { id: 56, date: "2026-02-14", time: "20:15", sport: "Short Track", discipline: "1500 m", gender: "Männer", category: "Short Track" },
+  // Samstag, 14. Februar (8 Entscheidungen)
+  { id: 52, date: "2026-02-14", time: "10:00", sport: "Ski Alpin", discipline: "Riesenslalom", gender: "Männer", category: "Ski Alpin" },
+  { id: 53, date: "2026-02-14", time: "10:30", sport: "Freestyle", discipline: "Dual Moguls", gender: "Frauen", category: "Freestyle" },
+  { id: 54, date: "2026-02-14", time: "12:00", sport: "Skilanglauf", discipline: "Staffel 4x5 km", gender: "Frauen", category: "Langlauf" },
+  { id: 55, date: "2026-02-14", time: "14:00", sport: "Biathlon", discipline: "Sprint 7,5 km", gender: "Frauen", category: "Biathlon" },
+  { id: 56, date: "2026-02-14", time: "16:00", sport: "Eisschnelllauf", discipline: "500 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 57, date: "2026-02-14", time: "18:00", sport: "Skeleton", discipline: "Einzel", gender: "Frauen", category: "Skeleton" },
+  { id: 58, date: "2026-02-14", time: "18:45", sport: "Skispringen", discipline: "Großschanze Einzel", gender: "Männer", category: "Skispringen" },
+  { id: 59, date: "2026-02-14", time: "20:15", sport: "Short Track", discipline: "1500 m", gender: "Männer", category: "Short Track" },
   
-  // Sonntag, 15. Februar
-  { id: 57, date: "2026-02-15", time: "10:00", sport: "Ski Alpin", discipline: "Riesenslalom", gender: "Frauen", category: "Ski Alpin" },
-  { id: 58, date: "2026-02-15", time: "10:30", sport: "Freestyle", discipline: "Synchron-Buckelpiste", gender: "Männer", category: "Freestyle" },
-  { id: 59, date: "2026-02-15", time: "11:15", sport: "Biathlon", discipline: "Verfolgung", gender: "Mixed", category: "Biathlon" },
-  { id: 60, date: "2026-02-15", time: "12:00", sport: "Skilanglauf", discipline: "Staffel", gender: "Männer", category: "Langlauf" },
-  { id: 61, date: "2026-02-15", time: "13:45", sport: "Snowboard", discipline: "Snowboardcross Mixed-Team", gender: "Mixed", category: "Snowboard" },
-  { id: 62, date: "2026-02-15", time: "16:00", sport: "Eisschnelllauf", discipline: "500 m", gender: "Frauen", category: "Eisschnelllauf" },
-  { id: 63, date: "2026-02-15", time: "18:00", sport: "Skeleton", discipline: "Mixed-Team", gender: "Mixed", category: "Skeleton" },
-  { id: 64, date: "2026-02-15", time: "18:45", sport: "Skispringen", discipline: "Großschanze", gender: "Frauen", category: "Skispringen" },
+  // Sonntag, 15. Februar (9 Entscheidungen)
+  { id: 60, date: "2026-02-15", time: "10:00", sport: "Ski Alpin", discipline: "Riesenslalom", gender: "Frauen", category: "Ski Alpin" },
+  { id: 61, date: "2026-02-15", time: "10:30", sport: "Freestyle", discipline: "Dual Moguls", gender: "Männer", category: "Freestyle" },
+  { id: 62, date: "2026-02-15", time: "11:15", sport: "Biathlon", discipline: "Verfolgung 12,5 km", gender: "Männer", category: "Biathlon" },
+  { id: 63, date: "2026-02-15", time: "12:00", sport: "Skilanglauf", discipline: "Staffel 4x10 km", gender: "Männer", category: "Langlauf" },
+  { id: 64, date: "2026-02-15", time: "13:45", sport: "Snowboard", discipline: "Snowboardcross Mixed-Team", gender: "Mixed", category: "Snowboard" },
+  { id: 65, date: "2026-02-15", time: "14:30", sport: "Biathlon", discipline: "Verfolgung 10 km", gender: "Frauen", category: "Biathlon" },
+  { id: 66, date: "2026-02-15", time: "16:00", sport: "Eisschnelllauf", discipline: "500 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 67, date: "2026-02-15", time: "18:00", sport: "Skeleton", discipline: "Mixed-Team", gender: "Mixed", category: "Skeleton" },
+  { id: 68, date: "2026-02-15", time: "18:45", sport: "Skispringen", discipline: "Großschanze Einzel", gender: "Frauen", category: "Skispringen" },
   
-  // Montag, 16. Februar
-  { id: 65, date: "2026-02-16", time: "10:00", sport: "Ski Alpin", discipline: "Slalom", gender: "Männer", category: "Ski Alpin" },
-  { id: 66, date: "2026-02-16", time: "11:00", sport: "Short Track", discipline: "1000 m", gender: "Frauen", category: "Short Track" },
-  { id: 67, date: "2026-02-16", time: "19:00", sport: "Bob", discipline: "Monobob", gender: "Frauen", category: "Bob" },
-  { id: 68, date: "2026-02-16", time: "19:00", sport: "Skispringen", discipline: "Super-Team", gender: "Männer", category: "Skispringen" },
-  { id: 69, date: "2026-02-16", time: "19:30", sport: "Freestyle", discipline: "Big Air", gender: "Frauen", category: "Freestyle" },
-  { id: 70, date: "2026-02-16", time: "20:00", sport: "Eiskunstlauf", discipline: "Kür Paare", gender: "Mixed", category: "Eiskunstlauf" },
+  // Montag, 16. Februar (6 Entscheidungen)
+  { id: 69, date: "2026-02-16", time: "10:00", sport: "Ski Alpin", discipline: "Slalom", gender: "Männer", category: "Ski Alpin" },
+  { id: 70, date: "2026-02-16", time: "11:00", sport: "Short Track", discipline: "1000 m", gender: "Frauen", category: "Short Track" },
+  { id: 71, date: "2026-02-16", time: "19:00", sport: "Bob", discipline: "Monobob", gender: "Frauen", category: "Bob" },
+  { id: 72, date: "2026-02-16", time: "19:00", sport: "Skispringen", discipline: "Super-Team", gender: "Männer", category: "Skispringen" },
+  { id: 73, date: "2026-02-16", time: "19:30", sport: "Freestyle", discipline: "Big Air", gender: "Frauen", category: "Freestyle" },
+  { id: 74, date: "2026-02-16", time: "20:00", sport: "Eiskunstlauf", discipline: "Kür Paare", gender: "Mixed", category: "Eiskunstlauf" },
   
-  // Dienstag, 17. Februar
-  { id: 71, date: "2026-02-17", time: "10:00", sport: "Nordische Kombination", discipline: "Gundersen", gender: "Männer", category: "Nordische Kombination" },
-  { id: 72, date: "2026-02-17", time: "13:00", sport: "Snowboard", discipline: "Slopestyle", gender: "Frauen", category: "Snowboard" },
-  { id: 73, date: "2026-02-17", time: "14:30", sport: "Biathlon", discipline: "Staffel", gender: "Männer", category: "Biathlon" },
-  { id: 74, date: "2026-02-17", time: "14:30", sport: "Eisschnelllauf", discipline: "Teamverfolgung", gender: "Mixed", category: "Eisschnelllauf" },
-  { id: 75, date: "2026-02-17", time: "19:00", sport: "Bob", discipline: "Zweier", gender: "Männer", category: "Bob" },
-  { id: 76, date: "2026-02-17", time: "19:30", sport: "Freestyle", discipline: "Big Air", gender: "Männer", category: "Freestyle" },
+  // Dienstag, 17. Februar (7 Entscheidungen)
+  { id: 75, date: "2026-02-17", time: "10:00", sport: "Nordische Kombination", discipline: "Einzel Großschanze/10 km", gender: "Männer", category: "Nordische Kombination" },
+  { id: 76, date: "2026-02-17", time: "13:00", sport: "Snowboard", discipline: "Slopestyle", gender: "Frauen", category: "Snowboard" },
+  { id: 77, date: "2026-02-17", time: "14:30", sport: "Biathlon", discipline: "Staffel 4x7,5 km", gender: "Männer", category: "Biathlon" },
+  { id: 78, date: "2026-02-17", time: "14:30", sport: "Eisschnelllauf", discipline: "Teamverfolgung", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 79, date: "2026-02-17", time: "15:30", sport: "Eisschnelllauf", discipline: "Teamverfolgung", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 80, date: "2026-02-17", time: "19:00", sport: "Bob", discipline: "Zweier", gender: "Männer", category: "Bob" },
+  { id: 81, date: "2026-02-17", time: "19:30", sport: "Freestyle", discipline: "Big Air", gender: "Männer", category: "Freestyle" },
   
-  // Mittwoch, 18. Februar
-  { id: 77, date: "2026-02-18", time: "10:00", sport: "Ski Alpin", discipline: "Slalom", gender: "Frauen", category: "Ski Alpin" },
-  { id: 78, date: "2026-02-18", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Frauen", category: "Freestyle" },
-  { id: 79, date: "2026-02-18", time: "11:45", sport: "Skilanglauf", discipline: "Teamsprint", gender: "Mixed", category: "Langlauf" },
-  { id: 80, date: "2026-02-18", time: "12:30", sport: "Snowboard", discipline: "Slopestyle", gender: "Männer", category: "Snowboard" },
-  { id: 81, date: "2026-02-18", time: "14:45", sport: "Biathlon", discipline: "Staffel", gender: "Frauen", category: "Biathlon" },
-  { id: 82, date: "2026-02-18", time: "20:15", sport: "Short Track", discipline: "3000 m", gender: "Frauen", category: "Short Track" },
-  { id: 83, date: "2026-02-18", time: "20:15", sport: "Short Track", discipline: "500 m", gender: "Männer", category: "Short Track" },
+  // Mittwoch, 18. Februar (8 Entscheidungen)
+  { id: 82, date: "2026-02-18", time: "10:00", sport: "Ski Alpin", discipline: "Slalom", gender: "Frauen", category: "Ski Alpin" },
+  { id: 83, date: "2026-02-18", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Frauen", category: "Freestyle" },
+  { id: 84, date: "2026-02-18", time: "11:45", sport: "Skilanglauf", discipline: "Teamsprint Freistil", gender: "Frauen", category: "Langlauf" },
+  { id: 85, date: "2026-02-18", time: "12:30", sport: "Snowboard", discipline: "Slopestyle", gender: "Männer", category: "Snowboard" },
+  { id: 86, date: "2026-02-18", time: "13:15", sport: "Skilanglauf", discipline: "Teamsprint Freistil", gender: "Männer", category: "Langlauf" },
+  { id: 87, date: "2026-02-18", time: "14:45", sport: "Biathlon", discipline: "Staffel 4x6 km", gender: "Frauen", category: "Biathlon" },
+  { id: 88, date: "2026-02-18", time: "20:00", sport: "Short Track", discipline: "Staffel 3000 m", gender: "Frauen", category: "Short Track" },
+  { id: 89, date: "2026-02-18", time: "20:30", sport: "Short Track", discipline: "500 m", gender: "Männer", category: "Short Track" },
   
-  // Donnerstag, 19. Februar
-  { id: 84, date: "2026-02-19", time: "10:00", sport: "Nordische Kombination", discipline: "Teamsprint", gender: "Männer", category: "Nordische Kombination" },
-  { id: 85, date: "2026-02-19", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
-  { id: 86, date: "2026-02-19", time: "12:55", sport: "Skibergsteigen", discipline: "Sprint", gender: "Mixed", category: "Ski Mountaineering" },
-  { id: 87, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
-  { id: 88, date: "2026-02-19", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Frauen", category: "Eiskunstlauf" },
-  { id: 89, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey" },
+  // Donnerstag, 19. Februar (7 Entscheidungen)
+  { id: 90, date: "2026-02-19", time: "10:00", sport: "Nordische Kombination", discipline: "Teamsprint Großschanze/2x7,5 km", gender: "Männer", category: "Nordische Kombination" },
+  { id: 91, date: "2026-02-19", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
+  { id: 92, date: "2026-02-19", time: "12:55", sport: "Skibergsteigen", discipline: "Sprint", gender: "Frauen", category: "Ski Mountaineering" },
+  { id: 93, date: "2026-02-19", time: "13:30", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering" },
+  { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 95, date: "2026-02-19", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Frauen", category: "Eiskunstlauf" },
+  { id: 96, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey" },
   
-  // Freitag, 20. Februar
-  { id: 90, date: "2026-02-20", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Frauen", category: "Freestyle" },
-  { id: 91, date: "2026-02-20", time: "14:15", sport: "Biathlon", discipline: "Massenstart", gender: "Männer", category: "Biathlon" },
-  { id: 92, date: "2026-02-20", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Frauen", category: "Eisschnelllauf" },
-  { id: 93, date: "2026-02-20", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Männer", category: "Freestyle" },
-  { id: 94, date: "2026-02-20", time: "20:15", sport: "Short Track", discipline: "1500 m", gender: "Frauen", category: "Short Track" },
-  { id: 95, date: "2026-02-20", time: "20:15", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
+  // Freitag, 20. Februar (6 Entscheidungen)
+  { id: 97, date: "2026-02-20", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Frauen", category: "Freestyle" },
+  { id: 98, date: "2026-02-20", time: "14:15", sport: "Biathlon", discipline: "Massenstart 15 km", gender: "Männer", category: "Biathlon" },
+  { id: 99, date: "2026-02-20", time: "16:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 100, date: "2026-02-20", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Männer", category: "Freestyle" },
+  { id: 101, date: "2026-02-20", time: "20:00", sport: "Short Track", discipline: "1500 m", gender: "Frauen", category: "Short Track" },
+  { id: 102, date: "2026-02-20", time: "20:30", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
+  { id: 103, date: "2026-02-20", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
   
-  // Samstag, 21. Februar
-  { id: 96, date: "2026-02-21", time: "10:45", sport: "Freestyle", discipline: "Mixed-Team Aerials", gender: "Mixed", category: "Freestyle" },
-  { id: 97, date: "2026-02-21", time: "11:00", sport: "Skilanglauf", discipline: "50 km", gender: "Männer", category: "Langlauf" },
-  { id: 98, date: "2026-02-21", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Männer", category: "Freestyle" },
-  { id: 99, date: "2026-02-21", time: "13:30", sport: "Skibergsteigen", discipline: "Mixed-Staffel", gender: "Mixed", category: "Ski Mountaineering" },
-  { id: 100, date: "2026-02-21", time: "14:15", sport: "Biathlon", discipline: "Massenstart", gender: "Frauen", category: "Biathlon" },
-  { id: 101, date: "2026-02-21", time: "15:00", sport: "Eisschnelllauf", discipline: "Massenstart", gender: "Mixed", category: "Eisschnelllauf" },
-  { id: 102, date: "2026-02-21", time: "19:00", sport: "Bob", discipline: "Zweier", gender: "Frauen", category: "Bob" },
-  { id: 103, date: "2026-02-21", time: "19:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
-  { id: 104, date: "2026-02-21", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Frauen", category: "Freestyle" },
+  // Samstag, 21. Februar (10 Entscheidungen)
+  { id: 104, date: "2026-02-21", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Männer", category: "Langlauf" },
+  { id: 105, date: "2026-02-21", time: "10:45", sport: "Freestyle", discipline: "Mixed-Team Aerials", gender: "Mixed", category: "Freestyle" },
+  { id: 106, date: "2026-02-21", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Männer", category: "Freestyle" },
+  { id: 107, date: "2026-02-21", time: "13:30", sport: "Skibergsteigen", discipline: "Mixed-Staffel", gender: "Mixed", category: "Ski Mountaineering" },
+  { id: 108, date: "2026-02-21", time: "14:15", sport: "Biathlon", discipline: "Massenstart 12,5 km", gender: "Frauen", category: "Biathlon" },
+  { id: 109, date: "2026-02-21", time: "15:00", sport: "Eisschnelllauf", discipline: "Massenstart", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 110, date: "2026-02-21", time: "16:00", sport: "Eisschnelllauf", discipline: "Massenstart", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 111, date: "2026-02-21", time: "19:00", sport: "Bob", discipline: "Zweier", gender: "Frauen", category: "Bob" },
+  { id: 112, date: "2026-02-21", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Frauen", category: "Freestyle" },
+  { id: 113, date: "2026-02-21", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
   
-  // Sonntag, 22. Februar
-  { id: 105, date: "2026-02-22", time: "10:00", sport: "Bob", discipline: "Vierer", gender: "Männer", category: "Bob" },
-  { id: 106, date: "2026-02-22", time: "10:00", sport: "Skilanglauf", discipline: "50 km", gender: "Frauen", category: "Langlauf" },
-  { id: 107, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling" },
-  { id: 108, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey" },
+  // Sonntag, 22. Februar (4 Entscheidungen)
+  { id: 114, date: "2026-02-22", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Frauen", category: "Langlauf" },
+  { id: 115, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling" },
+  { id: 116, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey" },
+  { id: 117, date: "2026-02-22", time: "19:00", sport: "Bob", discipline: "Vierer", gender: "Männer", category: "Bob" },
 ];
 
 // Olympische Winterspiele 2026 Milano-Cortina - Alle 92 teilnehmenden Nationen (alphabetisch nach deutschem Namen)
@@ -306,6 +315,7 @@ export const sportIcons: Record<string, string> = {
   "Biathlon": "🎿",
   "Ski Alpin": "⛷️",
   "Skispringen": "🦅",
+  "Skilanglauf": "🎿",
   "Langlauf": "🎿",
   "Nordische Kombination": "🎿",
   "Bob": "🛷",
@@ -318,5 +328,6 @@ export const sportIcons: Record<string, string> = {
   "Eishockey": "🏒",
   "Freestyle": "🎿",
   "Snowboard": "🏂",
-  "Ski Mountaineering": "🏔️"
+  "Ski Mountaineering": "🏔️",
+  "Skibergsteigen": "🏔️"
 };
