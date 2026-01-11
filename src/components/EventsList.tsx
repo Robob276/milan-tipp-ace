@@ -65,19 +65,22 @@ const EventsList: React.FC = () => {
   const upcomingGrouped = useMemo(() => groupEventsByDate(upcomingEvents), [upcomingEvents]);
   const completedGrouped = useMemo(() => groupEventsByDate(completedEvents), [completedEvents]);
 
-  const handleExpand = (eventId: number) => {
+  const handleExpand = (eventId: number, isCompleted: boolean = false) => {
     if (expandedEvent === eventId) {
       setExpandedEvent(null);
     } else {
       const existing = currentPlayer ? getPrediction(currentPlayer.id, eventId) : null;
-      setTempPredictions(prev => ({
-        ...prev,
-        [eventId]: {
-          gold: existing?.gold || '',
-          silver: existing?.silver || '',
-          bronze: existing?.bronze || ''
-        }
-      }));
+      // Only set temp predictions for editing on non-completed events
+      if (!isCompleted) {
+        setTempPredictions(prev => ({
+          ...prev,
+          [eventId]: {
+            gold: existing?.gold || '',
+            silver: existing?.silver || '',
+            bronze: existing?.bronze || ''
+          }
+        }));
+      }
       setExpandedEvent(eventId);
     }
   };
@@ -131,15 +134,25 @@ const EventsList: React.FC = () => {
     const eventDate = new Date(event.date + 'T' + event.time);
     const hasPrediction = status.type === 'tipped' || status.type === 'scored';
 
+    const prediction = currentPlayer ? getPrediction(currentPlayer.id, event.id) : null;
+    const result = results[event.id];
+
     return (
       <div key={event.id} className="transition-all">
         {/* Compact Row */}
         <button
-          onClick={() => !isCompleted && handleExpand(event.id)}
-          disabled={isCompleted && status.type === 'open'}
+          onClick={() => {
+            // Allow expanding completed events only if they have a prediction
+            if (isCompleted && hasPrediction) {
+              handleExpand(event.id, true);
+            } else if (!isCompleted) {
+              handleExpand(event.id, false);
+            }
+          }}
+          disabled={isCompleted && !hasPrediction}
           className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
             isExpanded ? 'bg-primary/5' : 'hover:bg-secondary/30'
-          } ${isCompleted && status.type === 'open' ? 'opacity-50' : ''}`}
+          } ${isCompleted && !hasPrediction ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
         >
           {/* Sport Icon */}
           <span className="text-xl shrink-0">{sportIcons[event.category] || '🏅'}</span>
@@ -204,10 +217,14 @@ const EventsList: React.FC = () => {
             {!hasPrediction && !isCompleted && (
               isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
+            {/* Chevron for completed events with predictions */}
+            {isCompleted && hasPrediction && (
+              isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            )}
           </div>
         </button>
 
-        {/* Expanded Form */}
+        {/* Expanded Form - Editable for upcoming events */}
         {isExpanded && !isCompleted && (
           <div className="px-4 pb-4 space-y-3 animate-fade-in">
             <div className="grid grid-cols-3 gap-2">
@@ -290,6 +307,79 @@ const EventsList: React.FC = () => {
                 Tipp abgeben
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Expanded View - Read-only for completed events */}
+        {isExpanded && isCompleted && hasPrediction && (
+          <div className="px-4 pb-4 space-y-3 animate-fade-in">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Gold */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-gold" /> Gold
+                </label>
+                <div className={`h-9 px-3 flex items-center rounded-md border text-sm ${
+                  result?.gold === prediction?.gold 
+                    ? 'bg-green-500/10 border-green-500/30 text-green-600' 
+                    : 'bg-muted/50 border-border text-foreground'
+                }`}>
+                  {prediction?.gold || '-'}
+                </div>
+                {result && result.gold !== prediction?.gold && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Ergebnis: <span className="font-medium">{result.gold}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Silver */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-silver" /> Silber
+                </label>
+                <div className={`h-9 px-3 flex items-center rounded-md border text-sm ${
+                  result?.silver === prediction?.silver 
+                    ? 'bg-green-500/10 border-green-500/30 text-green-600' 
+                    : 'bg-muted/50 border-border text-foreground'
+                }`}>
+                  {prediction?.silver || '-'}
+                </div>
+                {result && result.silver !== prediction?.silver && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Ergebnis: <span className="font-medium">{result.silver}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Bronze */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full gradient-bronze" /> Bronze
+                </label>
+                <div className={`h-9 px-3 flex items-center rounded-md border text-sm ${
+                  result?.bronze === prediction?.bronze 
+                    ? 'bg-green-500/10 border-green-500/30 text-green-600' 
+                    : 'bg-muted/50 border-border text-foreground'
+                }`}>
+                  {prediction?.bronze || '-'}
+                </div>
+                {result && result.bronze !== prediction?.bronze && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Ergebnis: <span className="font-medium">{result.bronze}</span>
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Points summary if scored */}
+            {status.type === 'scored' && (
+              <div className="text-center py-2 bg-primary/5 rounded-lg">
+                <span className="text-sm font-medium text-foreground">
+                  {status.points} Punkt{status.points !== 1 ? 'e' : ''} erreicht
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
