@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import Countdown from './Countdown';
+import { getFlagFromName } from '@/lib/countryFlags';
 
 const EventsList: React.FC = () => {
   const { currentPlayer } = usePlayer();
@@ -21,7 +22,10 @@ const EventsList: React.FC = () => {
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
 
   const countryOptions = useMemo(() => 
-    countries.map(c => ({ value: c.name, label: c.name })), 
+    countries.map(c => ({ 
+      value: c.name, 
+      label: `${getFlagFromName(c.name)} ${c.name}` 
+    })), 
     []
   );
 
@@ -324,11 +328,11 @@ const EventsList: React.FC = () => {
                     ? 'bg-green-500/10 border-green-500/30 text-green-600' 
                     : 'bg-muted/50 border-border text-foreground'
                 }`}>
-                  {prediction?.gold || '-'}
+                  {prediction?.gold ? `${getFlagFromName(prediction.gold)} ${prediction.gold}` : '-'}
                 </div>
                 {result && result.gold !== prediction?.gold && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Ergebnis: <span className="font-medium">{result.gold}</span>
+                    Ergebnis: <span className="font-medium">{getFlagFromName(result.gold)} {result.gold}</span>
                   </p>
                 )}
               </div>
@@ -343,11 +347,11 @@ const EventsList: React.FC = () => {
                     ? 'bg-green-500/10 border-green-500/30 text-green-600' 
                     : 'bg-muted/50 border-border text-foreground'
                 }`}>
-                  {prediction?.silver || '-'}
+                  {prediction?.silver ? `${getFlagFromName(prediction.silver)} ${prediction.silver}` : '-'}
                 </div>
                 {result && result.silver !== prediction?.silver && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Ergebnis: <span className="font-medium">{result.silver}</span>
+                    Ergebnis: <span className="font-medium">{getFlagFromName(result.silver)} {result.silver}</span>
                   </p>
                 )}
               </div>
@@ -362,11 +366,11 @@ const EventsList: React.FC = () => {
                     ? 'bg-green-500/10 border-green-500/30 text-green-600' 
                     : 'bg-muted/50 border-border text-foreground'
                 }`}>
-                  {prediction?.bronze || '-'}
+                  {prediction?.bronze ? `${getFlagFromName(prediction.bronze)} ${prediction.bronze}` : '-'}
                 </div>
                 {result && result.bronze !== prediction?.bronze && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Ergebnis: <span className="font-medium">{result.bronze}</span>
+                    Ergebnis: <span className="font-medium">{getFlagFromName(result.bronze)} {result.bronze}</span>
                   </p>
                 )}
               </div>
