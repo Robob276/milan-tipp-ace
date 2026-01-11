@@ -22,9 +22,9 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   const [editingEvent, setEditingEvent] = useState<number | null>(null);
   const [tempResult, setTempResult] = useState({ gold: '', silver: '', bronze: '' });
 
-  const countryOptions = useMemo(() => 
-    countries.map(c => ({ value: c.name, label: c.name })), 
-    []
+  const countryOptions = useMemo(
+    () => countries.map((c) => ({ value: c.name, label: c.name })),
+    [countries]
   );
 
   const filteredEvents = olympicEvents.filter(event => {

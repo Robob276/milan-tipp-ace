@@ -21,12 +21,13 @@ const EventsList: React.FC = () => {
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
 
-  const countryOptions = useMemo(() => 
-    countries.map(c => ({ 
-      value: c.name, 
-      label: `${getFlagFromName(c.name)} ${c.name}` 
-    })), 
-    []
+  const countryOptions = useMemo(
+    () =>
+      countries.map((c) => ({
+        value: c.name,
+        label: `${getFlagFromName(c.name)} ${c.name}`,
+      })),
+    [countries]
   );
 
   // Split events into upcoming and completed
@@ -54,7 +55,7 @@ const EventsList: React.FC = () => {
     completed.sort((a, b) => new Date(b.date + 'T' + b.time).getTime() - new Date(a.date + 'T' + a.time).getTime());
 
     return { upcomingEvents: upcoming, completedEvents: completed };
-  }, [searchTerm, selectedCategory, isEventStarted]);
+  }, [searchTerm, selectedCategory, isEventStarted, olympicEvents]);
 
   // Group events by date
   const groupEventsByDate = (events: typeof olympicEvents) => {
