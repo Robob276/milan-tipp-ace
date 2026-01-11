@@ -1,5 +1,5 @@
-import React from 'react';
-import { Snowflake, Sun, MapPin, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Snowflake, Sun, MapPin, Calendar, Timer } from 'lucide-react';
 import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
 interface OlympicGame {
@@ -62,6 +62,36 @@ interface HomeScreenProps {
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) => {
+  // Countdown to Milano-Cortina 2026 Opening Ceremony
+  const openingCeremony = new Date('2026-02-06T20:00:00+01:00');
+  
+  const [countdown, setCountdown] = useState(calculateCountdown());
+  
+  function calculateCountdown() {
+    const now = new Date().getTime();
+    const target = openingCeremony.getTime();
+    const diff = target - now;
+    
+    if (diff <= 0) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, started: true };
+    }
+    
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+      started: false
+    };
+  }
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(calculateCountdown());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -94,6 +124,47 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
             <div className="w-6 h-6 rounded-full border-2 border-olympic-yellow -ml-2 mt-2" />
             <div className="w-6 h-6 rounded-full border-2 border-olympic-green -ml-2 mt-2" />
           </div>
+
+          {/* Countdown to Opening Ceremony */}
+          {!countdown.started && (
+            <div className="mt-8 animate-fade-in">
+              <div className="inline-flex flex-col items-center glass-card rounded-2xl px-6 py-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <Timer className="w-4 h-4" />
+                  <span>Eröffnungsfeier Milano-Cortina 2026</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
+                      {countdown.days}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Tage</div>
+                  </div>
+                  <span className="text-2xl text-muted-foreground">:</span>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
+                      {countdown.hours.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Std</div>
+                  </div>
+                  <span className="text-2xl text-muted-foreground">:</span>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
+                      {countdown.minutes.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Min</div>
+                  </div>
+                  <span className="text-2xl text-muted-foreground">:</span>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
+                      {countdown.seconds.toString().padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Sek</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
