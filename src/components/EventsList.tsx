@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { olympicEvents, sportCategories, sportIcons } from '@/data/olympicEvents';
+import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 import Countdown from './Countdown';
 import { getFlagFromName } from '@/lib/countryFlags';
 
-const EventsList: React.FC = () => {
+interface EventsListProps {
+  competitionId: string;
+}
+
+const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
   const { currentPlayer } = usePlayer();
   const { getPrediction, setPrediction, deletePrediction, results, isEventStarted } = usePredictions();
   const { toast } = useToast();
@@ -21,11 +26,15 @@ const EventsList: React.FC = () => {
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
 
+  // Get events based on competition
+  const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
+  const categories = competitionId === 'ruhpolding-2026' ? ['Alle', 'Biathlon'] : sportCategories;
+
   // countryOptions removed - now using PredictionSelect component
 
   // Split events into upcoming and completed
   const { upcomingEvents, completedEvents } = useMemo(() => {
-    const filtered = olympicEvents.filter(event => {
+    const filtered = events.filter(event => {
       const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            event.discipline.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'Alle' || event.category === selectedCategory;
@@ -48,7 +57,7 @@ const EventsList: React.FC = () => {
     completed.sort((a, b) => new Date(b.date + 'T' + b.time).getTime() - new Date(a.date + 'T' + a.time).getTime());
 
     return { upcomingEvents: upcoming, completedEvents: completed };
-  }, [searchTerm, selectedCategory, isEventStarted, olympicEvents]);
+  }, [searchTerm, selectedCategory, isEventStarted, events]);
 
   // Group events by date
   const groupEventsByDate = (events: typeof olympicEvents) => {
@@ -396,7 +405,7 @@ const EventsList: React.FC = () => {
         
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          {sportCategories.map(category => (
+          {categories.map(category => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}

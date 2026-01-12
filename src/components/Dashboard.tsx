@@ -9,9 +9,10 @@ import { usePlayer } from '@/contexts/PlayerContext';
 interface DashboardProps {
   onBackToHome?: () => void;
   isAdminMode?: boolean;
+  competitionId: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode, competitionId }) => {
   const { isAdmin } = usePlayer();
   
   // Admin starts at leaderboard, players at events
@@ -34,10 +35,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode }) => {
       />
       
       <main className="container mx-auto px-4 py-6 max-w-6xl">
-        {activeTab === 'events' && !isAdmin && <EventsList />}
-        {activeTab === 'events' && isAdmin && <Leaderboard />}
-        {activeTab === 'leaderboard' && <Leaderboard />}
-        {activeTab === 'stats' && <Statistics />}
+        {activeTab === 'events' && !isAdmin && <EventsList competitionId={competitionId} />}
+        {activeTab === 'events' && isAdmin && <Leaderboard competitionId={competitionId} />}
+        {activeTab === 'leaderboard' && <Leaderboard competitionId={competitionId} />}
+        {activeTab === 'stats' && <Statistics competitionId={competitionId} />}
       </main>
     </div>
   );

@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents } from '@/data/olympicEvents';
+import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { Trophy, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PlayerDetail from './PlayerDetail';
 
-const Leaderboard: React.FC = () => {
+interface LeaderboardProps {
+  competitionId: string;
+}
+
+const Leaderboard: React.FC<LeaderboardProps> = ({ competitionId }) => {
   const { getLeaderboard, predictions, results, getVisiblePrediction, isEventStarted } = usePredictions();
   const { currentPlayer } = usePlayer();
   const leaderboard = getLeaderboard();
@@ -14,8 +19,11 @@ const Leaderboard: React.FC = () => {
   const [eventPage, setEventPage] = useState(0);
   const eventsPerPage = 3;
 
+  // Get events based on competition
+  const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
+
   // Get events that have results
-  const eventsWithResults = olympicEvents.filter(e => results[e.id]);
+  const eventsWithResults = events.filter(e => results[e.id]);
   const totalPages = Math.ceil(eventsWithResults.length / eventsPerPage);
   const displayedEvents = eventsWithResults.slice(eventPage * eventsPerPage, (eventPage + 1) * eventsPerPage);
 
