@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { olympicEvents, sportCategories, sportIcons, countries } from '@/data/olympicEvents';
+import { olympicEvents, sportCategories, sportIcons } from '@/data/olympicEvents';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { SearchableSelect } from '@/components/ui/searchable-select';
+import { PredictionSelect } from '@/components/PredictionSelect';
 import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -21,14 +21,7 @@ const EventsList: React.FC = () => {
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
 
-  const countryOptions = useMemo(
-    () =>
-      countries.map((c) => ({
-        value: c.name,
-        label: `${getFlagFromName(c.name)} ${c.name}`,
-      })),
-    [countries]
-  );
+  // countryOptions removed - now using PredictionSelect component
 
   // Split events into upcoming and completed
   const { upcomingEvents, completedEvents } = useMemo(() => {
@@ -238,16 +231,14 @@ const EventsList: React.FC = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full gradient-gold" /> Gold
                 </label>
-                <SearchableSelect
+                <PredictionSelect
+                  eventId={event.id}
                   value={temp.gold}
-                  onValueChange={(v) => setTempPredictions(prev => ({
+                  onChange={(v) => setTempPredictions(prev => ({
                     ...prev,
                     [event.id]: { ...prev[event.id], gold: v }
                   }))}
-                  options={countryOptions}
                   placeholder="Wählen"
-                  searchPlaceholder="Land suchen..."
-                  emptyText="Kein Land gefunden."
                   className="h-9 text-xs w-full"
                 />
               </div>
@@ -257,16 +248,14 @@ const EventsList: React.FC = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full gradient-silver" /> Silber
                 </label>
-                <SearchableSelect
+                <PredictionSelect
+                  eventId={event.id}
                   value={temp.silver}
-                  onValueChange={(v) => setTempPredictions(prev => ({
+                  onChange={(v) => setTempPredictions(prev => ({
                     ...prev,
                     [event.id]: { ...prev[event.id], silver: v }
                   }))}
-                  options={countryOptions}
                   placeholder="Wählen"
-                  searchPlaceholder="Land suchen..."
-                  emptyText="Kein Land gefunden."
                   className="h-9 text-xs w-full"
                 />
               </div>
@@ -276,16 +265,14 @@ const EventsList: React.FC = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full gradient-bronze" /> Bronze
                 </label>
-                <SearchableSelect
+                <PredictionSelect
+                  eventId={event.id}
                   value={temp.bronze}
-                  onValueChange={(v) => setTempPredictions(prev => ({
+                  onChange={(v) => setTempPredictions(prev => ({
                     ...prev,
                     [event.id]: { ...prev[event.id], bronze: v }
                   }))}
-                  options={countryOptions}
                   placeholder="Wählen"
-                  searchPlaceholder="Land suchen..."
-                  emptyText="Kein Land gefunden."
                   className="h-9 text-xs w-full"
                 />
               </div>
