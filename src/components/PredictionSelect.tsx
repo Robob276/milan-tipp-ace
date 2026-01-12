@@ -34,7 +34,7 @@ export function PredictionSelect({
   
   const hasAthletes = athletes && athletes.length > 0;
 
-  // Generate options based on whether we have athletes or not
+  // Generate options - always show countries as fallback, don't wait for loading
   const options = useMemo(() => {
     if (hasAthletes) {
       // Show athletes with their country - VALUE is country name for scoring
@@ -48,20 +48,21 @@ export function PredictionSelect({
         };
       });
     }
-    // Fallback to country selection
+    // Fallback to country selection (immediate, no loading state)
     return countries.map((c) => ({
       value: c.name,
       label: `${getFlagFromName(c.name)} ${c.name}`,
     }));
   }, [athletes, hasAthletes]);
 
+  // Don't show loading state - just use countries as fallback immediately
   return (
     <SearchableSelect
       options={options}
       value={value}
       onValueChange={onChange}
-      placeholder={isLoading ? "Laden..." : placeholder}
-      disabled={disabled || isLoading}
+      placeholder={placeholder}
+      disabled={disabled}
       searchPlaceholder={hasAthletes ? "Athlet suchen..." : "Land suchen..."}
       className={className}
     />
