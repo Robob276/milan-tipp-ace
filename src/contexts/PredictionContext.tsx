@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { usePlayer } from './PlayerContext';
 import type { Result, Prediction, OlympicEvent } from '@/data/olympicEvents';
 import { olympicEvents } from '@/data/olympicEvents';
+import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 
 interface PredictionContextType {
   predictions: Record<string, Record<number, Prediction>>; // playerId -> eventId -> Prediction
@@ -108,7 +109,9 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const isEventStarted = (eventId: number): boolean => {
-    const event = olympicEvents.find(e => e.id === eventId);
+    // Search in both olympic events and ruhpolding events
+    const allEvents = [...olympicEvents, ...ruhpoldingEvents];
+    const event = allEvents.find(e => e.id === eventId);
     if (!event) return true; // If event not found, assume started for safety
     const eventDate = new Date(event.date + 'T' + event.time);
     return eventDate < new Date();
