@@ -60,6 +60,7 @@ const AppContent = () => {
             setLoginMode(null);
           }} 
           isAdminMode={isAdmin && loginMode === 'admin'}
+          competitionId={selectedGame || 'milano-2026'}
         />
       </PredictionProvider>
     );

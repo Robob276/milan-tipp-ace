@@ -2,6 +2,7 @@ import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, sportCategories } from '@/data/olympicEvents';
+import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart, Medal, ChevronDown } from 'lucide-react';
 import {
   Table,
@@ -102,14 +103,25 @@ const getMedalEmoji = (place: number) => {
   return `${place}.`;
 };
 
-const Statistics: React.FC = () => {
+interface StatisticsProps {
+  competitionId: string;
+}
+
+const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const { currentPlayer } = usePlayer();
   const { predictions, profiles, calculateScore } = usePredictions();
 
+  // Get events based on competition
+  const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
+  const categories = competitionId === 'ruhpolding-2026' ? ['Biathlon'] : sportCategories.slice(1);
+
   // Calculate statistics
   const userPredictions = currentPlayer ? predictions[currentPlayer.id] || {} : {};
-  const totalTipps = Object.keys(userPredictions).length;
-  const totalEvents = olympicEvents.length;
+  const totalTipps = Object.keys(userPredictions).filter(id => {
+    const eventId = parseInt(id);
+    return events.some(e => e.id === eventId);
+  }).length;
+  const totalEvents = events.length;
   const completionRate = Math.round((totalTipps / totalEvents) * 100);
   const myScore = currentPlayer ? calculateScore(currentPlayer.id) : 0;
   const totalPlayers = Object.keys(profiles).length;
@@ -129,8 +141,8 @@ const Statistics: React.FC = () => {
     .slice(0, 5);
 
   // Category stats for current user
-  const categoryStats = sportCategories.slice(1).map(category => {
-    const categoryEvents = olympicEvents.filter(e => e.category === category);
+  const categoryStats = categories.map(category => {
+    const categoryEvents = events.filter(e => e.category === category);
     const tippedCount = categoryEvents.filter(e => userPredictions[e.id]).length;
     return {
       name: category,

@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Snowflake, Sun, MapPin, Calendar, Timer } from 'lucide-react';
 import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
-interface OlympicGame {
+import { Target } from 'lucide-react';
+
+interface Competition {
   id: string;
+  type: 'worldcup' | 'olympics';
+  name: string;
   year: number;
   season: 'winter' | 'summer';
   city: string;
@@ -13,9 +17,23 @@ interface OlympicGame {
   emoji: string;
 }
 
-const olympicGames: OlympicGame[] = [
+const competitions: Competition[] = [
+  {
+    id: 'ruhpolding-2026',
+    type: 'worldcup',
+    name: 'Biathlon Weltcup',
+    year: 2026,
+    season: 'winter',
+    city: 'Ruhpolding',
+    country: 'Deutschland',
+    dates: '14. - 18. Januar 2026',
+    available: true,
+    emoji: '🇩🇪'
+  },
   {
     id: 'milano-2026',
+    type: 'olympics',
+    name: 'Winterspiele',
     year: 2026,
     season: 'winter',
     city: 'Mailand-Cortina',
@@ -26,6 +44,8 @@ const olympicGames: OlympicGame[] = [
   },
   {
     id: 'la-2028',
+    type: 'olympics',
+    name: 'Sommerspiele',
     year: 2028,
     season: 'summer',
     city: 'Los Angeles',
@@ -36,6 +56,8 @@ const olympicGames: OlympicGame[] = [
   },
   {
     id: 'alps-2030',
+    type: 'olympics',
+    name: 'Winterspiele',
     year: 2030,
     season: 'winter',
     city: 'Französische Alpen',
@@ -46,6 +68,8 @@ const olympicGames: OlympicGame[] = [
   },
   {
     id: 'brisbane-2032',
+    type: 'olympics',
+    name: 'Sommerspiele',
     year: 2032,
     season: 'summer',
     city: 'Brisbane',
@@ -168,16 +192,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
         </div>
       </div>
 
-      {/* Games Grid */}
+      {/* Competitions Grid */}
       <div className="container mx-auto px-4 pb-12 -mt-2">
         <div className="grid gap-4 max-w-2xl mx-auto">
-          {olympicGames.map((game, index) => (
+          {competitions.map((comp, index) => (
             <button
-              key={game.id}
-              onClick={() => game.available && onSelectGame(game.id)}
-              disabled={!game.available}
+              key={comp.id}
+              onClick={() => comp.available && onSelectGame(comp.id)}
+              disabled={!comp.available}
               className={`group relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-300 animate-fade-in ${
-                game.available
+                comp.available
                   ? 'glass-card hover:scale-[1.02] hover:shadow-xl cursor-pointer'
                   : 'bg-secondary/30 opacity-60 cursor-not-allowed'
               }`}
@@ -185,45 +209,49 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
             >
               {/* Season Indicator */}
               <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-20 ${
-                game.season === 'winter' ? 'bg-blue-400' : 'bg-orange-400'
+                comp.season === 'winter' ? 'bg-blue-400' : 'bg-orange-400'
               }`} />
               
               <div className="relative flex items-start gap-4">
                 {/* Icon */}
                 <div className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ${
-                  game.season === 'winter' 
-                    ? 'bg-gradient-to-br from-blue-500 to-cyan-400' 
-                    : 'bg-gradient-to-br from-orange-500 to-yellow-400'
+                  comp.type === 'worldcup'
+                    ? 'bg-gradient-to-br from-emerald-500 to-teal-400'
+                    : comp.season === 'winter' 
+                      ? 'bg-gradient-to-br from-blue-500 to-cyan-400' 
+                      : 'bg-gradient-to-br from-orange-500 to-yellow-400'
                 }`}>
-                  {game.season === 'winter' 
-                    ? <Snowflake className="w-7 h-7 text-white" />
-                    : <Sun className="w-7 h-7 text-white" />
+                  {comp.type === 'worldcup' 
+                    ? <Target className="w-7 h-7 text-white" />
+                    : comp.season === 'winter' 
+                      ? <Snowflake className="w-7 h-7 text-white" />
+                      : <Sun className="w-7 h-7 text-white" />
                   }
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl">{game.emoji}</span>
+                    <span className="text-2xl">{comp.emoji}</span>
                     <h3 className="text-xl font-bold text-foreground">
-                      {game.season === 'winter' ? 'Winterspiele' : 'Sommerspiele'} {game.year}
+                      {comp.name} {comp.year}
                     </h3>
                   </div>
                   
                   <div className="flex items-center gap-2 text-muted-foreground mb-2">
                     <MapPin className="w-4 h-4" />
-                    <span>{game.city}, {game.country}</span>
+                    <span>{comp.city}, {comp.country}</span>
                   </div>
                   
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    <span>{game.dates}</span>
+                    <span>{comp.dates}</span>
                   </div>
                 </div>
 
                 {/* Status Badge */}
                 <div className="shrink-0">
-                  {game.available ? (
+                  {comp.available ? (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 border border-green-500/20">
                       Aktiv
                     </span>
@@ -236,7 +264,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
               </div>
 
               {/* Hover Arrow */}
-              {game.available && (
+              {comp.available && (
                 <div className="absolute right-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                     <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
