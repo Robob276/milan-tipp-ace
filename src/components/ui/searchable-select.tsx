@@ -24,6 +24,7 @@ interface SearchableSelectProps {
   searchPlaceholder?: string;
   emptyText?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function SearchableSelect({
@@ -34,6 +35,7 @@ export function SearchableSelect({
   searchPlaceholder = "Suchen...",
   emptyText = "Keine Ergebnisse.",
   className,
+  disabled = false,
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -46,6 +48,7 @@ export function SearchableSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          disabled={disabled}
           className={cn("justify-between font-normal", className)}
         >
           <span className="truncate">
