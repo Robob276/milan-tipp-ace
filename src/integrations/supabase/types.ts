@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      athletes: {
+        Row: {
+          bib_number: string | null
+          country: string
+          country_code: string | null
+          created_at: string
+          event_id: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bib_number?: string | null
+          country: string
+          country_code?: string | null
+          created_at?: string
+          event_id: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bib_number?: string | null
+          country?: string
+          country_code?: string | null
+          created_at?: string
+          event_id?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string
