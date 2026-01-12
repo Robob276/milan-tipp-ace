@@ -29,13 +29,12 @@ interface PredictionSelectProps {
 }
 
 /**
- * Smart prediction select that shows athletes with their countries if available,
- * otherwise falls back to country-only selection.
+ * Smart prediction select that shows countries as main focus with athletes as hints.
  * 
- * When athletes are available: "Johannes Thingnes Bø 🇳🇴 Norwegen"
- * Fallback (no athletes): "🇳🇴 Norwegen"
+ * Dropdown shows: "🇸🇪 Schweden" (big) + "Elvira Öberg" (small hint below)
+ * Selected value shows: "🇸🇪 Schweden" only
  * 
- * The VALUE is always the COUNTRY name (for scoring), but display shows athlete + country
+ * The VALUE is always the COUNTRY name (for scoring)
  */
 export function PredictionSelect({
   eventId,
@@ -50,39 +49,36 @@ export function PredictionSelect({
   
   const hasAthletes = athletes && athletes.length > 0;
 
-  // Generate options - athletes have unique keys but country values
+  // Generate options - country as main value, athlete as hint
   const options = useMemo(() => {
     if (hasAthletes) {
-      // Show athletes with their country - VALUE is country name for scoring
+      // Show countries with athlete hints
       return athletes.map((athlete) => {
         const flag = getFlagFromName(athlete.country);
         return {
-          // Unique key for the athlete
           key: athlete.id,
-          // Value is the country name (what gets saved/scored)
           value: athlete.country,
-          // Label shows athlete name + flag + country
-          label: `${athlete.name} ${flag} ${athlete.country}`,
-          // Store athlete name for display when selected
+          // Display label for search - includes athlete name for searchability
+          searchLabel: `${athlete.country} ${athlete.name}`,
+          // Country with flag (main display)
+          countryLabel: `${flag} ${athlete.country}`,
+          // Athlete name (hint)
           athleteName: athlete.name,
         };
       });
     }
-    // Fallback to country selection (immediate, no loading state)
+    // Fallback to country selection only
     return countries.map((c) => ({
       key: c.name,
       value: c.name,
-      label: `${getFlagFromName(c.name)} ${c.name}`,
+      searchLabel: c.name,
+      countryLabel: `${getFlagFromName(c.name)} ${c.name}`,
       athleteName: null,
     }));
   }, [athletes, hasAthletes]);
 
-  // Find the selected option - for athletes, we need to match by value (country)
-  // and show the first matching one (since user selected that country)
-  const selectedOption = options.find((option) => option.value === value);
-  
-  // For display: show the full label if we have athletes, otherwise just the country
-  const displayLabel = selectedOption?.label;
+  // For the button display - just show country with flag
+  const selectedCountryLabel = value ? `${getFlagFromName(value)} ${value}` : null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -95,34 +91,41 @@ export function PredictionSelect({
           className={cn("justify-between font-normal", className)}
         >
           <span className="truncate text-xs">
-            {displayLabel || placeholder}
+            {selectedCountryLabel || placeholder}
           </span>
           <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[280px] p-0 z-50 bg-popover" align="start">
+      <PopoverContent className="w-[240px] p-0 z-50 bg-popover" align="start">
         <Command>
-          <CommandInput placeholder={hasAthletes ? "Athlet suchen..." : "Land suchen..."} />
+          <CommandInput placeholder={hasAthletes ? "Land oder Athlet suchen..." : "Land suchen..."} />
           <CommandList className="max-h-[300px]">
             <CommandEmpty>Keine Ergebnisse.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.key}
-                  value={option.label}
+                  value={option.searchLabel}
                   onSelect={() => {
                     onChange(option.value);
                     setOpen(false);
                   }}
-                  className="text-sm"
+                  className="flex flex-col items-start py-2"
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4 shrink-0",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <span className="truncate">{option.label}</span>
+                  <div className="flex items-center w-full">
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4 shrink-0",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <span className="font-medium text-sm">{option.countryLabel}</span>
+                  </div>
+                  {option.athleteName && (
+                    <span className="ml-6 text-xs text-muted-foreground truncate max-w-[180px]">
+                      {option.athleteName}
+                    </span>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
