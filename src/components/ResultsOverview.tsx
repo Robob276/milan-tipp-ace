@@ -11,7 +11,7 @@ interface ResultsOverviewProps {
 }
 
 const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
-  const { results, predictions, profiles, isEventStarted } = usePredictions();
+  const { results, predictions, profiles, isEventStarted, isLoading } = usePredictions();
   const { players, currentPlayer } = usePlayer();
   
   // Get events based on competition
@@ -26,6 +26,10 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
     const dateB = new Date(b.date + 'T' + b.time);
     return dateA.getTime() - dateB.getTime();
   });
+
+  // Count statistics
+  const finishedEvents = sortedEvents.filter(e => results[e.id]).length;
+  const totalEvents = sortedEvents.length;
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -99,13 +103,31 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Ergebnisse & Tipps</h2>
+            <p className="text-muted-foreground text-sm mt-1">Übersicht wird geladen...</p>
+          </div>
+        </div>
+        <div className="glass-card rounded-xl p-8 text-center">
+          <div className="w-12 h-12 rounded-full gradient-olympic mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Daten werden geladen...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header with Statistics */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Ergebnisse & Tipps</h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Übersicht aller Ergebnisse und Tipps pro Event
+            {finishedEvents} von {totalEvents} Events beendet • {regularPlayers.length} Spieler
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -118,13 +140,22 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
         </div>
       </div>
 
+      {/* Info if no players */}
+      {regularPlayers.length === 0 && (
+        <div className="glass-card rounded-xl p-6 text-center">
+          <User className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">Keine Spieler gefunden.</p>
+        </div>
+      )}
+
       {/* Events Table - Kicktipp style */}
-      <div className="overflow-x-auto">
-        <div className="min-w-[800px]">
-          {sortedEvents.map((event) => {
-            const status = getEventStatus(event);
-            const result = results[event.id];
-            const isStarted = isEventStarted(event.id);
+      {regularPlayers.length > 0 && (
+        <div className="overflow-x-auto">
+          <div className="min-w-[800px]">
+            {sortedEvents.map((event) => {
+              const status = getEventStatus(event);
+              const result = results[event.id];
+              const isStarted = isEventStarted(event.id);
             
             return (
               <div key={event.id} className="mb-6 glass-card rounded-xl overflow-hidden">
@@ -264,8 +295,9 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
               </div>
             );
           })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Legend */}
       <div className="glass-card rounded-xl p-4">
