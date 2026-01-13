@@ -82,10 +82,9 @@ const competitions: Competition[] = [
 
 interface HomeScreenProps {
   onSelectGame: (gameId: string) => void;
-  onAdminLogin?: () => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
   // Countdown to Milano-Cortina 2026 Opening Ceremony
   const openingCeremony = new Date('2026-02-06T20:00:00+01:00');
   
@@ -277,17 +276,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame, onAdminLogin }) =
           ))}
         </div>
 
-        {/* Admin Login Button */}
-        {onAdminLogin && (
-          <div className="text-center mt-8">
-            <button
-              onClick={onAdminLogin}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
-            >
-              Admin-Login
-            </button>
-          </div>
-        )}
 
         {/* Footer Note */}
         <p className="text-center text-sm text-muted-foreground mt-4">

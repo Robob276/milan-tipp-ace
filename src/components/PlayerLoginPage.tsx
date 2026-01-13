@@ -3,13 +3,14 @@ import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mountain, Snowflake, Medal, ArrowLeft } from 'lucide-react';
+import { Mountain, Snowflake, Shield } from 'lucide-react';
+import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
 interface PlayerLoginPageProps {
-  onBackToHome?: () => void;
+  onAdminLogin?: () => void;
 }
 
-const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
+const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onAdminLogin }) => {
   const { players, login, setupPin } = usePlayer();
   const [selectedPlayerId, setSelectedPlayerId] = useState('');
   const [pin, setPin] = useState('');
@@ -17,7 +18,9 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const selectedPlayer = players.find(p => p.id === selectedPlayerId);
+  // Filter out admin players for regular login
+  const regularPlayers = players.filter(p => !p.is_admin);
+  const selectedPlayer = regularPlayers.find(p => p.id === selectedPlayerId);
   const needsSetup = selectedPlayer && !selectedPlayer.has_pin;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,14 +60,14 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
 
   return (
     <div className="min-h-screen gradient-olympic flex items-center justify-center p-4 relative overflow-hidden">
-      {onBackToHome && (
+      {onAdminLogin && (
         <Button
           variant="ghost"
-          onClick={onBackToHome}
-          className="absolute top-4 left-4 text-white/80 hover:text-white hover:bg-white/10 z-20"
+          onClick={onAdminLogin}
+          className="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/10 z-20"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Zurück
+          <Shield className="w-4 h-4 mr-2" />
+          Admin
         </Button>
       )}
 
@@ -76,11 +79,13 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
 
       <div className="glass-card rounded-2xl p-8 w-full max-w-md relative z-10 animate-scale-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-olympic mb-4 shadow-olympic">
-            <Medal className="w-10 h-10 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">Olympia Tippspiel</h1>
-          <p className="text-muted-foreground mt-2">Mailand-Cortina 2026</p>
+          <img 
+            src={opodiumLogo} 
+            alt="Opodium Logo" 
+            className="w-24 h-24 rounded-full mx-auto mb-4 shadow-olympic object-cover"
+          />
+          <h1 className="text-2xl font-bold text-foreground">Opodium Tippspiel</h1>
+          <p className="text-muted-foreground mt-2">Wähle dich aus und melde dich an</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,9 +101,9 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onBackToHome }) => {
                 <SelectValue placeholder="Wähle deinen Namen..." />
               </SelectTrigger>
               <SelectContent className="bg-background border shadow-lg z-50">
-                {players.map(player => (
+                {regularPlayers.map(player => (
                   <SelectItem key={player.id} value={player.id}>
-                    {player.name} {player.is_admin ? '(Admin)' : ''} {!player.has_pin && '(Neu)'}
+                    {player.name} {!player.has_pin && '(Neu)'}
                   </SelectItem>
                 ))}
               </SelectContent>

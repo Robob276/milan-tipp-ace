@@ -24,17 +24,9 @@ const AppContent = () => {
     );
   }
   
-  // If not selecting a game yet, show home screen
-  if (!selectedGame && !loginMode) {
-    return (
-      <HomeScreen 
-        onSelectGame={(gameId) => {
-          setSelectedGame(gameId);
-          setLoginMode('player');
-        }}
-        onAdminLogin={() => setLoginMode('admin')}
-      />
-    );
+  // Not authenticated - show login page first (new flow)
+  if (!isAuthenticated && loginMode !== 'admin') {
+    return <PlayerLoginPage onAdminLogin={() => setLoginMode('admin')} />;
   }
 
   // Admin login flow
@@ -42,37 +34,29 @@ const AppContent = () => {
     return <AdminLoginPage onBackToHome={() => setLoginMode(null)} />;
   }
 
-  // Player login flow  
-  if (selectedGame && !isAuthenticated) {
-    return <PlayerLoginPage onBackToHome={() => {
-      setSelectedGame(null);
-      setLoginMode(null);
-    }} />;
+  // Authenticated - show event selection if no game selected
+  if (isAuthenticated && !selectedGame) {
+    return (
+      <HomeScreen 
+        onSelectGame={(gameId) => setSelectedGame(gameId)}
+      />
+    );
   }
 
-  // Authenticated - show dashboard
-  if (isAuthenticated) {
+  // Authenticated with game selected - show dashboard
+  if (isAuthenticated && selectedGame) {
     return (
       <PredictionProvider>
         <Dashboard 
-          onBackToHome={() => {
-            setSelectedGame(null);
-            setLoginMode(null);
-          }} 
-          isAdminMode={isAdmin && loginMode === 'admin'}
-          competitionId={selectedGame || 'milano-2026'}
+          onBackToHome={() => setSelectedGame(null)} 
+          isAdminMode={isAdmin}
+          competitionId={selectedGame}
         />
       </PredictionProvider>
     );
   }
 
-  return <HomeScreen 
-    onSelectGame={(gameId) => {
-      setSelectedGame(gameId);
-      setLoginMode('player');
-    }}
-    onAdminLogin={() => setLoginMode('admin')}
-  />;
+  return <PlayerLoginPage onAdminLogin={() => setLoginMode('admin')} />;
 };
 
 const Index = () => {
