@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, countries, sportCategories, sportIcons } from '@/data/olympicEvents';
+import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchableSelect } from '@/components/ui/searchable-select';
@@ -27,15 +28,38 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
     [countries]
   );
 
-  const filteredEvents = olympicEvents.filter(event => {
+  // Combine Olympic events and Ruhpolding events
+  const allEvents = useMemo(() => {
+    return [...olympicEvents, ...ruhpoldingEvents];
+  }, []);
+
+  // Extended categories including "Ruhpolding 2026"
+  const allCategories = useMemo(() => {
+    const uniqueCategories = new Set([...sportCategories, 'Ruhpolding 2026']);
+    return ['Alle', ...Array.from(uniqueCategories).filter(c => c !== 'Alle')];
+  }, []);
+
+  const filteredEvents = allEvents.filter(event => {
     const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.discipline.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'Alle' || event.category === selectedCategory;
+    
+    // Check if it's a Ruhpolding event
+    const isRuhpoldingEvent = event.id >= 1000;
+    
+    let matchesCategory = false;
+    if (selectedCategory === 'Alle') {
+      matchesCategory = true;
+    } else if (selectedCategory === 'Ruhpolding 2026') {
+      matchesCategory = isRuhpoldingEvent;
+    } else {
+      matchesCategory = event.category === selectedCategory && !isRuhpoldingEvent;
+    }
+    
     return matchesSearch && matchesCategory;
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const eventsWithResults = Object.keys(results).length;
-  const totalEvents = olympicEvents.length;
+  const totalEvents = allEvents.length;
 
   const handleEdit = (eventId: number) => {
     const existing = results[eventId];
@@ -127,7 +151,7 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {sportCategories.map(category => (
+              {allCategories.map(category => (
                 <SelectItem key={category} value={category}>{category}</SelectItem>
               ))}
             </SelectContent>
