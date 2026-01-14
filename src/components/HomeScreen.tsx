@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Snowflake, Sun, MapPin, Calendar, Timer } from 'lucide-react';
+import React from 'react';
+import { Snowflake, Sun, MapPin, Calendar, Target, ChevronRight } from 'lucide-react';
 import opodiumLogo from '@/assets/opodium-logo.jpeg';
-
-import { Target } from 'lucide-react';
 
 interface Competition {
   id: string;
@@ -85,110 +83,16 @@ interface HomeScreenProps {
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
-  // Countdown to Milano-Cortina 2026 Opening Ceremony
-  const openingCeremony = new Date('2026-02-06T20:00:00+01:00');
-  
-  const [countdown, setCountdown] = useState(calculateCountdown());
-  
-  function calculateCountdown() {
-    const now = new Date().getTime();
-    const target = openingCeremony.getTime();
-    const diff = target - now;
-    
-    if (diff <= 0) {
-      return { days: 0, hours: 0, minutes: 0, seconds: 0, started: true };
-    }
-    
-    return {
-      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((diff / (1000 * 60)) % 60),
-      seconds: Math.floor((diff / 1000) % 60),
-      started: false
-    };
-  }
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(calculateCountdown());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 gradient-olympic opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
-        
-        <div className="relative container mx-auto px-4 pt-12 pb-8 text-center">
-          <img 
-            src={opodiumLogo} 
-            alt="Opodium Logo" 
-            className="w-32 h-32 object-contain mb-4 animate-fade-in"
-          />
-          
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-1 animate-fade-in">
-            Opodium
-          </h1>
-          <p className="text-xl text-muted-foreground mb-3 animate-fade-in">
-            Olympisches Tippspiel
-          </p>
-          <p className="text-muted-foreground text-base max-w-md mx-auto animate-fade-in">
-            Wähle ein Turnier und tippe auf deine Favoriten
-          </p>
-          
-          {/* Olympic Rings */}
-          <div className="flex justify-center gap-1 mt-6 animate-fade-in">
-            <div className="w-6 h-6 rounded-full border-2 border-olympic-blue" />
-            <div className="w-6 h-6 rounded-full border-2 border-foreground -ml-2" />
-            <div className="w-6 h-6 rounded-full border-2 border-olympic-red -ml-2" />
-            <div className="w-6 h-6 rounded-full border-2 border-olympic-yellow -ml-2 mt-2" />
-            <div className="w-6 h-6 rounded-full border-2 border-olympic-green -ml-2 mt-2" />
-          </div>
-
-          {/* Countdown to Opening Ceremony */}
-          {!countdown.started && (
-            <div className="mt-8 animate-fade-in">
-              <div className="inline-flex flex-col items-center glass-card rounded-2xl px-6 py-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                  <Timer className="w-4 h-4" />
-                  <span>Eröffnungsfeier Milano-Cortina 2026</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
-                      {countdown.days}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">Tage</div>
-                  </div>
-                  <span className="text-2xl text-muted-foreground">:</span>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
-                      {countdown.hours.toString().padStart(2, '0')}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">Std</div>
-                  </div>
-                  <span className="text-2xl text-muted-foreground">:</span>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
-                      {countdown.minutes.toString().padStart(2, '0')}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">Min</div>
-                  </div>
-                  <span className="text-2xl text-muted-foreground">:</span>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-foreground bg-primary/10 rounded-lg px-3 py-2 min-w-[60px]">
-                      {countdown.seconds.toString().padStart(2, '0')}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">Sek</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Hero Section - Minimal */}
+      <div className="flex flex-col items-center justify-center pt-16 pb-10">
+        <img 
+          src={opodiumLogo} 
+          alt="Opodium Logo" 
+          className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-3xl shadow-2xl animate-fade-in"
+        />
       </div>
 
       {/* Competitions Grid */}
