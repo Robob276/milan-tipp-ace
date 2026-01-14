@@ -6,7 +6,7 @@ import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PredictionSelect } from '@/components/PredictionSelect';
-import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar } from 'lucide-react';
+import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -141,11 +141,21 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
     const eventDate = new Date(event.date + 'T' + event.time);
     const hasPrediction = status.type === 'tipped' || status.type === 'scored';
 
+    // Calculate urgency for upcoming events without prediction
+    const hoursUntilEvent = (eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
+    const isUrgent = !isCompleted && !hasPrediction && hoursUntilEvent <= 24 && hoursUntilEvent > 0;
+    const isVeryUrgent = !isCompleted && !hasPrediction && hoursUntilEvent <= 6 && hoursUntilEvent > 0;
+    const isCritical = !isCompleted && !hasPrediction && hoursUntilEvent <= 2 && hoursUntilEvent > 0;
+
     const prediction = currentPlayer ? getPrediction(currentPlayer.id, event.id) : null;
     const result = results[event.id];
 
     return (
-      <div key={event.id} className="transition-all">
+      <div key={event.id} className={`transition-all ${
+        isCritical ? 'ring-2 ring-red-500/50 rounded-lg' :
+        isVeryUrgent ? 'ring-2 ring-orange-500/40 rounded-lg' :
+        isUrgent ? 'ring-2 ring-amber-500/30 rounded-lg' : ''
+      }`}>
         {/* Compact Row */}
         <button
           onClick={() => {
@@ -159,7 +169,11 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
           disabled={isCompleted && !hasPrediction}
           className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
             isExpanded ? 'bg-primary/5' : 'hover:bg-secondary/30'
-          } ${isCompleted && !hasPrediction ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
+          } ${isCompleted && !hasPrediction ? 'opacity-50 cursor-default' : 'cursor-pointer'} ${
+            isCritical ? 'bg-red-500/5' :
+            isVeryUrgent ? 'bg-orange-500/5' :
+            isUrgent ? 'bg-amber-500/5' : ''
+          }`}
         >
           {/* Sport Icon */}
           <span className="text-xl shrink-0">{sportIcons[event.category] || '🏅'}</span>
@@ -175,9 +189,15 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
                   ? 'bg-muted text-muted-foreground' 
                   : hasPrediction
                     ? 'bg-green-500/20 text-green-600'
-                    : 'bg-orange-500/20 text-orange-600'
+                    : isCritical
+                      ? 'bg-red-500/20 text-red-600 font-semibold animate-pulse'
+                      : isVeryUrgent
+                        ? 'bg-orange-500/20 text-orange-600 font-medium'
+                        : isUrgent
+                          ? 'bg-amber-500/20 text-amber-600'
+                          : 'bg-orange-500/20 text-orange-600'
               }`}>
-                {isCompleted ? 'Abgeschlossen' : hasPrediction ? 'Getippt' : 'Offen'}
+                {isCompleted ? 'Abgeschlossen' : hasPrediction ? 'Getippt' : isCritical ? '⚠️ Jetzt tippen!' : isUrgent ? '⏰ Bald!' : 'Offen'}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -196,7 +216,11 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
             {/* Countdown for upcoming events */}
             {!isCompleted && (
               <div className="mt-2">
-                <Countdown targetDate={eventDate} />
+                <Countdown 
+                  targetDate={eventDate} 
+                  showUrgency={true}
+                  hasPrediction={hasPrediction}
+                />
               </div>
             )}
           </div>
