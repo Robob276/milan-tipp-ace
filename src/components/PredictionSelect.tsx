@@ -49,25 +49,42 @@ export function PredictionSelect({
   
   const hasAthletes = athletes && athletes.length > 0;
 
-  // Generate options - country as main value, athlete as hint
-  const options = useMemo(() => {
-    if (hasAthletes) {
-      // Show countries with athlete hints
-      return athletes.map((athlete) => {
-        const flag = getFlagFromName(athlete.country);
-        return {
-          key: athlete.id,
-          value: athlete.country,
-          // Display label for search - includes athlete name for searchability
-          searchLabel: `${athlete.country} ${athlete.name}`,
-          // Country with flag (main display)
-          countryLabel: `${flag} ${athlete.country}`,
-          // Athlete name (hint)
-          athleteName: athlete.name,
-        };
-      });
-    }
-    // Fallback to country selection only
+  // Generate athlete options (top of list)
+  const athleteOptions = useMemo(() => {
+    if (!hasAthletes) return [];
+    return athletes.map((athlete) => {
+      const flag = getFlagFromName(athlete.country);
+      return {
+        key: athlete.id,
+        value: athlete.country,
+        searchLabel: `${athlete.country} ${athlete.name}`,
+        countryLabel: `${flag} ${athlete.country}`,
+        athleteName: athlete.name,
+      };
+    });
+  }, [athletes, hasAthletes]);
+
+  // Get countries that are NOT in the athlete list
+  const athleteCountries = useMemo(() => {
+    if (!hasAthletes) return new Set<string>();
+    return new Set(athletes.map(a => a.country));
+  }, [athletes, hasAthletes]);
+
+  // All other countries (alphabetically)
+  const otherCountryOptions = useMemo(() => {
+    return countries
+      .filter(c => !athleteCountries.has(c.name))
+      .map((c) => ({
+        key: `country-${c.code}`,
+        value: c.name,
+        searchLabel: c.name,
+        countryLabel: `${getFlagFromName(c.name)} ${c.name}`,
+        athleteName: null,
+      }));
+  }, [athleteCountries]);
+
+  // Full country list when no athletes
+  const allCountryOptions = useMemo(() => {
     return countries.map((c) => ({
       key: c.name,
       value: c.name,
@@ -75,7 +92,7 @@ export function PredictionSelect({
       countryLabel: `${getFlagFromName(c.name)} ${c.name}`,
       athleteName: null,
     }));
-  }, [athletes, hasAthletes]);
+  }, []);
 
   // For the button display - just show country with flag
   const selectedCountryLabel = value ? `${getFlagFromName(value)} ${value}` : null;
@@ -101,34 +118,88 @@ export function PredictionSelect({
           <CommandInput placeholder={hasAthletes ? "Land oder Athlet suchen..." : "Land suchen..."} />
           <CommandList className="max-h-[300px]">
             <CommandEmpty>Keine Ergebnisse.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.key}
-                  value={option.searchLabel}
-                  onSelect={() => {
-                    onChange(option.value);
-                    setOpen(false);
-                  }}
-                  className="flex flex-col items-start py-2"
-                >
-                  <div className="flex items-center w-full">
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4 shrink-0",
-                        value === option.value ? "opacity-100" : "opacity-0"
+            
+            {/* When athletes exist: show them first, then other countries */}
+            {hasAthletes ? (
+              <>
+                <CommandGroup heading="Startliste">
+                  {athleteOptions.map((option) => (
+                    <CommandItem
+                      key={option.key}
+                      value={option.searchLabel}
+                      onSelect={() => {
+                        onChange(option.value);
+                        setOpen(false);
+                      }}
+                      className="flex flex-col items-start py-2"
+                    >
+                      <div className="flex items-center w-full">
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4 shrink-0",
+                            value === option.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <span className="font-medium text-sm">{option.countryLabel}</span>
+                      </div>
+                      {option.athleteName && (
+                        <span className="ml-6 text-xs text-muted-foreground truncate max-w-[180px]">
+                          {option.athleteName}
+                        </span>
                       )}
-                    />
-                    <span className="font-medium text-sm">{option.countryLabel}</span>
-                  </div>
-                  {option.athleteName && (
-                    <span className="ml-6 text-xs text-muted-foreground truncate max-w-[180px]">
-                      {option.athleteName}
-                    </span>
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandGroup heading="Weitere Nationen">
+                  {otherCountryOptions.map((option) => (
+                    <CommandItem
+                      key={option.key}
+                      value={option.searchLabel}
+                      onSelect={() => {
+                        onChange(option.value);
+                        setOpen(false);
+                      }}
+                      className="flex flex-col items-start py-2"
+                    >
+                      <div className="flex items-center w-full">
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4 shrink-0",
+                            value === option.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <span className="font-medium text-sm">{option.countryLabel}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            ) : (
+              /* No athletes: show all countries */
+              <CommandGroup>
+                {allCountryOptions.map((option) => (
+                  <CommandItem
+                    key={option.key}
+                    value={option.searchLabel}
+                    onSelect={() => {
+                      onChange(option.value);
+                      setOpen(false);
+                    }}
+                    className="flex flex-col items-start py-2"
+                  >
+                    <div className="flex items-center w-full">
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4 shrink-0",
+                          value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <span className="font-medium text-sm">{option.countryLabel}</span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
