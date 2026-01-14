@@ -3,7 +3,7 @@ import { usePredictions } from '@/contexts/PredictionContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
-import { Medal, Trophy, Clock, CheckCircle, Lock, User } from 'lucide-react';
+import { Medal, Trophy, Clock, CheckCircle, Lock, User, Check } from 'lucide-react';
 import { getFlagFromCode } from '@/lib/countryFlags';
 
 interface ResultsOverviewProps {
@@ -135,7 +135,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
             <CheckCircle className="w-3 h-3 text-green-500" /> Richtig
           </span>
           <span className="flex items-center gap-1">
-            <Lock className="w-3 h-3" /> Versteckt
+            <Check className="w-3 h-3 text-blue-500" /> Getippt
           </span>
         </div>
       </div>
@@ -235,6 +235,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                           </td>
                           {regularPlayers.map((player) => {
                             const prediction = getPlayerPrediction(player.id, event.id, position);
+                            const hasPrediction = predictions[player.id]?.[event.id] != null;
                             const isCorrect = result && isPredictionCorrect(player.id, event.id, position);
                             const canSee = isStarted || player.id === currentPlayer?.id;
                             
@@ -252,10 +253,14 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                                     <span className="text-muted-foreground text-xs">—</span>
                                   )
                                 ) : (
-                                  <div className="flex items-center gap-1 text-muted-foreground">
-                                    <Lock className="w-3 h-3" />
-                                    <span className="text-xs">versteckt</span>
-                                  </div>
+                                  hasPrediction ? (
+                                    <div className="flex items-center gap-1 text-blue-500">
+                                      <Check className="w-3 h-3" />
+                                      <span className="text-xs font-medium">getippt</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs">—</span>
+                                  )
                                 )}
                               </td>
                             );
