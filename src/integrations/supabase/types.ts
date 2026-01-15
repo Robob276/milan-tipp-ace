@@ -271,6 +271,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_current_player_admin: { Args: never; Returns: boolean }
       set_config: {
         Args: {
           is_local?: boolean
