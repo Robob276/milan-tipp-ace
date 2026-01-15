@@ -59,7 +59,7 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onAdminLogin }) => {
   };
 
   return (
-    <div className="min-h-screen gradient-olympic flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen gradient-olympic flex items-center justify-center p-4 relative">
       {onAdminLogin && (
         <Button
           variant="ghost"
@@ -71,7 +71,7 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onAdminLogin }) => {
         </Button>
       )}
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <Snowflake className="absolute top-20 left-10 w-16 h-16 text-white/20 animate-float" />
         <Snowflake className="absolute top-40 right-20 w-12 h-12 text-white/15 animate-float" style={{ animationDelay: '1s' }} />
         <Mountain className="absolute bottom-0 left-0 w-96 h-96 text-white/5" />
@@ -100,7 +100,7 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onAdminLogin }) => {
               <SelectTrigger className="h-12 bg-background/50">
                 <SelectValue placeholder="Wähle deinen Namen..." />
               </SelectTrigger>
-              <SelectContent className="bg-background border shadow-lg z-50">
+              <SelectContent className="bg-background border shadow-lg z-[100]" position="popper" sideOffset={4}>
                 {regularPlayers.map(player => (
                   <SelectItem key={player.id} value={player.id}>
                     {player.name} {!player.has_pin && '(Neu)'}
