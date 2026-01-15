@@ -134,20 +134,6 @@ export type Database = {
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "predictions_player_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "players_admin"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "predictions_player_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "players_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       profiles: {
@@ -230,16 +216,6 @@ export type Database = {
           id: string | null
           name: string | null
         }
-        Insert: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Update: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
         Relationships: []
       }
       players_public: {
@@ -247,16 +223,6 @@ export type Database = {
           has_pin: boolean | null
           id: string | null
           name: string | null
-        }
-        Insert: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Update: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
         }
         Relationships: []
       }
@@ -272,6 +238,22 @@ export type Database = {
         Returns: boolean
       }
       is_current_player_admin: { Args: never; Returns: boolean }
+      list_admin_players: {
+        Args: never
+        Returns: {
+          has_pin: boolean
+          id: string
+          name: string
+        }[]
+      }
+      list_public_players: {
+        Args: never
+        Returns: {
+          has_pin: boolean
+          id: string
+          name: string
+        }[]
+      }
       set_config: {
         Args: {
           is_local?: boolean
