@@ -15,10 +15,10 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "opodium-logo.jpeg"],
+      includeAssets: ["favicon.ico", "pwa-opodium-512x512.png"],
       manifest: {
-        name: "Milan Tipp Ace - Olympia Tippspiel",
-        short_name: "Tipp Ace",
+        name: "Opodium - Olympia Tippspiel",
+        short_name: "Opodium",
         description: "Dein Tippspiel für die Olympischen Winterspiele 2026 in Milano-Cortina",
         theme_color: "#1e3a5f",
         background_color: "#0f172a",
