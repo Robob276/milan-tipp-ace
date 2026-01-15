@@ -97,12 +97,16 @@ const PlayerLoginPage: React.FC<PlayerLoginPageProps> = ({ onAdminLogin }) => {
               setConfirmPin('');
               setError('');
             }}>
-              <SelectTrigger className="h-12 bg-background/50">
+              <SelectTrigger className="h-12 bg-background/50 pointer-events-auto">
                 <SelectValue placeholder="Wähle deinen Namen..." />
               </SelectTrigger>
-              <SelectContent className="bg-background border shadow-lg z-[100]" position="popper" sideOffset={4}>
+              <SelectContent 
+                className="bg-background border shadow-lg pointer-events-auto" 
+                position="popper" 
+                sideOffset={4}
+              >
                 {regularPlayers.map(player => (
-                  <SelectItem key={player.id} value={player.id}>
+                  <SelectItem key={player.id} value={player.id} className="cursor-pointer">
                     {player.name} {!player.has_pin && '(Neu)'}
                   </SelectItem>
                 ))}
