@@ -162,6 +162,34 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
         </div>
       </div>
 
+      {/* Tab Navigation */}
+      {regularPlayers.length > 0 && (
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowFinishedEvents(false)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+              !showFinishedEvents 
+                ? 'bg-amber-500/20 text-amber-600 border border-amber-500/30' 
+                : 'bg-secondary/50 text-muted-foreground hover:bg-secondary/70'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            Anstehend ({upcomingAndRunningEvents.length})
+          </button>
+          <button
+            onClick={() => setShowFinishedEvents(true)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+              showFinishedEvents 
+                ? 'bg-green-500/20 text-green-600 border border-green-500/30' 
+                : 'bg-secondary/50 text-muted-foreground hover:bg-secondary/70'
+            }`}
+          >
+            <Trophy className="w-4 h-4" />
+            Abgeschlossen ({finishedEventsList.length})
+          </button>
+        </div>
+      )}
+
       {/* Info if no players */}
       {regularPlayers.length === 0 && (
         <div className="glass-card rounded-xl p-6 text-center">
@@ -171,7 +199,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
       )}
 
       {/* Upcoming & Running Events */}
-      {regularPlayers.length > 0 && upcomingAndRunningEvents.length > 0 && (
+      {regularPlayers.length > 0 && !showFinishedEvents && upcomingAndRunningEvents.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Clock className="w-5 h-5 text-amber-500" />
@@ -294,45 +322,25 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
         </div>
       )}
 
-      {/* No upcoming events message */}
-      {regularPlayers.length > 0 && upcomingAndRunningEvents.length === 0 && finishedEventsList.length > 0 && (
+      {/* No upcoming events message - shown in upcoming tab */}
+      {regularPlayers.length > 0 && !showFinishedEvents && upcomingAndRunningEvents.length === 0 && (
         <div className="glass-card rounded-xl p-6 text-center">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <p className="text-foreground font-medium">Alle Events sind abgeschlossen!</p>
-          <p className="text-muted-foreground text-sm mt-1">Klicke unten um die Ergebnisse zu sehen.</p>
+          <p className="text-muted-foreground text-sm mt-1">Wechsle zum Tab "Abgeschlossen" um die Ergebnisse zu sehen.</p>
         </div>
       )}
 
-      {/* Finished Events - Collapsible Section */}
-      {regularPlayers.length > 0 && finishedEventsList.length > 0 && (
+      {/* Finished Events - shown when tab is active */}
+      {regularPlayers.length > 0 && showFinishedEvents && finishedEventsList.length > 0 && (
         <div className="space-y-4">
-          {/* Section Header - Clickable to expand/collapse */}
-          <button 
-            onClick={() => setShowFinishedEvents(!showFinishedEvents)}
-            className="w-full glass-card rounded-xl p-4 flex items-center justify-between hover:bg-secondary/50 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-lg font-semibold text-foreground">
-                  Abgeschlossene Events ({finishedEventsList.length})
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Klicken um {showFinishedEvents ? 'auszublenden' : 'anzuzeigen'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              {showFinishedEvents ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-            </div>
-          </button>
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-green-500" />
+            Abgeschlossene Events ({finishedEventsList.length})
+          </h3>
 
-          {/* Finished Events List */}
-          {showFinishedEvents && (
-            <div className="overflow-x-auto">
-              <div className="min-w-[800px]">
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
                 {finishedEventsList.map((event) => {
                   const result = results[event.id];
                   const isStarted = isEventStarted(event.id);
@@ -486,9 +494,8 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                   </div>
                 );
               })}
-              </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 
