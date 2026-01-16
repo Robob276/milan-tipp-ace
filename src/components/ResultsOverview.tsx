@@ -22,6 +22,8 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
   
   // Track which events are expanded (finished events are collapsed by default)
   const [expandedEvents, setExpandedEvents] = useState<Set<number>>(new Set());
+  // Track if finished events section is expanded
+  const [showFinishedEvents, setShowFinishedEvents] = useState(false);
   
   // Sort events by date
   const sortedEvents = [...events].sort((a, b) => {
@@ -29,6 +31,10 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
     const dateB = new Date(b.date + 'T' + b.time);
     return dateA.getTime() - dateB.getTime();
   });
+  
+  // Separate events into upcoming/running and finished
+  const upcomingAndRunningEvents = sortedEvents.filter(e => !results[e.id]);
+  const finishedEventsList = sortedEvents.filter(e => results[e.id]);
   
   // Toggle expand/collapse for an event
   const toggleEventExpand = (eventId: number) => {
@@ -44,7 +50,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
   };
 
   // Count statistics
-  const finishedEvents = sortedEvents.filter(e => results[e.id]).length;
+  const finishedEventsCount = finishedEventsList.length;
   const totalEvents = sortedEvents.length;
 
   const formatDate = (dateStr: string) => {
@@ -143,7 +149,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
         <div>
           <h2 className="text-2xl font-bold text-foreground">Ergebnisse & Tipps</h2>
           <p className="text-muted-foreground text-sm mt-1">
-            {finishedEvents} von {totalEvents} Events beendet • {regularPlayers.length} Spieler
+            {finishedEventsCount} von {totalEvents} Events beendet • {regularPlayers.length} Spieler
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -164,70 +170,51 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
         </div>
       )}
 
-      {/* Events Table - Kicktipp style */}
-      {regularPlayers.length > 0 && (
-        <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
-            {sortedEvents.map((event) => {
-              const status = getEventStatus(event);
-              const result = results[event.id];
-              const isStarted = isEventStarted(event.id);
-              // Finished events are collapsed by default, others are expanded
-              const isExpanded = status === 'finished' ? expandedEvents.has(event.id) : true;
-            
-            return (
-              <div key={event.id} className="mb-6 glass-card rounded-xl overflow-hidden">
-                {/* Event Header - clickable for finished events */}
-                <div 
-                  className={`bg-secondary/50 px-4 py-3 ${isExpanded ? 'border-b border-border/50' : ''} ${status === 'finished' ? 'cursor-pointer hover:bg-secondary/70 transition-colors' : ''}`}
-                  onClick={() => status === 'finished' && toggleEventExpand(event.id)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {/* Expand/Collapse Icon for finished events */}
-                      {status === 'finished' && (
-                        <div className="text-muted-foreground">
-                          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      {/* Upcoming & Running Events */}
+      {regularPlayers.length > 0 && upcomingAndRunningEvents.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Clock className="w-5 h-5 text-amber-500" />
+            Anstehende Events ({upcomingAndRunningEvents.length})
+          </h3>
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              {upcomingAndRunningEvents.map((event) => {
+                const status = getEventStatus(event);
+                const result = results[event.id];
+                const isStarted = isEventStarted(event.id);
+              
+              return (
+                <div key={event.id} className="mb-4 glass-card rounded-xl overflow-hidden">
+                  {/* Event Header */}
+                  <div className="bg-secondary/50 px-4 py-3 border-b border-border/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          status === 'started' ? 'bg-amber-500/20 text-amber-600' :
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          <Clock className="w-4 h-4" />
                         </div>
-                      )}
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        status === 'finished' ? 'bg-green-500/20 text-green-600' :
-                        status === 'started' ? 'bg-amber-500/20 text-amber-600' :
-                        'bg-muted text-muted-foreground'
-                      }`}>
-                        {status === 'finished' ? <Trophy className="w-4 h-4" /> :
-                         status === 'started' ? <Clock className="w-4 h-4" /> :
-                         <Clock className="w-4 h-4" />}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">
-                          {event.discipline} {event.gender}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(event.date)} • {event.time} Uhr
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {/* Show quick score summary for collapsed finished events */}
-                      {status === 'finished' && !isExpanded && currentPlayer && (
-                        <div className="text-xs font-medium text-muted-foreground">
-                          Deine Punkte: <span className="text-foreground font-bold">{calculatePlayerEventScore(currentPlayer.id, event.id)}</span>
+                        <div>
+                          <h3 className="font-semibold text-foreground">
+                            {event.discipline} {event.gender}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(event.date)} • {event.time} Uhr
+                          </p>
                         </div>
-                      )}
+                      </div>
                       <div className={`px-2 py-1 rounded text-xs font-medium ${
-                        status === 'finished' ? 'bg-green-500/10 text-green-600' :
                         status === 'started' ? 'bg-amber-500/10 text-amber-600' :
                         'bg-muted text-muted-foreground'
                       }`}>
-                        {status === 'finished' ? 'Ergebnis' : status === 'started' ? 'Läuft' : 'Anstehend'}
+                        {status === 'started' ? 'Läuft' : 'Anstehend'}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Results & Predictions Grid - only show if expanded */}
-                {isExpanded && (
+                  {/* Predictions Grid */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -263,28 +250,21 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                               </div>
                             </td>
                             <td className="px-4 py-2 bg-secondary/30">
-                              {result ? (
-                                renderAthlete(result[position], undefined, true)
-                              ) : (
-                                <span className="text-muted-foreground text-xs">—</span>
-                              )}
+                              <span className="text-muted-foreground text-xs">—</span>
                             </td>
                             {regularPlayers.map((player) => {
                               const prediction = getPlayerPrediction(player.id, event.id, position);
                               const hasPrediction = predictions[player.id]?.[event.id] != null;
-                              const isCorrect = result && isPredictionCorrect(player.id, event.id, position);
                               const canSee = isStarted || player.id === currentPlayer?.id;
                               
                               return (
                                 <td 
                                   key={player.id} 
-                                  className={`px-3 py-2 ${
-                                    isCorrect ? 'bg-green-500/10' : ''
-                                  } ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
+                                  className={`px-3 py-2 ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
                                 >
                                   {canSee ? (
                                     prediction ? (
-                                      renderAthlete(prediction, isCorrect)
+                                      renderAthlete(prediction, false)
                                     ) : (
                                       <span className="text-muted-foreground text-xs">—</span>
                                     )
@@ -303,41 +283,212 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                             })}
                           </tr>
                         ))}
-                        
-                        {/* Score Row */}
-                        {result && (
-                          <tr className="bg-secondary/20 border-t border-border/50">
-                            <td className="px-4 py-2 text-xs font-medium text-muted-foreground" colSpan={2}>
-                              Punkte
-                            </td>
-                            {regularPlayers.map((player) => {
-                              const score = calculatePlayerEventScore(player.id, event.id);
-                              return (
-                                <td 
-                                  key={player.id} 
-                                  className={`px-3 py-2 ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
-                                >
-                                  <span className={`text-sm font-bold ${
-                                    score === 6 ? 'text-amber-500' :
-                                    score >= 4 ? 'text-green-600' :
-                                    score > 0 ? 'text-foreground' :
-                                    'text-muted-foreground'
-                                  }`}>
-                                    {score}
-                                  </span>
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        )}
                       </tbody>
                     </table>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* No upcoming events message */}
+      {regularPlayers.length > 0 && upcomingAndRunningEvents.length === 0 && finishedEventsList.length > 0 && (
+        <div className="glass-card rounded-xl p-6 text-center">
+          <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+          <p className="text-foreground font-medium">Alle Events sind abgeschlossen!</p>
+          <p className="text-muted-foreground text-sm mt-1">Klicke unten um die Ergebnisse zu sehen.</p>
+        </div>
+      )}
+
+      {/* Finished Events - Collapsible Section */}
+      {regularPlayers.length > 0 && finishedEventsList.length > 0 && (
+        <div className="space-y-4">
+          {/* Section Header - Clickable to expand/collapse */}
+          <button 
+            onClick={() => setShowFinishedEvents(!showFinishedEvents)}
+            className="w-full glass-card rounded-xl p-4 flex items-center justify-between hover:bg-secondary/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Abgeschlossene Events ({finishedEventsList.length})
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Klicken um {showFinishedEvents ? 'auszublenden' : 'anzuzeigen'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              {showFinishedEvents ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </div>
+          </button>
+
+          {/* Finished Events List */}
+          {showFinishedEvents && (
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                {finishedEventsList.map((event) => {
+                  const result = results[event.id];
+                  const isStarted = isEventStarted(event.id);
+                  const isExpanded = expandedEvents.has(event.id);
+                
+                return (
+                  <div key={event.id} className="mb-4 glass-card rounded-xl overflow-hidden">
+                    {/* Event Header - clickable */}
+                    <div 
+                      className={`bg-secondary/50 px-4 py-3 ${isExpanded ? 'border-b border-border/50' : ''} cursor-pointer hover:bg-secondary/70 transition-colors`}
+                      onClick={() => toggleEventExpand(event.id)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="text-muted-foreground">
+                            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          </div>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-500/20 text-green-600">
+                            <Trophy className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-foreground">
+                              {event.discipline} {event.gender}
+                            </h3>
+                            <p className="text-xs text-muted-foreground">
+                              {formatDate(event.date)} • {event.time} Uhr
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {!isExpanded && currentPlayer && (
+                            <div className="text-xs font-medium text-muted-foreground">
+                              Deine Punkte: <span className="text-foreground font-bold">{calculatePlayerEventScore(currentPlayer.id, event.id)}</span>
+                            </div>
+                          )}
+                          <div className="px-2 py-1 rounded text-xs font-medium bg-green-500/10 text-green-600">
+                            Ergebnis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Results & Predictions Grid - only show if expanded */}
+                    {isExpanded && (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-border/50">
+                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground w-16">Platz</th>
+                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">
+                                <div className="flex items-center gap-1">
+                                  <Trophy className="w-3 h-3" />
+                                  Ergebnis
+                                </div>
+                              </th>
+                              {regularPlayers.map((player) => (
+                                <th key={player.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[120px]">
+                                  <div className="flex items-center gap-1">
+                                    <User className="w-3 h-3" />
+                                    <span className={player.id === currentPlayer?.id ? 'text-primary font-semibold' : ''}>
+                                      {player.name}
+                                    </span>
+                                  </div>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(['gold', 'silver', 'bronze'] as const).map((position, idx) => (
+                              <tr key={position} className={idx < 2 ? 'border-b border-border/30' : ''}>
+                                <td className="px-4 py-2">
+                                  <div className="flex items-center gap-2">
+                                    {getMedalIcon(position)}
+                                    <span className="text-xs text-muted-foreground capitalize">
+                                      {position === 'gold' ? '1.' : position === 'silver' ? '2.' : '3.'}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2 bg-secondary/30">
+                                  {result ? (
+                                    renderAthlete(result[position], undefined, true)
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs">—</span>
+                                  )}
+                                </td>
+                                {regularPlayers.map((player) => {
+                                  const prediction = getPlayerPrediction(player.id, event.id, position);
+                                  const hasPrediction = predictions[player.id]?.[event.id] != null;
+                                  const isCorrect = result && isPredictionCorrect(player.id, event.id, position);
+                                  const canSee = isStarted || player.id === currentPlayer?.id;
+                                  
+                                  return (
+                                    <td 
+                                      key={player.id} 
+                                      className={`px-3 py-2 ${
+                                        isCorrect ? 'bg-green-500/10' : ''
+                                      } ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
+                                    >
+                                      {canSee ? (
+                                        prediction ? (
+                                          renderAthlete(prediction, isCorrect)
+                                        ) : (
+                                          <span className="text-muted-foreground text-xs">—</span>
+                                        )
+                                      ) : (
+                                        hasPrediction ? (
+                                          <div className="flex items-center gap-1 text-blue-500">
+                                            <Check className="w-3 h-3" />
+                                            <span className="text-xs font-medium">getippt</span>
+                                          </div>
+                                        ) : (
+                                          <span className="text-muted-foreground text-xs">—</span>
+                                        )
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                            
+                            {/* Score Row */}
+                            {result && (
+                              <tr className="bg-secondary/20 border-t border-border/50">
+                                <td className="px-4 py-2 text-xs font-medium text-muted-foreground" colSpan={2}>
+                                  Punkte
+                                </td>
+                                {regularPlayers.map((player) => {
+                                  const score = calculatePlayerEventScore(player.id, event.id);
+                                  return (
+                                    <td 
+                                      key={player.id} 
+                                      className={`px-3 py-2 ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
+                                    >
+                                      <span className={`text-sm font-bold ${
+                                        score === 6 ? 'text-amber-500' :
+                                        score >= 4 ? 'text-green-600' :
+                                        score > 0 ? 'text-foreground' :
+                                        'text-muted-foreground'
+                                      }`}>
+                                        {score}
+                                      </span>
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
