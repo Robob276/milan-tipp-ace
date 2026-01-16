@@ -104,8 +104,8 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="glass sticky top-0 z-50 border-b border-border/50">
-        <div className="container mx-auto px-4 py-3">
+      <header className="glass sticky top-0 z-50 border-b border-border/50 pt-[max(env(safe-area-inset-top,0px)+16px,32px)]">
+        <div className="container mx-auto px-4 pb-3 pt-0">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={onBack} className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4 mr-2" />
