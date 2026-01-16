@@ -120,15 +120,15 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const setPrediction = async (eventId: number, prediction: Omit<Prediction, 'eventId'>) => {
     if (!currentPlayer) return;
 
-    const { error } = await supabase
-      .from('predictions')
-      .upsert({
-        user_id: currentPlayer.id,
-        event_id: eventId,
-        gold: prediction.gold,
-        silver: prediction.silver,
-        bronze: prediction.bronze
-      }, { onConflict: 'user_id,event_id' });
+    // NOTE: We use an RPC because the table RLS relies on a per-request DB setting.
+    // Calling `set_config` in a separate request does not carry over.
+    const { error } = await (supabase as any).rpc('upsert_prediction', {
+      player_id: currentPlayer.id,
+      event_id: eventId,
+      gold: prediction.gold,
+      silver: prediction.silver,
+      bronze: prediction.bronze
+    });
 
     if (error) {
       console.error('Error saving prediction:', error);
@@ -148,11 +148,10 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deletePrediction = async (eventId: number) => {
     if (!currentPlayer) return;
 
-    const { error } = await supabase
-      .from('predictions')
-      .delete()
-      .eq('user_id', currentPlayer.id)
-      .eq('event_id', eventId);
+    const { error } = await (supabase as any).rpc('delete_prediction', {
+      player_id: currentPlayer.id,
+      event_id: eventId
+    });
 
     if (error) {
       console.error('Error deleting prediction:', error);
@@ -190,48 +189,29 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const setResult = async (eventId: number, result: Omit<Result, 'eventId'>): Promise<{ error: string | null }> => {
-    console.log('setResult called with:', { eventId, result, currentPlayer });
-    
     if (!currentPlayer) {
       return { error: 'Nicht angemeldet' };
     }
 
-    // Set the current player ID in the database session for RLS
-    const { error: configError } = await supabase.rpc('set_config', {
-      setting_name: 'app.current_player_id',
-      setting_value: currentPlayer.id,
-      is_local: true
+    const { error } = await (supabase as any).rpc('admin_upsert_result', {
+      admin_player_id: currentPlayer.id,
+      event_id: eventId,
+      gold: result.gold,
+      silver: result.silver,
+      bronze: result.bronze
     });
-
-    if (configError) {
-      console.error('Error setting player config:', configError);
-      return { error: configError.message };
-    }
-
-    const { data, error } = await supabase
-      .from('results')
-      .upsert({
-        event_id: eventId,
-        gold: result.gold,
-        silver: result.silver,
-        bronze: result.bronze
-      }, { onConflict: 'event_id' })
-      .select();
-
-    console.log('setResult response:', { data, error });
 
     if (error) {
       console.error('Error saving result:', error);
-      return { error: error.message };
+      return { error: error.message ?? 'Unbekannter Fehler' };
     }
 
-    // Update local state
+    // Update local state (optimistic) + then refetch for full sync
     setResults(prev => ({
       ...prev,
       [eventId]: { eventId, ...result }
     }));
 
-    // Refetch all results to ensure sync
     await fetchResults();
 
     return { error: null };
@@ -240,17 +220,10 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteResult = async (eventId: number) => {
     if (!currentPlayer) return;
 
-    // Set the current player ID in the database session for RLS
-    await supabase.rpc('set_config', {
-      setting_name: 'app.current_player_id',
-      setting_value: currentPlayer.id,
-      is_local: true
+    const { error } = await (supabase as any).rpc('admin_delete_result', {
+      admin_player_id: currentPlayer.id,
+      event_id: eventId
     });
-
-    const { error } = await supabase
-      .from('results')
-      .delete()
-      .eq('event_id', eventId);
 
     if (error) {
       console.error('Error deleting result:', error);
