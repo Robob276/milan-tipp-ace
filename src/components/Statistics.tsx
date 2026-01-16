@@ -305,6 +305,31 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         </Accordion>
       </div>
 
+      {/* Scoring Info */}
+      <div className="glass-card rounded-xl p-4">
+        <h3 className="font-semibold text-foreground mb-3 text-sm">Punktevergabe</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="text-center p-2 rounded-lg bg-gold/10">
+            <div className="w-8 h-8 rounded-full gradient-gold mx-auto mb-1 flex items-center justify-center text-white font-bold text-sm">
+              3
+            </div>
+            <p className="text-xs font-medium text-foreground">Gold</p>
+          </div>
+          <div className="text-center p-2 rounded-lg bg-silver/10">
+            <div className="w-8 h-8 rounded-full gradient-silver mx-auto mb-1 flex items-center justify-center text-white font-bold text-sm">
+              2
+            </div>
+            <p className="text-xs font-medium text-foreground">Silber</p>
+          </div>
+          <div className="text-center p-2 rounded-lg bg-bronze/10">
+            <div className="w-8 h-8 rounded-full gradient-bronze mx-auto mb-1 flex items-center justify-center text-white font-bold text-sm">
+              1
+            </div>
+            <p className="text-xs font-medium text-foreground">Bronze</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
