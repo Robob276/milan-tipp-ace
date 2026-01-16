@@ -124,7 +124,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Calling `set_config` in a separate request does not carry over.
     const { error } = await (supabase as any).rpc('upsert_prediction', {
       player_id: currentPlayer.id,
-      event_id: eventId,
+      p_event_id: eventId,
       gold: prediction.gold,
       silver: prediction.silver,
       bronze: prediction.bronze
@@ -150,7 +150,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const { error } = await (supabase as any).rpc('delete_prediction', {
       player_id: currentPlayer.id,
-      event_id: eventId
+      p_event_id: eventId
     });
 
     if (error) {

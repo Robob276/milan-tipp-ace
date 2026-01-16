@@ -245,7 +245,7 @@ export type Database = {
       check_player_has_pin: { Args: { player_id: string }; Returns: boolean }
       current_player_id: { Args: never; Returns: string }
       delete_prediction: {
-        Args: { event_id: number; player_id: string }
+        Args: { p_event_id: number; player_id: string }
         Returns: undefined
       }
       has_role: {
@@ -291,8 +291,8 @@ export type Database = {
       upsert_prediction: {
         Args: {
           bronze: string
-          event_id: number
           gold: string
+          p_event_id: number
           player_id: string
           silver: string
         }
