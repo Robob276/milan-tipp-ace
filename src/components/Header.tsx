@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
   };
 
   return (
-    <header className="glass sticky top-0 z-50 border-b border-border/50 pt-[calc(env(safe-area-inset-top)+12px)]">
+    <header className="glass sticky top-0 z-50 border-b border-border/50 pt-[max(env(safe-area-inset-top,0px)+8px,24px)]">
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between gap-2">
           {/* Logo */}
