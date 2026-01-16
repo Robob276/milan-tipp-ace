@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
-import { Medal, Trophy, Clock, CheckCircle, Lock, User, Check } from 'lucide-react';
+import { Medal, Trophy, Clock, CheckCircle, Lock, User, Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { getFlagFromCode } from '@/lib/countryFlags';
 
 interface ResultsOverviewProps {
@@ -20,12 +20,28 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
   // Get non-admin players for the columns
   const regularPlayers = players.filter(p => !p.is_admin);
   
+  // Track which events are expanded (finished events are collapsed by default)
+  const [expandedEvents, setExpandedEvents] = useState<Set<number>>(new Set());
+  
   // Sort events by date
   const sortedEvents = [...events].sort((a, b) => {
     const dateA = new Date(a.date + 'T' + a.time);
     const dateB = new Date(b.date + 'T' + b.time);
     return dateA.getTime() - dateB.getTime();
   });
+  
+  // Toggle expand/collapse for an event
+  const toggleEventExpand = (eventId: number) => {
+    setExpandedEvents(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
+  };
 
   // Count statistics
   const finishedEvents = sortedEvents.filter(e => results[e.id]).length;
@@ -156,13 +172,24 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
               const status = getEventStatus(event);
               const result = results[event.id];
               const isStarted = isEventStarted(event.id);
+              // Finished events are collapsed by default, others are expanded
+              const isExpanded = status === 'finished' ? expandedEvents.has(event.id) : true;
             
             return (
               <div key={event.id} className="mb-6 glass-card rounded-xl overflow-hidden">
-                {/* Event Header */}
-                <div className="bg-secondary/50 px-4 py-3 border-b border-border/50">
+                {/* Event Header - clickable for finished events */}
+                <div 
+                  className={`bg-secondary/50 px-4 py-3 ${isExpanded ? 'border-b border-border/50' : ''} ${status === 'finished' ? 'cursor-pointer hover:bg-secondary/70 transition-colors' : ''}`}
+                  onClick={() => status === 'finished' && toggleEventExpand(event.id)}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
+                      {/* Expand/Collapse Icon for finished events */}
+                      {status === 'finished' && (
+                        <div className="text-muted-foreground">
+                          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </div>
+                      )}
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                         status === 'finished' ? 'bg-green-500/20 text-green-600' :
                         status === 'started' ? 'bg-amber-500/20 text-amber-600' :
@@ -181,122 +208,132 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                         </p>
                       </div>
                     </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${
-                      status === 'finished' ? 'bg-green-500/10 text-green-600' :
-                      status === 'started' ? 'bg-amber-500/10 text-amber-600' :
-                      'bg-muted text-muted-foreground'
-                    }`}>
-                      {status === 'finished' ? 'Ergebnis' : status === 'started' ? 'Läuft' : 'Anstehend'}
+                    <div className="flex items-center gap-2">
+                      {/* Show quick score summary for collapsed finished events */}
+                      {status === 'finished' && !isExpanded && currentPlayer && (
+                        <div className="text-xs font-medium text-muted-foreground">
+                          Deine Punkte: <span className="text-foreground font-bold">{calculatePlayerEventScore(currentPlayer.id, event.id)}</span>
+                        </div>
+                      )}
+                      <div className={`px-2 py-1 rounded text-xs font-medium ${
+                        status === 'finished' ? 'bg-green-500/10 text-green-600' :
+                        status === 'started' ? 'bg-amber-500/10 text-amber-600' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        {status === 'finished' ? 'Ergebnis' : status === 'started' ? 'Läuft' : 'Anstehend'}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Results & Predictions Grid */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border/50">
-                        <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground w-16">Platz</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">
-                          <div className="flex items-center gap-1">
-                            <Trophy className="w-3 h-3" />
-                            Ergebnis
-                          </div>
-                        </th>
-                        {regularPlayers.map((player) => (
-                          <th key={player.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[120px]">
+                {/* Results & Predictions Grid - only show if expanded */}
+                {isExpanded && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground w-16">Platz</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">
                             <div className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              <span className={player.id === currentPlayer?.id ? 'text-primary font-semibold' : ''}>
-                                {player.name}
-                              </span>
+                              <Trophy className="w-3 h-3" />
+                              Ergebnis
                             </div>
                           </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(['gold', 'silver', 'bronze'] as const).map((position, idx) => (
-                        <tr key={position} className={idx < 2 ? 'border-b border-border/30' : ''}>
-                          <td className="px-4 py-2">
-                            <div className="flex items-center gap-2">
-                              {getMedalIcon(position)}
-                              <span className="text-xs text-muted-foreground capitalize">
-                                {position === 'gold' ? '1.' : position === 'silver' ? '2.' : '3.'}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 bg-secondary/30">
-                            {result ? (
-                              renderAthlete(result[position], undefined, true)
-                            ) : (
-                              <span className="text-muted-foreground text-xs">—</span>
-                            )}
-                          </td>
-                          {regularPlayers.map((player) => {
-                            const prediction = getPlayerPrediction(player.id, event.id, position);
-                            const hasPrediction = predictions[player.id]?.[event.id] != null;
-                            const isCorrect = result && isPredictionCorrect(player.id, event.id, position);
-                            const canSee = isStarted || player.id === currentPlayer?.id;
-                            
-                            return (
-                              <td 
-                                key={player.id} 
-                                className={`px-3 py-2 ${
-                                  isCorrect ? 'bg-green-500/10' : ''
-                                } ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
-                              >
-                                {canSee ? (
-                                  prediction ? (
-                                    renderAthlete(prediction, isCorrect)
-                                  ) : (
-                                    <span className="text-muted-foreground text-xs">—</span>
-                                  )
-                                ) : (
-                                  hasPrediction ? (
-                                    <div className="flex items-center gap-1 text-blue-500">
-                                      <Check className="w-3 h-3" />
-                                      <span className="text-xs font-medium">getippt</span>
-                                    </div>
-                                  ) : (
-                                    <span className="text-muted-foreground text-xs">—</span>
-                                  )
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                      
-                      {/* Score Row */}
-                      {result && (
-                        <tr className="bg-secondary/20 border-t border-border/50">
-                          <td className="px-4 py-2 text-xs font-medium text-muted-foreground" colSpan={2}>
-                            Punkte
-                          </td>
-                          {regularPlayers.map((player) => {
-                            const score = calculatePlayerEventScore(player.id, event.id);
-                            return (
-                              <td 
-                                key={player.id} 
-                                className={`px-3 py-2 ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
-                              >
-                                <span className={`text-sm font-bold ${
-                                  score === 6 ? 'text-amber-500' :
-                                  score >= 4 ? 'text-green-600' :
-                                  score > 0 ? 'text-foreground' :
-                                  'text-muted-foreground'
-                                }`}>
-                                  {score}
+                          {regularPlayers.map((player) => (
+                            <th key={player.id} className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[120px]">
+                              <div className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                <span className={player.id === currentPlayer?.id ? 'text-primary font-semibold' : ''}>
+                                  {player.name}
                                 </span>
-                              </td>
-                            );
-                          })}
+                              </div>
+                            </th>
+                          ))}
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {(['gold', 'silver', 'bronze'] as const).map((position, idx) => (
+                          <tr key={position} className={idx < 2 ? 'border-b border-border/30' : ''}>
+                            <td className="px-4 py-2">
+                              <div className="flex items-center gap-2">
+                                {getMedalIcon(position)}
+                                <span className="text-xs text-muted-foreground capitalize">
+                                  {position === 'gold' ? '1.' : position === 'silver' ? '2.' : '3.'}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-2 bg-secondary/30">
+                              {result ? (
+                                renderAthlete(result[position], undefined, true)
+                              ) : (
+                                <span className="text-muted-foreground text-xs">—</span>
+                              )}
+                            </td>
+                            {regularPlayers.map((player) => {
+                              const prediction = getPlayerPrediction(player.id, event.id, position);
+                              const hasPrediction = predictions[player.id]?.[event.id] != null;
+                              const isCorrect = result && isPredictionCorrect(player.id, event.id, position);
+                              const canSee = isStarted || player.id === currentPlayer?.id;
+                              
+                              return (
+                                <td 
+                                  key={player.id} 
+                                  className={`px-3 py-2 ${
+                                    isCorrect ? 'bg-green-500/10' : ''
+                                  } ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
+                                >
+                                  {canSee ? (
+                                    prediction ? (
+                                      renderAthlete(prediction, isCorrect)
+                                    ) : (
+                                      <span className="text-muted-foreground text-xs">—</span>
+                                    )
+                                  ) : (
+                                    hasPrediction ? (
+                                      <div className="flex items-center gap-1 text-blue-500">
+                                        <Check className="w-3 h-3" />
+                                        <span className="text-xs font-medium">getippt</span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-muted-foreground text-xs">—</span>
+                                    )
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                        
+                        {/* Score Row */}
+                        {result && (
+                          <tr className="bg-secondary/20 border-t border-border/50">
+                            <td className="px-4 py-2 text-xs font-medium text-muted-foreground" colSpan={2}>
+                              Punkte
+                            </td>
+                            {regularPlayers.map((player) => {
+                              const score = calculatePlayerEventScore(player.id, event.id);
+                              return (
+                                <td 
+                                  key={player.id} 
+                                  className={`px-3 py-2 ${player.id === currentPlayer?.id ? 'bg-primary/5' : ''}`}
+                                >
+                                  <span className={`text-sm font-bold ${
+                                    score === 6 ? 'text-amber-500' :
+                                    score >= 4 ? 'text-green-600' :
+                                    score > 0 ? 'text-foreground' :
+                                    'text-muted-foreground'
+                                  }`}>
+                                    {score}
+                                  </span>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             );
           })}
