@@ -190,8 +190,24 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const setResult = async (eventId: number, result: Omit<Result, 'eventId'>): Promise<{ error: string | null }> => {
-    console.log('setResult called with:', { eventId, result });
+    console.log('setResult called with:', { eventId, result, currentPlayer });
     
+    if (!currentPlayer) {
+      return { error: 'Nicht angemeldet' };
+    }
+
+    // Set the current player ID in the database session for RLS
+    const { error: configError } = await supabase.rpc('set_config', {
+      setting_name: 'app.current_player_id',
+      setting_value: currentPlayer.id,
+      is_local: true
+    });
+
+    if (configError) {
+      console.error('Error setting player config:', configError);
+      return { error: configError.message };
+    }
+
     const { data, error } = await supabase
       .from('results')
       .upsert({
@@ -222,6 +238,15 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const deleteResult = async (eventId: number) => {
+    if (!currentPlayer) return;
+
+    // Set the current player ID in the database session for RLS
+    await supabase.rpc('set_config', {
+      setting_name: 'app.current_player_id',
+      setting_value: currentPlayer.id,
+      is_local: true
+    });
+
     const { error } = await supabase
       .from('results')
       .delete()
