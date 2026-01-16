@@ -195,7 +195,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const { error } = await (supabase as any).rpc('admin_upsert_result', {
       admin_player_id: currentPlayer.id,
-      event_id: eventId,
+      p_event_id: eventId,
       gold: result.gold,
       silver: result.silver,
       bronze: result.bronze
@@ -222,7 +222,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const { error } = await (supabase as any).rpc('admin_delete_result', {
       admin_player_id: currentPlayer.id,
-      event_id: eventId
+      p_event_id: eventId
     });
 
     if (error) {
