@@ -1,9 +1,9 @@
 import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
-import { olympicEvents, sportCategories } from '@/data/olympicEvents';
+import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
-import { BarChart3, Target, Trophy, Users, TrendingUp, PieChart, Medal, ChevronDown } from 'lucide-react';
+import { BarChart3, Target, Trophy, Users, PieChart, Medal } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -113,7 +113,6 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
 
   // Get events based on competition
   const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
-  const categories = competitionId === 'ruhpolding-2026' ? ['Biathlon'] : sportCategories.slice(1);
 
   // Calculate statistics
   const userPredictions = currentPlayer ? predictions[currentPlayer.id] || {} : {};
@@ -122,9 +121,33 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
     return events.some(e => e.id === eventId);
   }).length;
   const totalEvents = events.length;
-  const completionRate = Math.round((totalTipps / totalEvents) * 100);
   const myScore = currentPlayer ? calculateScore(currentPlayer.id) : 0;
   const totalPlayers = Object.keys(profiles).length;
+
+  // Calculate correct predictions percentage
+  // We need to access results from context
+  const { results } = usePredictions();
+  
+  let correctPredictions = 0;
+  let totalPossiblePredictions = 0;
+  
+  if (currentPlayer) {
+    Object.entries(userPredictions).forEach(([eventIdStr, prediction]) => {
+      const eventId = parseInt(eventIdStr);
+      const result = results[eventId];
+      if (result) {
+        // Count each medal position separately
+        totalPossiblePredictions += 3;
+        if (prediction.gold === result.gold) correctPredictions++;
+        if (prediction.silver === result.silver) correctPredictions++;
+        if (prediction.bronze === result.bronze) correctPredictions++;
+      }
+    });
+  }
+  
+  const correctRate = totalPossiblePredictions > 0 
+    ? Math.round((correctPredictions / totalPossiblePredictions) * 100) 
+    : 0;
 
   // Most picked countries
   const countryPicks: Record<string, number> = {};
@@ -139,18 +162,6 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const topCountries = Object.entries(countryPicks)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
-
-  // Category stats for current user
-  const categoryStats = categories.map(category => {
-    const categoryEvents = events.filter(e => e.category === category);
-    const tippedCount = categoryEvents.filter(e => userPredictions[e.id]).length;
-    return {
-      name: category,
-      total: categoryEvents.length,
-      tipped: tippedCount,
-      percentage: categoryEvents.length > 0 ? Math.round((tippedCount / categoryEvents.length) * 100) : 0
-    };
-  });
 
   return (
     <div className="space-y-6">
@@ -172,8 +183,8 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
           <PieChart className="w-8 h-8 text-accent mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{completionRate}%</p>
-          <p className="text-sm text-muted-foreground">Vollständigkeit</p>
+          <p className="text-2xl font-bold text-foreground">{correctRate}%</p>
+          <p className="text-sm text-muted-foreground">Trefferquote</p>
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
           <Trophy className="w-8 h-8 text-gold mx-auto mb-2" />
@@ -268,53 +279,6 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         </Accordion>
       </div>
 
-      {/* Progress by Category */}
-      <div className="glass-card rounded-xl p-6">
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          Fortschritt nach Sportart
-        </h3>
-        <div className="space-y-4">
-          {categoryStats.map(stat => (
-            <div key={stat.name}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-foreground">{stat.name}</span>
-                <span className="text-muted-foreground">{stat.tipped}/{stat.total}</span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div 
-                  className="h-full gradient-olympic transition-all duration-500"
-                  style={{ width: `${stat.percentage}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-
-      {/* Event Timeline Info */}
-      <div className="glass-card rounded-xl p-6">
-        <h3 className="font-semibold text-foreground mb-3">📅 Event-Übersicht</h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground">Erster Wettkampf</p>
-            <p className="font-medium text-foreground">6. Februar 2026</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Letzter Wettkampf</p>
-            <p className="font-medium text-foreground">22. Februar 2026</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Anzahl Sportarten</p>
-            <p className="font-medium text-foreground">16 Sportarten</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Medaillenentscheidungen</p>
-            <p className="font-medium text-foreground">{totalEvents} Events</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
