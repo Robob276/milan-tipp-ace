@@ -1,12 +1,12 @@
 import React from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, Trophy, Calendar, BarChart3, Home, Settings, ClipboardList } from 'lucide-react';
+import { LogOut, Calendar, BarChart3, Home, Settings, ClipboardList } from 'lucide-react';
 import opodiumLogo from '@/assets/opodium-logo.jpeg';
 
 interface HeaderProps {
-  activeTab: 'events' | 'leaderboard' | 'stats' | 'results';
-  setActiveTab: (tab: 'events' | 'leaderboard' | 'stats' | 'results') => void;
+  activeTab: 'events' | 'stats' | 'results';
+  setActiveTab: (tab: 'events' | 'stats' | 'results') => void;
   onBackToHome?: () => void;
   onOpenResultsAdmin?: () => void;
 }
@@ -93,17 +93,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, 
               <span>Tippen</span>
             </button>
           )}
-          <button
-            onClick={() => setActiveTab('leaderboard')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === 'leaderboard'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-            }`}
-          >
-            <Trophy className="w-4 h-4" />
-            <span>Rang</span>
-          </button>
           <button
             onClick={() => setActiveTab('stats')}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
