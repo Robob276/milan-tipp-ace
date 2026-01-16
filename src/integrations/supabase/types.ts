@@ -229,15 +229,15 @@ export type Database = {
     }
     Functions: {
       admin_delete_result: {
-        Args: { admin_player_id: string; event_id: number }
+        Args: { admin_player_id: string; p_event_id: number }
         Returns: undefined
       }
       admin_upsert_result: {
         Args: {
           admin_player_id: string
           bronze: string
-          event_id: number
           gold: string
+          p_event_id: number
           silver: string
         }
         Returns: undefined
