@@ -109,10 +109,13 @@ interface StatisticsProps {
 
 const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const { currentPlayer } = usePlayer();
-  const { predictions, profiles, calculateScore } = usePredictions();
+  const { predictions, profiles, calculateScore, getLeaderboard, results } = usePredictions();
 
   // Get events based on competition
   const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
+  
+  // Get leaderboard
+  const leaderboard = getLeaderboard();
 
   // Calculate statistics
   const userPredictions = currentPlayer ? predictions[currentPlayer.id] || {} : {};
@@ -125,9 +128,6 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const totalPlayers = Object.keys(profiles).length;
 
   // Calculate correct predictions percentage
-  // We need to access results from context
-  const { results } = usePredictions();
-  
   let correctPredictions = 0;
   let totalPossiblePredictions = 0;
   
@@ -148,20 +148,6 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const correctRate = totalPossiblePredictions > 0 
     ? Math.round((correctPredictions / totalPossiblePredictions) * 100) 
     : 0;
-
-  // Most picked countries
-  const countryPicks: Record<string, number> = {};
-  Object.values(predictions).forEach(userPreds => {
-    Object.values(userPreds).forEach(pred => {
-      countryPicks[pred.gold] = (countryPicks[pred.gold] || 0) + 3;
-      countryPicks[pred.silver] = (countryPicks[pred.silver] || 0) + 2;
-      countryPicks[pred.bronze] = (countryPicks[pred.bronze] || 0) + 1;
-    });
-  });
-
-  const topCountries = Object.entries(countryPicks)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -195,6 +181,46 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
           <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{totalPlayers}</p>
           <p className="text-sm text-muted-foreground">Spieler</p>
+        </div>
+      </div>
+
+      {/* Current Leaderboard */}
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-primary" />
+          Aktuelle Rangliste
+        </h3>
+        <div className="space-y-2">
+          {leaderboard.map((player, index) => {
+            const isCurrentUser = player.playerId === currentPlayer?.id;
+            return (
+              <div 
+                key={player.playerId}
+                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                  isCurrentUser ? 'bg-primary/10 border border-primary/20' : 'bg-secondary/50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                    index === 0 ? 'gradient-gold text-white' :
+                    index === 1 ? 'gradient-silver text-white' :
+                    index === 2 ? 'gradient-bronze text-white' :
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    {index + 1}
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {player.name}
+                    {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(Du)</span>}
+                  </span>
+                </div>
+                <span className="text-xl font-bold text-foreground">{player.score}</span>
+              </div>
+            );
+          })}
+          {leaderboard.length === 0 && (
+            <p className="text-center text-muted-foreground py-4">Noch keine Spieler registriert</p>
+          )}
         </div>
       </div>
 
