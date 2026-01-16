@@ -228,8 +228,26 @@ export type Database = {
       }
     }
     Functions: {
+      admin_delete_result: {
+        Args: { admin_player_id: string; event_id: number }
+        Returns: undefined
+      }
+      admin_upsert_result: {
+        Args: {
+          admin_player_id: string
+          bronze: string
+          event_id: number
+          gold: string
+          silver: string
+        }
+        Returns: undefined
+      }
       check_player_has_pin: { Args: { player_id: string }; Returns: boolean }
       current_player_id: { Args: never; Returns: string }
+      delete_prediction: {
+        Args: { event_id: number; player_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -269,6 +287,16 @@ export type Database = {
           player_name: string
           success: boolean
         }[]
+      }
+      upsert_prediction: {
+        Args: {
+          bronze: string
+          event_id: number
+          gold: string
+          player_id: string
+          silver: string
+        }
+        Returns: undefined
       }
       verify_player_pin: {
         Args: { pin_attempt: string; player_id: string }
