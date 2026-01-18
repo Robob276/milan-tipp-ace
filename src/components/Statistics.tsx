@@ -206,8 +206,8 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         <p className="text-muted-foreground mt-2">Deine Tippübersicht im Detail</p>
       </div>
 
-      {/* Quick Stats - Restructured */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Quick Stats - Restructured as 2x2 grid with Top Countries */}
+      <div className="grid grid-cols-2 gap-4">
         <div className="glass-card rounded-xl p-4 text-center">
           <Target className="w-8 h-8 text-gold mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{correctGoldCount}</p>
@@ -219,45 +219,34 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
           <p className="text-sm text-muted-foreground">Gold-Trefferquote</p>
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
-          <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{myScore}</p>
-          <p className="text-sm text-muted-foreground">Deine Punkte</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
           <Target className="w-8 h-8 text-accent mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{correctRate}%</p>
           <p className="text-sm text-muted-foreground">Trefferquote Gesamt</p>
         </div>
-      </div>
-
-      {/* Top 3 Countries */}
-      {topCountries.length > 0 && (
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Flag className="w-5 h-5 text-primary" />
-            Deine Top 3 getippten Länder
-          </h3>
-          <div className="grid grid-cols-3 gap-3">
-            {topCountries.map(([country, count], index) => (
-              <div 
-                key={country}
-                className="glass-card rounded-xl p-4 text-center"
-              >
-                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mb-2 ${
-                  index === 0 ? 'gradient-gold text-white' :
-                  index === 1 ? 'gradient-silver text-white' :
-                  'gradient-bronze text-white'
-                }`}>
-                  {index + 1}
-                </span>
-                <div className="text-3xl mb-1">{getFlagFromName(country) || getFlagFromCode(country) || '🏳️'}</div>
-                <p className="font-medium text-foreground text-sm">{country}</p>
-                <p className="text-xs text-muted-foreground">{count}x getippt</p>
-              </div>
-            ))}
+        {/* Top 3 Countries - Vertical List */}
+        {topCountries.length > 0 && (
+          <div className="glass-card rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Flag className="w-5 h-5 text-primary" />
+              <p className="text-sm text-muted-foreground">Top 3 Länder</p>
+            </div>
+            <div className="space-y-2">
+              {topCountries.map(([country, count], index) => (
+                <div 
+                  key={country}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{getFlagFromName(country) || getFlagFromCode(country) || '🏳️'}</span>
+                    <span className="font-medium text-foreground text-sm">{country}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{count}x</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Current Leaderboard - Clickable */}
       <div className="glass-card rounded-xl p-6">
