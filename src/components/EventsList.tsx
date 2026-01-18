@@ -53,8 +53,16 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
       }
     });
 
-    // Sort upcoming by date ascending, completed by date descending
-    upcoming.sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime());
+    // Helper to get the deadline date (predictionDeadline if available, otherwise event date)
+    const getDeadlineDate = (event: typeof olympicEvents[0]) => {
+      return event.predictionDeadline 
+        ? new Date(event.predictionDeadline) 
+        : new Date(event.date + 'T' + event.time);
+    };
+
+    // Sort upcoming by prediction deadline ascending (earliest deadline first)
+    upcoming.sort((a, b) => getDeadlineDate(a).getTime() - getDeadlineDate(b).getTime());
+    // Sort completed by event date descending
     completed.sort((a, b) => new Date(b.date + 'T' + b.time).getTime() - new Date(a.date + 'T' + a.time).getTime());
 
     return { upcomingEvents: upcoming, completedEvents: completed };
