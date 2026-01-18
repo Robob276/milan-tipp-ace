@@ -6,6 +6,7 @@ export interface RuhpoldingEvent {
   discipline: string;
   gender: string;
   category: string;
+  predictionDeadline?: string; // Optional early deadline for predictions (ISO datetime format)
 }
 
 // Biathlon Weltcup Ruhpolding 2026 - 6 Wettbewerbe

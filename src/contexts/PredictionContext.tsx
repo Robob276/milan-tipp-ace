@@ -113,8 +113,13 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const allEvents = [...olympicEvents, ...ruhpoldingEvents];
     const event = allEvents.find(e => e.id === eventId);
     if (!event) return true; // If event not found, assume started for safety
-    const eventDate = new Date(event.date + 'T' + event.time);
-    return eventDate < new Date();
+    
+    // Use predictionDeadline if available, otherwise use event date/time
+    const deadlineDate = event.predictionDeadline 
+      ? new Date(event.predictionDeadline)
+      : new Date(event.date + 'T' + event.time);
+    
+    return deadlineDate < new Date();
   };
 
   const setPrediction = async (eventId: number, prediction: Omit<Prediction, 'eventId'>) => {
