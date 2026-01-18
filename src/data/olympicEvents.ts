@@ -6,6 +6,7 @@ export interface OlympicEvent {
   discipline: string;
   gender: string;
   category: string;
+  predictionDeadline?: string; // Optional early deadline for predictions (ISO datetime format)
 }
 
 export interface Country {
@@ -69,7 +70,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 23, date: "2026-02-10", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Männer", category: "Freestyle" },
   { id: 24, date: "2026-02-10", time: "13:30", sport: "Biathlon", discipline: "Einzel 20 km", gender: "Männer", category: "Biathlon" },
   { id: 25, date: "2026-02-10", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Frauen", category: "Rodeln" },
-  { id: 26, date: "2026-02-10", time: "18:00", sport: "Curling", discipline: "Mixed Doubles", gender: "Mixed", category: "Curling" },
+  { id: 26, date: "2026-02-10", time: "18:00", sport: "Curling", discipline: "Mixed Doubles", gender: "Mixed", category: "Curling", predictionDeadline: "2026-02-04T19:00:00" },
   { id: 27, date: "2026-02-10", time: "18:45", sport: "Skispringen", discipline: "Mixed-Team", gender: "Mixed", category: "Skispringen" },
   
   // Mittwoch, 11. Februar (8 Entscheidungen)
@@ -157,7 +158,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 93, date: "2026-02-19", time: "13:30", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering" },
   { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
   { id: 95, date: "2026-02-19", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Frauen", category: "Eiskunstlauf" },
-  { id: 96, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey" },
+  { id: 96, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey", predictionDeadline: "2026-02-04T19:00:00" },
   
   // Freitag, 20. Februar (6 Entscheidungen)
   { id: 97, date: "2026-02-20", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Frauen", category: "Freestyle" },
@@ -166,7 +167,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 100, date: "2026-02-20", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Männer", category: "Freestyle" },
   { id: 101, date: "2026-02-20", time: "20:00", sport: "Short Track", discipline: "1500 m", gender: "Frauen", category: "Short Track" },
   { id: 102, date: "2026-02-20", time: "20:30", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
-  { id: 103, date: "2026-02-20", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling" },
+  { id: 103, date: "2026-02-20", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling", predictionDeadline: "2026-02-04T19:00:00" },
   
   // Samstag, 21. Februar (9 Entscheidungen)
   { id: 104, date: "2026-02-21", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Männer", category: "Langlauf" },
@@ -181,8 +182,8 @@ export const olympicEvents: OlympicEvent[] = [
   
   // Sonntag, 22. Februar (4 Entscheidungen)
   { id: 113, date: "2026-02-22", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Frauen", category: "Langlauf" },
-  { id: 114, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling" },
-  { id: 115, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey" },
+  { id: 114, date: "2026-02-22", time: "11:00", sport: "Curling", discipline: "Finale", gender: "Frauen", category: "Curling", predictionDeadline: "2026-02-04T19:00:00" },
+  { id: 115, date: "2026-02-22", time: "14:10", sport: "Eishockey", discipline: "Finale", gender: "Männer", category: "Eishockey", predictionDeadline: "2026-02-04T19:00:00" },
   { id: 116, date: "2026-02-22", time: "19:00", sport: "Bob", discipline: "Vierer", gender: "Männer", category: "Bob" },
 ];
 

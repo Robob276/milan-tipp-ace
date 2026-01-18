@@ -145,11 +145,16 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
     // If archived, treat all events as completed (read-only)
     const effectivelyCompleted = isCompleted || isArchived;
 
-    // Calculate urgency for upcoming events without prediction (only if not archived)
-    const hoursUntilEvent = (eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
-    const isUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 24 && hoursUntilEvent > 0;
-    const isVeryUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 6 && hoursUntilEvent > 0;
-    const isCritical = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 2 && hoursUntilEvent > 0;
+    // Use predictionDeadline if available, otherwise use event date
+    const deadlineDate = event.predictionDeadline 
+      ? new Date(event.predictionDeadline) 
+      : eventDate;
+
+    // Calculate urgency based on prediction deadline (not event date)
+    const hoursUntilDeadline = (deadlineDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
+    const isUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilDeadline <= 24 && hoursUntilDeadline > 0;
+    const isVeryUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilDeadline <= 6 && hoursUntilDeadline > 0;
+    const isCritical = !effectivelyCompleted && !hasPrediction && hoursUntilDeadline <= 2 && hoursUntilDeadline > 0;
 
     const prediction = currentPlayer ? getPrediction(currentPlayer.id, event.id) : null;
     const result = results[event.id];
@@ -217,11 +222,12 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
                 {event.time} Uhr
               </span>
             </div>
-            {/* Countdown for upcoming events */}
+            {/* Countdown for upcoming events - use prediction deadline if available */}
             {!effectivelyCompleted && (
               <div className="mt-2">
                 <Countdown 
-                  targetDate={eventDate} 
+                  targetDate={deadlineDate} 
+                  label={event.predictionDeadline ? "Früher Tippschluss:" : "Tippschluss in:"}
                   showUrgency={true}
                   hasPrediction={hasPrediction}
                 />
