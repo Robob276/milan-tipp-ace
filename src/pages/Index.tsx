@@ -10,7 +10,7 @@ type LoginMode = 'player' | 'admin' | null;
 
 const AppContent = () => {
   const { isAuthenticated, isAdmin, isLoading } = usePlayer();
-  const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const [selectedGame, setSelectedGame] = useState<{ id: string; isArchived: boolean } | null>(null);
   const [loginMode, setLoginMode] = useState<LoginMode>(null);
   
   if (isLoading) {
@@ -38,7 +38,7 @@ const AppContent = () => {
   if (isAuthenticated && !selectedGame) {
     return (
       <HomeScreen 
-        onSelectGame={(gameId) => setSelectedGame(gameId)}
+        onSelectGame={(gameId, isArchived) => setSelectedGame({ id: gameId, isArchived: isArchived || false })}
       />
     );
   }
@@ -50,7 +50,8 @@ const AppContent = () => {
         <Dashboard 
           onBackToHome={() => setSelectedGame(null)} 
           isAdminMode={isAdmin}
-          competitionId={selectedGame}
+          competitionId={selectedGame.id}
+          isArchived={selectedGame.isArchived}
         />
       </PredictionProvider>
     );

@@ -9,9 +9,10 @@ interface HeaderProps {
   setActiveTab: (tab: 'events' | 'stats' | 'results') => void;
   onBackToHome?: () => void;
   onOpenResultsAdmin?: () => void;
+  isArchived?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, onOpenResultsAdmin }) => {
+const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onBackToHome, onOpenResultsAdmin, isArchived }) => {
   const { currentPlayer, isAdmin, logout } = usePlayer();
 
   const handleLogout = () => {

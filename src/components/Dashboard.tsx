@@ -10,9 +10,10 @@ interface DashboardProps {
   onBackToHome?: () => void;
   isAdminMode?: boolean;
   competitionId: string;
+  isArchived?: boolean;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode, competitionId }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode, competitionId, isArchived = false }) => {
   const { isAdmin } = usePlayer();
   
   // Admin starts at leaderboard, players at events
@@ -21,7 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode, compet
   );
   const [showResultsAdmin, setShowResultsAdmin] = useState(false);
 
-  if (showResultsAdmin) {
+  if (showResultsAdmin && !isArchived) {
     return <ResultsAdmin onBack={() => setShowResultsAdmin(false)} />;
   }
 
@@ -31,14 +32,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onBackToHome, isAdminMode, compet
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         onBackToHome={onBackToHome}
-        onOpenResultsAdmin={() => setShowResultsAdmin(true)}
+        onOpenResultsAdmin={isArchived ? undefined : () => setShowResultsAdmin(true)}
+        isArchived={isArchived}
       />
       
       <main className="container mx-auto px-4 py-6 max-w-6xl">
-        {activeTab === 'events' && !isAdmin && <EventsList competitionId={competitionId} />}
+        {activeTab === 'events' && !isAdmin && <EventsList competitionId={competitionId} isArchived={isArchived} />}
         {activeTab === 'events' && isAdmin && <Statistics competitionId={competitionId} />}
         {activeTab === 'stats' && <Statistics competitionId={competitionId} />}
-        {activeTab === 'results' && <ResultsOverview competitionId={competitionId} />}
         {activeTab === 'results' && <ResultsOverview competitionId={competitionId} />}
       </main>
     </div>
