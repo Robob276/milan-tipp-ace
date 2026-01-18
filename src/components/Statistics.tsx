@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
-import { BarChart3, Target, Trophy, Users, PieChart, Medal } from 'lucide-react';
+import { BarChart3, Target, Trophy, Users, TrendingUp, Medal, Flag } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -18,6 +18,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import PlayerStatisticsModal from './PlayerStatisticsModal';
+import { getFlagFromCode, getFlagFromName } from '@/lib/countryFlags';
 
 // Historische Daten seit 2016
 const allTimeMedalStandings = [
@@ -110,6 +112,7 @@ interface StatisticsProps {
 const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const { currentPlayer } = usePlayer();
   const { predictions, profiles, calculateScore, getLeaderboard, results } = usePredictions();
+  const [selectedPlayer, setSelectedPlayer] = useState<{ id: string; name: string } | null>(null);
 
   // Get events based on competition
   const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
@@ -119,24 +122,44 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
 
   // Calculate statistics
   const userPredictions = currentPlayer ? predictions[currentPlayer.id] || {} : {};
-  const totalTipps = Object.keys(userPredictions).filter(id => {
-    const eventId = parseInt(id);
+  const competitionPredictions = Object.entries(userPredictions).filter(([eventIdStr]) => {
+    const eventId = parseInt(eventIdStr);
     return events.some(e => e.id === eventId);
-  }).length;
+  });
+  
+  const totalTipps = competitionPredictions.length;
   const totalEvents = events.length;
   const myScore = currentPlayer ? calculateScore(currentPlayer.id) : 0;
   const totalPlayers = Object.keys(profiles).length;
 
-  // Calculate correct predictions percentage
+  // Calculate correct gold predictions
+  let correctGoldCount = 0;
+  let totalGoldPredictions = 0;
+  
+  if (currentPlayer) {
+    competitionPredictions.forEach(([eventIdStr, prediction]) => {
+      const eventId = parseInt(eventIdStr);
+      const result = results[eventId];
+      if (result) {
+        totalGoldPredictions++;
+        if (prediction.gold === result.gold) correctGoldCount++;
+      }
+    });
+  }
+
+  const goldHitRate = totalGoldPredictions > 0 
+    ? Math.round((correctGoldCount / totalGoldPredictions) * 100) 
+    : 0;
+
+  // Calculate overall correct predictions percentage
   let correctPredictions = 0;
   let totalPossiblePredictions = 0;
   
   if (currentPlayer) {
-    Object.entries(userPredictions).forEach(([eventIdStr, prediction]) => {
+    competitionPredictions.forEach(([eventIdStr, prediction]) => {
       const eventId = parseInt(eventIdStr);
       const result = results[eventId];
       if (result) {
-        // Count each medal position separately
         totalPossiblePredictions += 3;
         if (prediction.gold === result.gold) correctPredictions++;
         if (prediction.silver === result.silver) correctPredictions++;
@@ -149,6 +172,29 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
     ? Math.round((correctPredictions / totalPossiblePredictions) * 100) 
     : 0;
 
+  // Calculate top 3 countries predicted by current user
+  const countryCount: Record<string, number> = {};
+  if (currentPlayer) {
+    competitionPredictions.forEach(([, prediction]) => {
+      const extractCountry = (athleteName: string) => {
+        const match = athleteName.match(/\(([^)]+)\)$/);
+        return match ? match[1] : athleteName;
+      };
+      
+      const goldCountry = extractCountry(prediction.gold);
+      const silverCountry = extractCountry(prediction.silver);
+      const bronzeCountry = extractCountry(prediction.bronze);
+      
+      countryCount[goldCountry] = (countryCount[goldCountry] || 0) + 1;
+      countryCount[silverCountry] = (countryCount[silverCountry] || 0) + 1;
+      countryCount[bronzeCountry] = (countryCount[bronzeCountry] || 0) + 1;
+    });
+  }
+
+  const topCountries = Object.entries(countryCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -160,43 +206,74 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         <p className="text-muted-foreground mt-2">Deine Tippübersicht im Detail</p>
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats - Restructured */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card rounded-xl p-4 text-center">
-          <Target className="w-8 h-8 text-primary mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{totalTipps}</p>
-          <p className="text-sm text-muted-foreground">Tipps abgegeben</p>
+          <Target className="w-8 h-8 text-gold mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{correctGoldCount}</p>
+          <p className="text-sm text-muted-foreground">Richtige Gold-Tipps</p>
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
-          <PieChart className="w-8 h-8 text-accent mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{correctRate}%</p>
-          <p className="text-sm text-muted-foreground">Trefferquote</p>
+          <TrendingUp className="w-8 h-8 text-gold mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{goldHitRate}%</p>
+          <p className="text-sm text-muted-foreground">Gold-Trefferquote</p>
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
-          <Trophy className="w-8 h-8 text-gold mx-auto mb-2" />
+          <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{myScore}</p>
           <p className="text-sm text-muted-foreground">Deine Punkte</p>
         </div>
         <div className="glass-card rounded-xl p-4 text-center">
-          <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{totalPlayers}</p>
-          <p className="text-sm text-muted-foreground">Spieler</p>
+          <Target className="w-8 h-8 text-accent mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{correctRate}%</p>
+          <p className="text-sm text-muted-foreground">Trefferquote Gesamt</p>
         </div>
       </div>
 
-      {/* Current Leaderboard */}
+      {/* Top 3 Countries */}
+      {topCountries.length > 0 && (
+        <div className="glass-card rounded-xl p-6">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Flag className="w-5 h-5 text-primary" />
+            Deine Top 3 getippten Länder
+          </h3>
+          <div className="grid grid-cols-3 gap-3">
+            {topCountries.map(([country, count], index) => (
+              <div 
+                key={country}
+                className="glass-card rounded-xl p-4 text-center"
+              >
+                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mb-2 ${
+                  index === 0 ? 'gradient-gold text-white' :
+                  index === 1 ? 'gradient-silver text-white' :
+                  'gradient-bronze text-white'
+                }`}>
+                  {index + 1}
+                </span>
+                <div className="text-3xl mb-1">{getFlagFromName(country) || getFlagFromCode(country) || '🏳️'}</div>
+                <p className="font-medium text-foreground text-sm">{country}</p>
+                <p className="text-xs text-muted-foreground">{count}x getippt</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Current Leaderboard - Clickable */}
       <div className="glass-card rounded-xl p-6">
         <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
           Aktuelle Rangliste
         </h3>
+        <p className="text-xs text-muted-foreground mb-3">Klicke auf einen Spieler für Details</p>
         <div className="space-y-2">
           {leaderboard.map((player, index) => {
             const isCurrentUser = player.playerId === currentPlayer?.id;
             return (
               <div 
                 key={player.playerId}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                onClick={() => setSelectedPlayer({ id: player.playerId, name: player.name })}
+                className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer hover:bg-primary/5 ${
                   isCurrentUser ? 'bg-primary/10 border border-primary/20' : 'bg-secondary/50'
                 }`}
               >
@@ -330,6 +407,16 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         </div>
       </div>
 
+      {/* Player Statistics Modal */}
+      {selectedPlayer && (
+        <PlayerStatisticsModal
+          playerId={selectedPlayer.id}
+          playerName={selectedPlayer.name}
+          isOpen={!!selectedPlayer}
+          onClose={() => setSelectedPlayer(null)}
+          competitionId={competitionId}
+        />
+      )}
     </div>
   );
 };
