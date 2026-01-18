@@ -15,9 +15,10 @@ import { getFlagFromName } from '@/lib/countryFlags';
 
 interface EventsListProps {
   competitionId: string;
+  isArchived?: boolean;
 }
 
-const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
+const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = false }) => {
   const { currentPlayer } = usePlayer();
   const { getPrediction, setPrediction, deletePrediction, results, isEventStarted } = usePredictions();
   const { toast } = useToast();
@@ -141,11 +142,14 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
     const eventDate = new Date(event.date + 'T' + event.time);
     const hasPrediction = status.type === 'tipped' || status.type === 'scored';
 
-    // Calculate urgency for upcoming events without prediction
+    // If archived, treat all events as completed (read-only)
+    const effectivelyCompleted = isCompleted || isArchived;
+
+    // Calculate urgency for upcoming events without prediction (only if not archived)
     const hoursUntilEvent = (eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
-    const isUrgent = !isCompleted && !hasPrediction && hoursUntilEvent <= 24 && hoursUntilEvent > 0;
-    const isVeryUrgent = !isCompleted && !hasPrediction && hoursUntilEvent <= 6 && hoursUntilEvent > 0;
-    const isCritical = !isCompleted && !hasPrediction && hoursUntilEvent <= 2 && hoursUntilEvent > 0;
+    const isUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 24 && hoursUntilEvent > 0;
+    const isVeryUrgent = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 6 && hoursUntilEvent > 0;
+    const isCritical = !effectivelyCompleted && !hasPrediction && hoursUntilEvent <= 2 && hoursUntilEvent > 0;
 
     const prediction = currentPlayer ? getPrediction(currentPlayer.id, event.id) : null;
     const result = results[event.id];
@@ -159,17 +163,17 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
         {/* Compact Row */}
         <button
           onClick={() => {
-            // Allow expanding completed events only if they have a prediction
-            if (isCompleted && hasPrediction) {
+            // Allow expanding completed/archived events only if they have a prediction
+            if (effectivelyCompleted && hasPrediction) {
               handleExpand(event.id, true);
-            } else if (!isCompleted) {
+            } else if (!effectivelyCompleted) {
               handleExpand(event.id, false);
             }
           }}
-          disabled={isCompleted && !hasPrediction}
+          disabled={effectivelyCompleted && !hasPrediction}
           className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
             isExpanded ? 'bg-primary/5' : 'hover:bg-secondary/30'
-          } ${isCompleted && !hasPrediction ? 'opacity-50 cursor-default' : 'cursor-pointer'} ${
+          } ${effectivelyCompleted && !hasPrediction ? 'opacity-50 cursor-default' : 'cursor-pointer'} ${
             isCritical ? 'bg-red-500/5' :
             isVeryUrgent ? 'bg-orange-500/5' :
             isUrgent ? 'bg-amber-500/5' : ''
@@ -185,7 +189,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
                 {event.sport}
               </p>
               <span className={`text-xs px-2 py-0.5 rounded-full ${
-                isCompleted 
+                effectivelyCompleted 
                   ? 'bg-muted text-muted-foreground' 
                   : hasPrediction
                     ? 'bg-green-500/20 text-green-600'
@@ -197,7 +201,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
                           ? 'bg-amber-500/20 text-amber-600'
                           : 'bg-orange-500/20 text-orange-600'
               }`}>
-                {isCompleted ? 'Abgeschlossen' : hasPrediction ? 'Getippt' : isCritical ? '⚠️ Jetzt tippen!' : isUrgent ? '⏰ Bald!' : 'Offen'}
+                {effectivelyCompleted ? 'Abgeschlossen' : hasPrediction ? 'Getippt' : isCritical ? '⚠️ Jetzt tippen!' : isUrgent ? '⏰ Bald!' : 'Offen'}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -214,7 +218,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
               </span>
             </div>
             {/* Countdown for upcoming events */}
-            {!isCompleted && (
+            {!effectivelyCompleted && (
               <div className="mt-2">
                 <Countdown 
                   targetDate={eventDate} 
@@ -242,21 +246,21 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
                 Kein Tipp
               </span>
             )}
-            {hasPrediction && !isCompleted && status.type !== 'scored' && (
+            {hasPrediction && !effectivelyCompleted && status.type !== 'scored' && (
               <Check className="w-5 h-5 text-green-500" />
             )}
-            {!hasPrediction && !isCompleted && (
+            {!hasPrediction && !effectivelyCompleted && (
               isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
-            {/* Chevron for completed events with predictions */}
-            {isCompleted && hasPrediction && (
+            {/* Chevron for completed/archived events with predictions */}
+            {effectivelyCompleted && hasPrediction && (
               isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
           </div>
         </button>
 
-        {/* Expanded Form - Editable for upcoming events */}
-        {isExpanded && !isCompleted && (
+        {/* Expanded Form - Editable for upcoming events (not archived) */}
+        {isExpanded && !effectivelyCompleted && (
           <div className="px-4 pb-4 space-y-3 animate-fade-in">
             <div className="grid grid-cols-3 gap-2">
               {/* Gold */}
@@ -335,8 +339,8 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId }) => {
           </div>
         )}
 
-        {/* Expanded View - Read-only for completed events */}
-        {isExpanded && isCompleted && hasPrediction && (
+        {/* Expanded View - Read-only for completed/archived events */}
+        {isExpanded && effectivelyCompleted && hasPrediction && (
           <div className="px-4 pb-4 space-y-3 animate-fade-in">
             <div className="grid grid-cols-3 gap-2">
               {/* Gold */}

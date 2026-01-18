@@ -12,22 +12,11 @@ interface Competition {
   country: string;
   dates: string;
   available: boolean;
+  archived?: boolean;
   emoji: string;
 }
 
 const competitions: Competition[] = [
-  {
-    id: 'ruhpolding-2026',
-    type: 'worldcup',
-    name: 'Biathlon Weltcup',
-    year: 2026,
-    season: 'winter',
-    city: 'Ruhpolding',
-    country: 'Deutschland',
-    dates: '14. - 18. Januar 2026',
-    available: true,
-    emoji: '🇩🇪'
-  },
   {
     id: 'milano-2026',
     type: 'olympics',
@@ -75,11 +64,24 @@ const competitions: Competition[] = [
     dates: '23. Juli - 8. August 2032',
     available: false,
     emoji: '🇦🇺'
+  },
+  {
+    id: 'ruhpolding-2026',
+    type: 'worldcup',
+    name: 'Biathlon Weltcup',
+    year: 2026,
+    season: 'winter',
+    city: 'Ruhpolding',
+    country: 'Deutschland',
+    dates: '14. - 18. Januar 2026',
+    available: true,
+    archived: true,
+    emoji: '🇩🇪'
   }
 ];
 
 interface HomeScreenProps {
-  onSelectGame: (gameId: string) => void;
+  onSelectGame: (gameId: string, isArchived?: boolean) => void;
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
@@ -101,7 +103,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
           {competitions.map((comp, index) => (
             <button
               key={comp.id}
-              onClick={() => comp.available && onSelectGame(comp.id)}
+              onClick={() => comp.available && onSelectGame(comp.id, comp.archived)}
               disabled={!comp.available}
               className={`group relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-300 animate-fade-in ${
                 comp.available
@@ -154,7 +156,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectGame }) => {
 
                 {/* Status Badge */}
                 <div className="shrink-0">
-                  {comp.available ? (
+                  {comp.archived ? (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                      Archiviert
+                    </span>
+                  ) : comp.available ? (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 border border-green-500/20">
                       Aktiv
                     </span>
