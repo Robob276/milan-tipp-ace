@@ -75,6 +75,7 @@ export type Database = {
           is_admin: boolean
           name: string
           pin: string | null
+          pin_hash: string | null
           updated_at: string
         }
         Insert: {
@@ -83,6 +84,7 @@ export type Database = {
           is_admin?: boolean
           name: string
           pin?: string | null
+          pin_hash?: string | null
           updated_at?: string
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           is_admin?: boolean
           name?: string
           pin?: string | null
+          pin_hash?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -132,6 +135,20 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "players_admin"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_player_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "players_public"
             referencedColumns: ["id"]
           },
         ]
@@ -216,6 +233,16 @@ export type Database = {
           id: string | null
           name: string | null
         }
+        Insert: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
         Relationships: []
       }
       players_public: {
@@ -223,6 +250,16 @@ export type Database = {
           has_pin: boolean | null
           id: string | null
           name: string | null
+        }
+        Insert: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          has_pin?: never
+          id?: string | null
+          name?: string | null
         }
         Relationships: []
       }
