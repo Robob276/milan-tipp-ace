@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents, countries, sportCategories, sportIcons } from '@/data/olympicEvents';
-import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchableSelect } from '@/components/ui/searchable-select';
@@ -28,38 +27,26 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
     [countries]
   );
 
-  // Combine Olympic events and Ruhpolding events
-  const allEvents = useMemo(() => {
-    return [...olympicEvents, ...ruhpoldingEvents];
-  }, []);
+  // Only Olympic events for Winter Games 2026 admin
+  const allEvents = olympicEvents;
 
-  // Extended categories including "Ruhpolding 2026"
+  // Categories from Olympic events only
   const allCategories = useMemo(() => {
-    const uniqueCategories = new Set([...sportCategories, 'Ruhpolding 2026']);
-    return ['Alle', ...Array.from(uniqueCategories).filter(c => c !== 'Alle')];
+    return ['Alle', ...sportCategories.filter(c => c !== 'Alle')];
   }, []);
 
   const filteredEvents = allEvents.filter(event => {
     const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.discipline.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Check if it's a Ruhpolding event
-    const isRuhpoldingEvent = event.id >= 1000;
-    
-    let matchesCategory = false;
-    if (selectedCategory === 'Alle') {
-      matchesCategory = true;
-    } else if (selectedCategory === 'Ruhpolding 2026') {
-      matchesCategory = isRuhpoldingEvent;
-    } else {
-      matchesCategory = event.category === selectedCategory && !isRuhpoldingEvent;
-    }
+    const matchesCategory = selectedCategory === 'Alle' || event.category === selectedCategory;
     
     return matchesSearch && matchesCategory;
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  const eventsWithResults = Object.keys(results).length;
-  const totalEvents = allEvents.length;
+  // Count only olympic event results
+  const eventsWithResults = olympicEvents.filter(e => results[e.id]).length;
+  const totalEvents = olympicEvents.length;
 
   const handleEdit = (eventId: number) => {
     const existing = results[eventId];
