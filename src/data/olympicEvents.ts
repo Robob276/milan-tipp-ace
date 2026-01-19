@@ -47,7 +47,7 @@ export const olympicEvents: OlympicEvent[] = [
   
   // Sonntag, 8. Februar (8 Entscheidungen)
   { id: 6, date: "2026-02-08", time: "11:30", sport: "Ski Alpin", discipline: "Abfahrt", gender: "Frauen", category: "Ski Alpin" },
-  { id: 7, date: "2026-02-08", time: "12:30", sport: "Skilanglauf", discipline: "Skiathlon 30 km", gender: "Männer", category: "Langlauf" },
+  { id: 7, date: "2026-02-08", time: "12:30", sport: "Skilanglauf", discipline: "Skiathlon 20 km", gender: "Männer", category: "Langlauf" },
   { id: 8, date: "2026-02-08", time: "13:00", sport: "Snowboard", discipline: "Parallel-Riesenslalom", gender: "Frauen", category: "Snowboard" },
   { id: 9, date: "2026-02-08", time: "13:30", sport: "Snowboard", discipline: "Parallel-Riesenslalom", gender: "Männer", category: "Snowboard" },
   { id: 10, date: "2026-02-08", time: "14:00", sport: "Biathlon", discipline: "Mixed-Staffel", gender: "Mixed", category: "Biathlon" },
