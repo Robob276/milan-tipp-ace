@@ -36,64 +36,54 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     const init = async () => {
-      await fetchPlayers();
-      
-      // Check for stored session after players are loaded
+      const allPlayers = await fetchPlayers();
+
+      // Restore stored session after players are loaded
       const storedPlayerId = localStorage.getItem('currentPlayerId');
       if (storedPlayerId) {
-        // We need to wait for players to be set, so we check directly
-        const { data: regularPlayers } = await supabase
-          .from('players_public')
-          .select('id, name, has_pin')
-          .eq('id', storedPlayerId)
-          .maybeSingle();
-        
-        const { data: adminPlayer } = await supabase
-          .from('players_admin')
-          .select('id, name, has_pin')
-          .eq('id', storedPlayerId)
-          .maybeSingle();
-        
-        const playerData = regularPlayers || adminPlayer;
+        const playerData = allPlayers.find((p) => p.id === storedPlayerId);
         if (playerData) {
-          setCurrentPlayer({
-            ...playerData,
-            is_admin: !!adminPlayer
-          });
+          setCurrentPlayer(playerData);
         } else {
           localStorage.removeItem('currentPlayerId');
         }
       }
+
       setIsLoading(false);
     };
-    
+
     init();
   }, []);
 
-  const fetchPlayers = async () => {
-    // Fetch regular players from public view (doesn't expose is_admin)
-    const { data: regularPlayers, error: regularError } = await supabase
-      .from('players_public')
-      .select('id, name, has_pin')
-      .order('name');
-    
-    // Fetch admin players from admin view
-    const { data: adminPlayers, error: adminError } = await supabase
-      .from('players_admin')
-      .select('id, name, has_pin')
-      .order('name');
-    
+  const fetchPlayers = async (): Promise<Player[]> => {
+    // Prefer RPCs (SECURITY DEFINER) over direct SELECT on views.
+    // This avoids client permission/RLS edge-cases and keeps the login flow robust.
+    const { data: regularPlayers, error: regularError } = await supabase.rpc('list_public_players');
+    const { data: adminPlayers, error: adminError } = await supabase.rpc('list_admin_players');
+
     if (regularError || adminError) {
       console.error('Error fetching players:', regularError || adminError);
-      return;
+      setPlayers([]);
+      return [];
     }
 
-    const allPlayers = [
-      ...(regularPlayers?.map(p => ({ ...p, is_admin: false })) || []),
-      ...(adminPlayers?.map(p => ({ ...p, is_admin: true })) || [])
+    const allPlayers: Player[] = [
+      ...((regularPlayers ?? []) as any[]).map((p) => ({
+        id: p.id,
+        name: p.name,
+        has_pin: !!p.has_pin,
+        is_admin: false,
+      })),
+      ...((adminPlayers ?? []) as any[]).map((p) => ({
+        id: p.id,
+        name: p.name,
+        has_pin: !!p.has_pin,
+        is_admin: true,
+      })),
     ];
 
     setPlayers(allPlayers);
+    return allPlayers;
   };
 
   const login = async (playerId: string, pin: string): Promise<{ error: string | null }> => {
