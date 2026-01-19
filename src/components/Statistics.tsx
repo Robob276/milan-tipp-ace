@@ -3,6 +3,8 @@ import { usePlayer } from '@/contexts/PlayerContext';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
+import { OlympicEvent } from '@/data/olympicEvents';
+import { RuhpoldingEvent } from '@/data/ruhpoldingEvents';
 import { BarChart3, Target, Trophy, Users, TrendingUp, Medal, Flag } from 'lucide-react';
 import {
   Table,
@@ -114,8 +116,8 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
   const { predictions, profiles, calculateScore, getLeaderboard, results } = usePredictions();
   const [selectedPlayer, setSelectedPlayer] = useState<{ id: string; name: string } | null>(null);
 
-  // Get events based on competition
-  const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
+  // Get events based on competition - Ruhpolding is archived, Winter Olympics only uses olympic events
+  const events: (OlympicEvent | RuhpoldingEvent)[] = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
   
   // Get leaderboard
   const leaderboard = getLeaderboard();
