@@ -468,29 +468,55 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
         {totalEvents} Entscheidungen ({upcomingEvents.length} anstehend, {completedEvents.length} abgeschlossen)
       </p>
 
-      {/* Upcoming Events */}
+      {/* Upcoming Events - Grouped by Date */}
       {upcomingEvents.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-green-500" />
             Anstehende Events
           </h2>
-          <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
-            {upcomingEvents.map(event => renderEventCard(event, false))}
-          </div>
+          {Object.entries(upcomingGrouped)
+            .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+            .map(([date, dateEvents]) => (
+              <div key={date} className="space-y-2">
+                {/* Date Headline */}
+                <div className="flex items-center gap-2 px-1">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-primary">
+                    {format(new Date(date), 'EEEE, dd.MM.yyyy', { locale: de })}
+                  </h3>
+                </div>
+                <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
+                  {dateEvents.map(event => renderEventCard(event, false))}
+                </div>
+              </div>
+            ))}
         </div>
       )}
 
-      {/* Completed Events */}
+      {/* Completed Events - Grouped by Date */}
       {completedEvents.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-muted-foreground" />
             Abgeschlossene Events
           </h2>
-          <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
-            {completedEvents.map(event => renderEventCard(event, true))}
-          </div>
+          {Object.entries(completedGrouped)
+            .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+            .map(([date, dateEvents]) => (
+              <div key={date} className="space-y-2">
+                {/* Date Headline */}
+                <div className="flex items-center gap-2 px-1">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="text-sm font-semibold text-muted-foreground">
+                    {format(new Date(date), 'EEEE, dd.MM.yyyy', { locale: de })}
+                  </h3>
+                </div>
+                <div className="glass-card rounded-xl overflow-hidden divide-y divide-border/30">
+                  {dateEvents.map(event => renderEventCard(event, true))}
+                </div>
+              </div>
+            ))}
         </div>
       )}
 
