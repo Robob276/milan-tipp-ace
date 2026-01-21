@@ -6,7 +6,7 @@ import { usePredictions } from '@/contexts/PredictionContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PredictionSelect } from '@/components/PredictionSelect';
-import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Check, Clock, ChevronDown, ChevronUp, Trash2, Calendar, AlertTriangle, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +26,8 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
   const [selectedCategory, setSelectedCategory] = useState('Alle');
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [tempPredictions, setTempPredictions] = useState<Record<number, { gold: string; silver: string; bronze: string }>>({});
+  const [showUpcoming, setShowUpcoming] = useState(true);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // Get events based on competition
   const events = competitionId === 'ruhpolding-2026' ? ruhpoldingEvents : olympicEvents;
@@ -473,13 +475,35 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
         {totalEvents} Entscheidungen ({upcomingEvents.length} anstehend, {completedEvents.length} abgeschlossen)
       </p>
 
+      {/* Tab Navigation */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowUpcoming(true)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            showUpcoming
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-green-500" />
+          Anstehend ({upcomingEvents.length})
+        </button>
+        <button
+          onClick={() => setShowUpcoming(false)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            !showUpcoming
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-muted-foreground" />
+          Abgeschlossen ({completedEvents.length})
+        </button>
+      </div>
+
       {/* Upcoming Events - Grouped by Date */}
-      {upcomingEvents.length > 0 && (
+      {showUpcoming && upcomingEvents.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-green-500" />
-            Anstehende Events
-          </h2>
           {Object.entries(upcomingGrouped)
             .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
             .map(([date, dateEvents]) => (
@@ -499,13 +523,15 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
         </div>
       )}
 
+      {showUpcoming && upcomingEvents.length === 0 && (
+        <div className="glass-card rounded-xl p-8 text-center text-muted-foreground">
+          Keine anstehenden Events
+        </div>
+      )}
+
       {/* Completed Events - Grouped by Date */}
-      {completedEvents.length > 0 && (
+      {!showUpcoming && completedEvents.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-muted-foreground" />
-            Abgeschlossene Events
-          </h2>
           {Object.entries(completedGrouped)
             .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
             .map(([date, dateEvents]) => (
@@ -522,6 +548,12 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
                 </div>
               </div>
             ))}
+        </div>
+      )}
+
+      {!showUpcoming && completedEvents.length === 0 && (
+        <div className="glass-card rounded-xl p-8 text-center text-muted-foreground">
+          Keine abgeschlossenen Events
         </div>
       )}
 
