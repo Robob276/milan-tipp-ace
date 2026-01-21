@@ -68,18 +68,23 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
     return { upcomingEvents: upcoming, completedEvents: completed };
   }, [searchTerm, selectedCategory, isEventStarted, events]);
 
-  // Group events by date
-  const groupEventsByDate = (events: typeof olympicEvents) => {
+  // Group events by date - for upcoming events, use prediction deadline date
+  const groupEventsByDate = (events: typeof olympicEvents, useDeadline: boolean = false) => {
     const groups: Record<string, typeof olympicEvents> = {};
     events.forEach(event => {
-      if (!groups[event.date]) groups[event.date] = [];
-      groups[event.date].push(event);
+      // For upcoming events, group by prediction deadline if available
+      const groupDate = useDeadline && event.predictionDeadline 
+        ? event.predictionDeadline.split('T')[0] 
+        : event.date;
+      if (!groups[groupDate]) groups[groupDate] = [];
+      groups[groupDate].push(event);
     });
     return groups;
   };
 
-  const upcomingGrouped = useMemo(() => groupEventsByDate(upcomingEvents), [upcomingEvents]);
-  const completedGrouped = useMemo(() => groupEventsByDate(completedEvents), [completedEvents]);
+  // Group upcoming by prediction deadline, completed by event date
+  const upcomingGrouped = useMemo(() => groupEventsByDate(upcomingEvents, true), [upcomingEvents]);
+  const completedGrouped = useMemo(() => groupEventsByDate(completedEvents, false), [completedEvents]);
 
   const handleExpand = (eventId: number, isCompleted: boolean = false) => {
     if (expandedEvent === eventId) {
