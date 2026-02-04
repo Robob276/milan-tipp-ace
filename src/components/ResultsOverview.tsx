@@ -225,8 +225,8 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                           <Clock className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-foreground">
-                            {event.discipline} {event.gender}
+                        <h3 className="font-semibold text-foreground">
+                            {event.sport}: {event.discipline} {event.gender}
                           </h3>
                           <p className="text-xs text-muted-foreground">
                             {formatDate(event.date)} • {event.time} Uhr
@@ -363,7 +363,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                           </div>
                           <div>
                             <h3 className="font-semibold text-foreground">
-                              {event.discipline} {event.gender}
+                              {event.sport}: {event.discipline} {event.gender}
                             </h3>
                             <p className="text-xs text-muted-foreground">
                               {formatDate(event.date)} • {event.time} Uhr
