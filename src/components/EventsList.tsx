@@ -120,6 +120,24 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
     setExpandedEvent(null);
   };
 
+  // Auto-save when all predictions are filled
+  const handleAutoSave = async (eventId: number, newPred: { gold: string; silver: string; bronze: string }) => {
+    // Update temp state first
+    setTempPredictions(prev => ({
+      ...prev,
+      [eventId]: newPred
+    }));
+
+    // If all three are filled, auto-save
+    if (newPred.gold && newPred.silver && newPred.bronze) {
+      await setPrediction(eventId, newPred);
+      toast({
+        title: "✓ Gespeichert",
+        description: "Dein Tipp wurde automatisch gespeichert."
+      });
+    }
+  };
+
   const handleDelete = async (eventId: number) => {
     await deletePrediction(eventId);
     toast({
@@ -292,10 +310,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
                 <PredictionSelect
                   eventId={event.id}
                   value={temp.gold}
-                  onChange={(v) => setTempPredictions(prev => ({
-                    ...prev,
-                    [event.id]: { ...prev[event.id], gold: v }
-                  }))}
+                  onChange={(v) => handleAutoSave(event.id, { ...temp, gold: v })}
                   placeholder="Wählen"
                   className="h-9 text-xs w-full"
                 />
@@ -309,10 +324,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
                 <PredictionSelect
                   eventId={event.id}
                   value={temp.silver}
-                  onChange={(v) => setTempPredictions(prev => ({
-                    ...prev,
-                    [event.id]: { ...prev[event.id], silver: v }
-                  }))}
+                  onChange={(v) => handleAutoSave(event.id, { ...temp, silver: v })}
                   placeholder="Wählen"
                   className="h-9 text-xs w-full"
                 />
@@ -326,37 +338,27 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
                 <PredictionSelect
                   eventId={event.id}
                   value={temp.bronze}
-                  onChange={(v) => setTempPredictions(prev => ({
-                    ...prev,
-                    [event.id]: { ...prev[event.id], bronze: v }
-                  }))}
+                  onChange={(v) => handleAutoSave(event.id, { ...temp, bronze: v })}
                   placeholder="Wählen"
                   className="h-9 text-xs w-full"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2">
-              {/* Delete button - only show if prediction exists */}
-              {hasPrediction && (
+            {/* Only show delete button if prediction exists */}
+            {hasPrediction && (
+              <div className="flex gap-2">
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => handleDelete(event.id)}
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Tipp löschen
                 </Button>
-              )}
-              <Button 
-                size="sm"
-                onClick={() => handleSave(event.id)}
-                disabled={!temp.gold || !temp.silver || !temp.bronze}
-                className="flex-1 gradient-olympic text-primary-foreground"
-              >
-                Tipp abgeben
-              </Button>
-            </div>
+              </div>
+            )}
           </div>
         )}
 
