@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import PlayerStatisticsModal from './PlayerStatisticsModal';
 import { getFlagFromCode, getFlagFromName } from '@/lib/countryFlags';
+import { getPlayerFlag, isImageFlag } from '@/lib/playerFlags';
 
 // Historische Daten seit 2016
 const allTimeMedalStandings = [
@@ -277,7 +278,18 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
                   }`}>
                     {index + 1}
                   </span>
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-foreground flex items-center">
+                    {getPlayerFlag(player.name) && (
+                      isImageFlag(getPlayerFlag(player.name)) ? (
+                        <img 
+                          src={getPlayerFlag(player.name)} 
+                          alt="flag" 
+                          className="w-5 h-4 mr-1.5 object-cover rounded-sm"
+                        />
+                      ) : (
+                        <span className="mr-1.5">{getPlayerFlag(player.name)}</span>
+                      )
+                    )}
                     {player.name}
                     {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(Du)</span>}
                   </span>
