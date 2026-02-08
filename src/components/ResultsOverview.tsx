@@ -34,8 +34,12 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
   
   // Separate events into upcoming/running and finished
   const upcomingAndRunningEvents = sortedEvents.filter(e => !results[e.id]);
-  // Finished events sorted newest first (descending by date)
-  const finishedEventsList = sortedEvents.filter(e => results[e.id]).reverse();
+  // Finished events sorted newest first (descending by date/time)
+  const finishedEventsList = [...sortedEvents.filter(e => results[e.id])].sort((a, b) => {
+    const dateA = new Date(a.date + 'T' + a.time);
+    const dateB = new Date(b.date + 'T' + b.time);
+    return dateB.getTime() - dateA.getTime(); // Descending: newest first
+  });
   
   // Toggle expand/collapse for an event
   const toggleEventExpand = (eventId: number) => {
