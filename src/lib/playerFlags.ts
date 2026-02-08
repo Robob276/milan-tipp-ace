@@ -21,3 +21,8 @@ export const playerFlags: Record<string, string> = {
 export function getPlayerFlag(playerName: string): string {
   return playerFlags[playerName] || "";
 }
+
+export function isImageFlag(flag: string): boolean {
+  // Image flags contain file paths (start with / or contain assets)
+  return flag.startsWith('/') || flag.includes('assets');
+}
