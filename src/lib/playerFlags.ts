@@ -26,7 +26,7 @@ export function getPlayerFlag(playerName: string): string {
   return playerFlags[playerName] || "";
 }
 
+// All flags are now images, so this always returns true if flag exists
 export function isImageFlag(flag: string): boolean {
-  // Image flags contain file paths (start with / or contain assets)
-  return flag.startsWith('/') || flag.includes('assets');
+  return flag.length > 0;
 }
