@@ -6,6 +6,7 @@ import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { Trophy, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PlayerDetail from './PlayerDetail';
+import { getPlayerFlag } from '@/lib/playerFlags';
 
 interface LeaderboardProps {
   competitionId: string;
@@ -160,6 +161,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ competitionId }) => {
                     {/* Name */}
                     <td className="py-3 px-3">
                       <span className="font-medium text-foreground">
+                        {getPlayerFlag(player.name) && (
+                          <span className="mr-1.5">{getPlayerFlag(player.name)}</span>
+                        )}
                         {player.name}
                         {isCurrentUser && (
                           <span className="ml-1 text-xs text-muted-foreground">(Du)</span>
