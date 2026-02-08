@@ -166,7 +166,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ competitionId }) => {
                             <img 
                               src={getPlayerFlag(player.name)} 
                               alt="flag" 
-                              className="w-5 h-4 mr-1.5 object-cover rounded-sm"
+                              className="w-6 h-4 mr-1.5 object-contain"
                             />
                           ) : (
                             <span className="mr-1.5">{getPlayerFlag(player.name)}</span>
