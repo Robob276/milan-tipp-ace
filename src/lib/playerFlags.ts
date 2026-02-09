@@ -9,11 +9,12 @@ import frankreichFlag from '@/assets/flags/frankreich.png';
 import deutschlandFlag from '@/assets/flags/deutschland.png';
 import oesterreichFlag from '@/assets/flags/oesterreich.png';
 import norwegenFlag from '@/assets/flags/norwegen.jpg';
+import preussenFlag from '@/assets/flags/preussen.png';
 
 export const playerFlags: Record<string, string> = {
   "Robert B": deutschlandFlag,      // Deutschland
   "Aurore": frankreichFlag,          // Frankreich
-  "Marcus G": brandenburgFlag,       // Brandenburg
+  "Marcus G": preussenFlag,           // Preußen
   "Sebastian S": oesterreichFlag,    // Österreich
   "Marcus B": frankreichFlag,        // Frankreich
   "Marcel K": berlinFlag,            // Berlin
