@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getFlagFromCode, getFlagFromName } from '@/lib/countryFlags';
+import { isPredictionMatch } from '@/lib/medalUtils';
 
 interface PlayerStatisticsModalProps {
   playerId: string;
@@ -47,7 +48,7 @@ const PlayerStatisticsModal: React.FC<PlayerStatisticsModalProps> = ({
     const result = results[eventId];
     if (result) {
       totalGoldPredictions++;
-      if (prediction.gold === result.gold) correctGoldCount++;
+      if (isPredictionMatch(prediction.gold, result.gold)) correctGoldCount++;
     }
   });
 
@@ -64,9 +65,9 @@ const PlayerStatisticsModal: React.FC<PlayerStatisticsModalProps> = ({
     const result = results[eventId];
     if (result) {
       totalPossiblePredictions += 3;
-      if (prediction.gold === result.gold) correctPredictions++;
-      if (prediction.silver === result.silver) correctPredictions++;
-      if (prediction.bronze === result.bronze) correctPredictions++;
+      if (isPredictionMatch(prediction.gold, result.gold)) correctPredictions++;
+      if (isPredictionMatch(prediction.silver, result.silver)) correctPredictions++;
+      if (isPredictionMatch(prediction.bronze, result.bronze)) correctPredictions++;
     }
   });
   

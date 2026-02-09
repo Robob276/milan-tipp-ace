@@ -4,6 +4,7 @@ import { usePlayer } from './PlayerContext';
 import type { Result, Prediction, OlympicEvent } from '@/data/olympicEvents';
 import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
+import { calculateEventScore } from '@/lib/medalUtils';
 
 interface PredictionContextType {
   predictions: Record<string, Record<number, Prediction>>; // playerId -> eventId -> Prediction
@@ -251,9 +252,7 @@ export const PredictionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const eventId = Number(eventIdStr);
       const result = results[eventId];
       if (result) {
-        if (prediction.gold === result.gold) score += 3;
-        if (prediction.silver === result.silver) score += 2;
-        if (prediction.bronze === result.bronze) score += 1;
+        score += calculateEventScore(prediction, result);
       }
     });
 

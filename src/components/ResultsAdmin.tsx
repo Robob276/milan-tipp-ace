@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Trophy, Check, Search, Filter, Trash2 } from 'lucide-react';
+import { ArrowLeft, Trophy, Check, Search, Filter, Trash2, Plus, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import { splitMedalValue, joinMedalValues } from '@/lib/medalUtils';
 
 interface ResultsAdminProps {
   onBack: () => void;
@@ -20,17 +21,17 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Alle');
   const [editingEvent, setEditingEvent] = useState<number | null>(null);
-  const [tempResult, setTempResult] = useState({ gold: '', silver: '', bronze: '' });
+  const [tempResult, setTempResult] = useState<{ gold: string[]; silver: string[]; bronze: string[] }>({ 
+    gold: [''], silver: [''], bronze: [''] 
+  });
 
   const countryOptions = useMemo(
     () => countries.map((c) => ({ value: c.name, label: c.name })),
     [countries]
   );
 
-  // Only Olympic events for Winter Games 2026 admin
   const allEvents = olympicEvents;
 
-  // Categories from Olympic events only
   const allCategories = useMemo(() => {
     return ['Alle', ...sportCategories.filter(c => c !== 'Alle')];
   }, []);
@@ -38,33 +39,34 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
   const filteredEvents = allEvents.filter(event => {
     const matchesSearch = event.sport.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.discipline.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesCategory = selectedCategory === 'Alle' || event.category === selectedCategory;
-    
     return matchesSearch && matchesCategory;
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Count only olympic event results
   const eventsWithResults = olympicEvents.filter(e => results[e.id]).length;
   const totalEvents = olympicEvents.length;
 
   const handleEdit = (eventId: number) => {
     const existing = results[eventId];
     setTempResult({
-      gold: existing?.gold || '',
-      silver: existing?.silver || '',
-      bronze: existing?.bronze || ''
+      gold: existing ? splitMedalValue(existing.gold) : [''],
+      silver: existing ? splitMedalValue(existing.silver) : [''],
+      bronze: existing ? splitMedalValue(existing.bronze) : [''],
     });
+    if (tempResult.gold.length === 0) setTempResult(prev => ({ ...prev, gold: [''] }));
+    if (tempResult.silver.length === 0) setTempResult(prev => ({ ...prev, silver: [''] }));
+    if (tempResult.bronze.length === 0) setTempResult(prev => ({ ...prev, bronze: [''] }));
     setEditingEvent(eventId);
   };
 
   const handleSave = async (eventId: number) => {
-    if (tempResult.gold && tempResult.silver && tempResult.bronze) {
-      const { error } = await setResult(eventId, {
-        gold: tempResult.gold,
-        silver: tempResult.silver,
-        bronze: tempResult.bronze
-      });
+    const gold = joinMedalValues(tempResult.gold);
+    const silver = joinMedalValues(tempResult.silver);
+    const bronze = joinMedalValues(tempResult.bronze);
+    
+    // At least gold must be filled
+    if (gold) {
+      const { error } = await setResult(eventId, { gold, silver, bronze });
       
       if (error) {
         toast({
@@ -78,15 +80,68 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
           description: "Ergebnis wurde erfolgreich eingetragen."
         });
         setEditingEvent(null);
-        setTempResult({ gold: '', silver: '', bronze: '' });
+        setTempResult({ gold: [''], silver: [''], bronze: [''] });
       }
     }
   };
 
   const handleCancel = () => {
     setEditingEvent(null);
-    setTempResult({ gold: '', silver: '', bronze: '' });
+    setTempResult({ gold: [''], silver: [''], bronze: [''] });
   };
+
+  const addCountrySlot = (position: 'gold' | 'silver' | 'bronze') => {
+    setTempResult(prev => ({
+      ...prev,
+      [position]: [...prev[position], '']
+    }));
+  };
+
+  const removeCountrySlot = (position: 'gold' | 'silver' | 'bronze', index: number) => {
+    setTempResult(prev => ({
+      ...prev,
+      [position]: prev[position].filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateCountrySlot = (position: 'gold' | 'silver' | 'bronze', index: number, value: string) => {
+    setTempResult(prev => ({
+      ...prev,
+      [position]: prev[position].map((v, i) => i === index ? value : v)
+    }));
+  };
+
+  const renderMedalInputs = (position: 'gold' | 'silver' | 'bronze', label: string, gradientClass: string) => (
+    <div>
+      <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+        <div className={`w-4 h-4 rounded-full ${gradientClass}`} /> {label}
+      </label>
+      <div className="space-y-2">
+        {tempResult[position].map((value, index) => (
+          <div key={index} className="flex items-center gap-1">
+            <SearchableSelect
+              value={value}
+              onValueChange={(v) => updateCountrySlot(position, index, v)}
+              options={countryOptions}
+              placeholder="Land wählen"
+              searchPlaceholder="Land suchen..."
+              className="w-full"
+            />
+            {tempResult[position].length > 1 && (
+              <Button variant="ghost" size="sm" className="px-1 h-8 text-destructive" onClick={() => removeCountrySlot(position, index)}>
+                <X className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+        ))}
+        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-6 px-2" onClick={() => addCountrySlot(position)}>
+          <Plus className="w-3 h-3 mr-1" /> Land hinzufügen
+        </Button>
+      </div>
+    </div>
+  );
+
+  const canSave = tempResult.gold.some(v => v.length > 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,18 +242,31 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                 {/* Result Display (when not editing) */}
                 {hasResult && !isEditing && (
                   <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border/50">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-gold/10">
-                      <div className="w-6 h-6 rounded-full gradient-gold flex items-center justify-center text-white text-xs font-bold">1</div>
-                      <span className="text-sm font-medium text-foreground">{results[event.id].gold}</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-silver/10">
-                      <div className="w-6 h-6 rounded-full gradient-silver flex items-center justify-center text-white text-xs font-bold">2</div>
-                      <span className="text-sm font-medium text-foreground">{results[event.id].silver}</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-bronze/10">
-                      <div className="w-6 h-6 rounded-full gradient-bronze flex items-center justify-center text-white text-xs font-bold">3</div>
-                      <span className="text-sm font-medium text-foreground">{results[event.id].bronze}</span>
-                    </div>
+                    {(['gold', 'silver', 'bronze'] as const).map((position) => {
+                      const values = splitMedalValue(results[event.id][position]);
+                      const gradientMap = { gold: 'gradient-gold', silver: 'gradient-silver', bronze: 'gradient-bronze' };
+                      const bgMap = { gold: 'bg-gold/10', silver: 'bg-silver/10', bronze: 'bg-bronze/10' };
+                      const numMap = { gold: '1', silver: '2', bronze: '3' };
+                      
+                      if (values.length === 0) return (
+                        <div key={position} className={`flex items-center gap-2 p-2 rounded-lg ${bgMap[position]}`}>
+                          <div className={`w-6 h-6 rounded-full ${gradientMap[position]} flex items-center justify-center text-white text-xs font-bold`}>{numMap[position]}</div>
+                          <span className="text-sm text-muted-foreground">—</span>
+                        </div>
+                      );
+
+                      return (
+                        <div key={position} className={`p-2 rounded-lg ${bgMap[position]}`}>
+                          {values.map((v, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                              {i === 0 && <div className={`w-6 h-6 rounded-full ${gradientMap[position]} flex items-center justify-center text-white text-xs font-bold`}>{numMap[position]}</div>}
+                              {i > 0 && <div className="w-6 h-6" />}
+                              <span className="text-sm font-medium text-foreground">{v}</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -206,45 +274,9 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                 {isEditing && (
                   <div className="mt-3 pt-3 border-t border-border/50 space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                          <div className="w-4 h-4 rounded-full gradient-gold" /> Gold
-                        </label>
-                        <SearchableSelect
-                          value={tempResult.gold}
-                          onValueChange={(v) => setTempResult(prev => ({ ...prev, gold: v }))}
-                          options={countryOptions}
-                          placeholder="Land wählen"
-                          searchPlaceholder="Land suchen..."
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                          <div className="w-4 h-4 rounded-full gradient-silver" /> Silber
-                        </label>
-                        <SearchableSelect
-                          value={tempResult.silver}
-                          onValueChange={(v) => setTempResult(prev => ({ ...prev, silver: v }))}
-                          options={countryOptions}
-                          placeholder="Land wählen"
-                          searchPlaceholder="Land suchen..."
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                          <div className="w-4 h-4 rounded-full gradient-bronze" /> Bronze
-                        </label>
-                        <SearchableSelect
-                          value={tempResult.bronze}
-                          onValueChange={(v) => setTempResult(prev => ({ ...prev, bronze: v }))}
-                          options={countryOptions}
-                          placeholder="Land wählen"
-                          searchPlaceholder="Land suchen..."
-                          className="w-full"
-                        />
-                      </div>
+                      {renderMedalInputs('gold', 'Gold', 'gradient-gold')}
+                      {renderMedalInputs('silver', 'Silber', 'gradient-silver')}
+                      {renderMedalInputs('bronze', 'Bronze', 'gradient-bronze')}
                     </div>
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" onClick={handleCancel}>Abbrechen</Button>
@@ -266,7 +298,7 @@ const ResultsAdmin: React.FC<ResultsAdminProps> = ({ onBack }) => {
                       )}
                       <Button 
                         onClick={() => handleSave(event.id)}
-                        disabled={!tempResult.gold || !tempResult.silver || !tempResult.bronze}
+                        disabled={!canSave}
                         className="gradient-olympic text-primary-foreground"
                       >
                         Speichern

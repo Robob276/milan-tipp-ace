@@ -23,6 +23,7 @@ import {
 import PlayerStatisticsModal from './PlayerStatisticsModal';
 import { getFlagFromCode, getFlagFromName } from '@/lib/countryFlags';
 import { getPlayerFlag, isImageFlag } from '@/lib/playerFlags';
+import { isPredictionMatch } from '@/lib/medalUtils';
 
 // Historische Daten seit 2016
 const allTimeMedalStandings = [
@@ -145,7 +146,7 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
       const result = results[eventId];
       if (result) {
         totalGoldPredictions++;
-        if (prediction.gold === result.gold) correctGoldCount++;
+        if (isPredictionMatch(prediction.gold, result.gold)) correctGoldCount++;
       }
     });
   }
@@ -164,9 +165,9 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
       const result = results[eventId];
       if (result) {
         totalPossiblePredictions += 3;
-        if (prediction.gold === result.gold) correctPredictions++;
-        if (prediction.silver === result.silver) correctPredictions++;
-        if (prediction.bronze === result.bronze) correctPredictions++;
+        if (isPredictionMatch(prediction.gold, result.gold)) correctPredictions++;
+        if (isPredictionMatch(prediction.silver, result.silver)) correctPredictions++;
+        if (isPredictionMatch(prediction.bronze, result.bronze)) correctPredictions++;
       }
     });
   }
