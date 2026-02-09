@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { calculateEventScore } from '@/lib/medalUtils';
 import { olympicEvents, sportCategories, sportIcons } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { usePlayer } from '@/contexts/PlayerContext';
@@ -157,10 +158,7 @@ const EventsList: React.FC<EventsListProps> = ({ competitionId, isArchived = fal
     const result = results[eventId];
     
     if (result && prediction) {
-      let points = 0;
-      if (prediction.gold === result.gold) points += 3;
-      if (prediction.silver === result.silver) points += 2;
-      if (prediction.bronze === result.bronze) points += 1;
+      const points = calculateEventScore(prediction, result);
       return { type: 'scored', points };
     }
     if (result) return { type: 'result', points: 0 };

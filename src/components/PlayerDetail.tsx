@@ -1,4 +1,5 @@
 import React from 'react';
+import { calculateEventScore } from '@/lib/medalUtils';
 import { usePredictions } from '@/contexts/PredictionContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents, sportIcons } from '@/data/olympicEvents';
@@ -44,9 +45,7 @@ const PlayerDetail: React.FC<PlayerDetailProps> = ({ odplayerId, onBack }) => {
 
       let points = 0;
       if (result) {
-        if (prediction.gold === result.gold) points += 3;
-        if (prediction.silver === result.silver) points += 2;
-        if (prediction.bronze === result.bronze) points += 1;
+        points = calculateEventScore(prediction, result);
       }
 
       return {

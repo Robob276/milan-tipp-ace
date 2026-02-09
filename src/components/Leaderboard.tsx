@@ -7,6 +7,7 @@ import { Trophy, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus } fr
 import { Button } from '@/components/ui/button';
 import PlayerDetail from './PlayerDetail';
 import { getPlayerFlag, isImageFlag } from '@/lib/playerFlags';
+import { calculateEventScore } from '@/lib/medalUtils';
 
 interface LeaderboardProps {
   competitionId: string;
@@ -43,9 +44,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ competitionId }) => {
     if (!prediction || !result) return null;
     
     let score = 0;
-    if (prediction.gold === result.gold) score += 3;
-    if (prediction.silver === result.silver) score += 2;
-    if (prediction.bronze === result.bronze) score += 1;
+    score += calculateEventScore(prediction, result);
     return score;
   };
 
