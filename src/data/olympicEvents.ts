@@ -58,7 +58,7 @@ export const olympicEvents: OlympicEvent[] = [
   // Montag, 9. Februar (5 Entscheidungen)
   { id: 14, date: "2026-02-09", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Männer", category: "Ski Alpin" },
   { id: 15, date: "2026-02-09", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Frauen", category: "Freestyle" },
-  { id: 16, date: "2026-02-09", time: "17:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 16, date: "2026-02-09", time: "17:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Frauen", category: "Eisschnelllauf" },
   { id: 17, date: "2026-02-09", time: "19:00", sport: "Skispringen", discipline: "Normalschanze Einzel", gender: "Männer", category: "Skispringen" },
   { id: 18, date: "2026-02-09", time: "19:30", sport: "Snowboard", discipline: "Big Air", gender: "Frauen", category: "Snowboard" },
   
@@ -80,7 +80,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 31, date: "2026-02-11", time: "14:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Frauen", category: "Freestyle" },
   { id: 32, date: "2026-02-11", time: "17:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Männer", category: "Rodeln" },
   { id: 33, date: "2026-02-11", time: "18:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Frauen", category: "Rodeln" },
-  { id: 34, date: "2026-02-11", time: "18:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 34, date: "2026-02-11", time: "18:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
   { id: 35, date: "2026-02-11", time: "19:30", sport: "Eiskunstlauf", discipline: "Eistanz Kür", gender: "Mixed", category: "Eiskunstlauf" },
   
   // Donnerstag, 12. Februar (9 Entscheidungen)
@@ -156,14 +156,14 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 91, date: "2026-02-19", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
   { id: 92, date: "2026-02-19", time: "12:55", sport: "Skibergsteigen", discipline: "Sprint", gender: "Frauen", category: "Ski Mountaineering" },
   { id: 93, date: "2026-02-19", time: "13:30", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering" },
-  { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
+  { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
   { id: 95, date: "2026-02-19", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Frauen", category: "Eiskunstlauf" },
   { id: 96, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey", predictionDeadline: "2026-02-04T19:00:00" },
   
   // Freitag, 20. Februar (6 Entscheidungen)
   { id: 97, date: "2026-02-20", time: "12:00", sport: "Freestyle", discipline: "Skicross", gender: "Frauen", category: "Freestyle" },
   { id: 98, date: "2026-02-20", time: "14:15", sport: "Biathlon", discipline: "Massenstart 15 km", gender: "Männer", category: "Biathlon" },
-  { id: 99, date: "2026-02-20", time: "16:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Frauen", category: "Eisschnelllauf" },
+  { id: 99, date: "2026-02-20", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Frauen", category: "Eisschnelllauf" },
   { id: 100, date: "2026-02-20", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Männer", category: "Freestyle" },
   { id: 101, date: "2026-02-20", time: "20:00", sport: "Short Track", discipline: "1500 m", gender: "Frauen", category: "Short Track" },
   { id: 102, date: "2026-02-20", time: "20:30", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
