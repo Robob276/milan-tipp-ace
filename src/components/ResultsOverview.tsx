@@ -5,6 +5,7 @@ import { olympicEvents } from '@/data/olympicEvents';
 import { ruhpoldingEvents } from '@/data/ruhpoldingEvents';
 import { Medal, Trophy, Clock, CheckCircle, Lock, User, Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { getFlagFromCode } from '@/lib/countryFlags';
+import { isPredictionMatch, splitMedalValue, calculateEventScore } from '@/lib/medalUtils';
 
 interface ResultsOverviewProps {
   competitionId: string;
@@ -91,19 +92,14 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
     const result = results[eventId];
     const prediction = predictions[playerId]?.[eventId];
     if (!result || !prediction) return false;
-    return prediction[position] === result[position];
+    return isPredictionMatch(prediction[position], result[position]);
   };
 
   const calculatePlayerEventScore = (playerId: string, eventId: number) => {
     const result = results[eventId];
     const prediction = predictions[playerId]?.[eventId];
     if (!result || !prediction) return 0;
-    
-    let score = 0;
-    if (prediction.gold === result.gold) score += 3;
-    if (prediction.silver === result.silver) score += 2;
-    if (prediction.bronze === result.bronze) score += 1;
-    return score;
+    return calculateEventScore(prediction, result);
   };
 
   // Render athlete name with flag
@@ -426,7 +422,11 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                                 </td>
                                 <td className="px-4 py-2 bg-secondary/30">
                                   {result ? (
-                                    renderAthlete(result[position], undefined, true)
+                                    <div className="space-y-1">
+                                      {splitMedalValue(result[position]).map((country, i) => (
+                                        <div key={i}>{renderAthlete(country, undefined, true)}</div>
+                                      ))}
+                                    </div>
                                   ) : (
                                     <span className="text-muted-foreground text-xs">—</span>
                                   )}
