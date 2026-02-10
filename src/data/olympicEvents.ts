@@ -65,8 +65,8 @@ export const olympicEvents: OlympicEvent[] = [
   // Dienstag, 10. Februar (9 Entscheidungen)
   { id: 19, date: "2026-02-10", time: "10:30", sport: "Ski Alpin", discipline: "Team-Kombination", gender: "Frauen", category: "Ski Alpin" },
   { id: 20, date: "2026-02-10", time: "10:30", sport: "Short Track", discipline: "Mixed-Staffel", gender: "Mixed", category: "Short Track" },
-  { id: 21, date: "2026-02-10", time: "11:45", sport: "Skilanglauf", discipline: "Sprint Freistil", gender: "Frauen", category: "Langlauf" },
-  { id: 22, date: "2026-02-10", time: "12:15", sport: "Skilanglauf", discipline: "Sprint Freistil", gender: "Männer", category: "Langlauf" },
+  { id: 21, date: "2026-02-10", time: "11:45", sport: "Skilanglauf", discipline: "Sprint Klassisch", gender: "Frauen", category: "Langlauf" },
+  { id: 22, date: "2026-02-10", time: "12:15", sport: "Skilanglauf", discipline: "Sprint Klassisch", gender: "Männer", category: "Langlauf" },
   { id: 23, date: "2026-02-10", time: "12:30", sport: "Freestyle", discipline: "Slopestyle", gender: "Männer", category: "Freestyle" },
   { id: 24, date: "2026-02-10", time: "13:30", sport: "Biathlon", discipline: "Einzel 20 km", gender: "Männer", category: "Biathlon" },
   { id: 25, date: "2026-02-10", time: "17:00", sport: "Rodeln", discipline: "Einsitzer", gender: "Frauen", category: "Rodeln" },
