@@ -219,12 +219,17 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                   <div className="bg-secondary/50 px-4 py-3 border-b border-border/50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          status === 'started' ? 'bg-amber-500/20 text-amber-600' :
-                          'bg-muted text-muted-foreground'
-                        }`}>
-                          <Clock className="w-4 h-4" />
-                        </div>
+                        {status === 'started' ? (
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-500/20">
+                            <div className="relative flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-muted text-muted-foreground">
+                            <Clock className="w-4 h-4" />
+                          </div>
+                        )}
                         <div>
                         <h3 className="font-semibold text-foreground">
                             {event.sport}: {event.discipline} {event.gender}
@@ -234,12 +239,16 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({ competitionId }) => {
                           </p>
                         </div>
                       </div>
-                      <div className={`px-2 py-1 rounded text-xs font-medium ${
-                        status === 'started' ? 'bg-amber-500/10 text-amber-600' :
-                        'bg-muted text-muted-foreground'
-                      }`}>
-                        {status === 'started' ? 'Läuft' : 'Anstehend'}
-                      </div>
+                      {status === 'started' ? (
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-red-500/10 text-red-600 text-xs font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                          LIVE
+                        </div>
+                      ) : (
+                        <div className="px-2 py-1 rounded text-xs font-medium bg-muted text-muted-foreground">
+                          Anstehend
+                        </div>
+                      )}
                     </div>
                   </div>
 
