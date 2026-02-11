@@ -79,7 +79,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 30, date: "2026-02-11", time: "14:15", sport: "Biathlon", discipline: "Einzel 15 km", gender: "Frauen", category: "Biathlon" },
   { id: 31, date: "2026-02-11", time: "14:15", sport: "Freestyle", discipline: "Buckelpiste", gender: "Frauen", category: "Freestyle" },
   { id: 32, date: "2026-02-11", time: "17:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Männer", category: "Rodeln" },
-  { id: 33, date: "2026-02-11", time: "18:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Frauen", category: "Rodeln", predictionDeadline: "2026-02-11T17:30:00" },
+  { id: 33, date: "2026-02-11", time: "17:00", sport: "Rodeln", discipline: "Doppelsitzer", gender: "Frauen", category: "Rodeln", predictionDeadline: "2026-02-11T17:00:00" },
   { id: 34, date: "2026-02-11", time: "18:30", sport: "Eisschnelllauf", discipline: "1000 m", gender: "Männer", category: "Eisschnelllauf" },
   { id: 35, date: "2026-02-11", time: "19:30", sport: "Eiskunstlauf", discipline: "Eistanz Kür", gender: "Mixed", category: "Eiskunstlauf" },
   
