@@ -45,6 +45,7 @@ const yearlyResults = [
     year: 2024,
     name: 'Paris 2024',
     type: 'Sommer',
+    winnerAvg: '2,30',
     results: [
       { place: 1, name: 'Robert B' },
       { place: 2, name: 'Marcel K' },
@@ -56,6 +57,7 @@ const yearlyResults = [
     year: 2022,
     name: 'Peking 2022',
     type: 'Winter',
+    winnerAvg: '2,44',
     results: [
       { place: 1, name: 'Marcel K' },
       { place: 2, name: 'Robert B' },
@@ -67,6 +69,7 @@ const yearlyResults = [
     year: 2021,
     name: 'Tokio 2020',
     type: 'Sommer',
+    winnerAvg: '2,02',
     results: [
       { place: 1, name: 'Robert B' },
       { place: 2, name: 'Marcus G' },
@@ -78,6 +81,7 @@ const yearlyResults = [
     year: 2018,
     name: 'PyeongChang 2018',
     type: 'Winter',
+    winnerAvg: '2,25',
     results: [
       { place: 1, name: 'Marcus G' },
       { place: 2, name: 'Robert B' },
@@ -91,6 +95,8 @@ const yearlyResults = [
     year: 2016,
     name: 'Rio 2016',
     type: 'Sommer',
+    winnerAvg: '1,56',
+    winnerNote: 'andere Punkterechnung',
     results: [
       { place: 1, name: 'Marcus G' },
       { place: 2, name: 'Marcus B' },
@@ -363,6 +369,11 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
                         {year.type}
                       </span>
                     </div>
+                    {year.winnerAvg && (
+                      <p className="text-xs text-muted-foreground mb-2">
+                        ⌀ Sieger: {year.winnerAvg} Pkt/Event{year.winnerNote ? ` (${year.winnerNote})` : ''}
+                      </p>
+                    )}
                     <div className="space-y-1">
                       {year.results.map((result) => (
                         <div 
