@@ -21,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import PlayerStatisticsModal from './PlayerStatisticsModal';
+import LeaderboardCarousel from './LeaderboardCarousel';
 import { getFlagFromCode, getFlagFromName } from '@/lib/countryFlags';
 import { getPlayerFlag, isImageFlag } from '@/lib/playerFlags';
 import { isPredictionMatch } from '@/lib/medalUtils';
@@ -258,58 +259,11 @@ const Statistics: React.FC<StatisticsProps> = ({ competitionId }) => {
         )}
       </div>
 
-      {/* Current Leaderboard - Clickable */}
-      <div className="glass-card rounded-xl p-6">
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-primary" />
-          Aktuelle Rangliste
-        </h3>
-        <p className="text-xs text-muted-foreground mb-3">Klicke auf einen Spieler für Details</p>
-        <div className="space-y-2">
-          {leaderboard.map((player, index) => {
-            const isCurrentUser = player.playerId === currentPlayer?.id;
-            return (
-              <div 
-                key={player.playerId}
-                onClick={() => setSelectedPlayer({ id: player.playerId, name: player.name })}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer hover:bg-primary/5 ${
-                  isCurrentUser ? 'bg-primary/10 border border-primary/20' : 'bg-secondary/50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                    index === 0 ? 'gradient-gold text-white' :
-                    index === 1 ? 'gradient-silver text-white' :
-                    index === 2 ? 'gradient-bronze text-white' :
-                    'bg-muted text-muted-foreground'
-                  }`}>
-                    {index + 1}
-                  </span>
-                  <span className="font-medium text-foreground flex items-center">
-                    {getPlayerFlag(player.name) && (
-                      isImageFlag(getPlayerFlag(player.name)) ? (
-                        <img 
-                          src={getPlayerFlag(player.name)} 
-                          alt="flag" 
-                          className="w-6 h-4 mr-1.5 object-contain"
-                        />
-                      ) : (
-                        <span className="mr-1.5">{getPlayerFlag(player.name)}</span>
-                      )
-                    )}
-                    {player.name}
-                    {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(Du)</span>}
-                  </span>
-                </div>
-                <span className="text-xl font-bold text-foreground">{player.score}</span>
-              </div>
-            );
-          })}
-          {leaderboard.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">Noch keine Spieler registriert</p>
-          )}
-        </div>
-      </div>
+      {/* Leaderboard Carousel */}
+      <LeaderboardCarousel
+        competitionId={competitionId}
+        onPlayerClick={(player) => setSelectedPlayer(player)}
+      />
 
       {/* All-Time Medal Standings */}
       <div className="glass-card rounded-xl p-6">
