@@ -278,10 +278,10 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
                     const p = dailyPodiums[player.playerId];
                     if (p.first === 0 && p.second === 0 && p.third === 0) return null;
                     return (
-                      <span className="text-xs text-muted-foreground ml-2 flex items-center gap-0.5 shrink-0">
-                        {p.first > 0 && <span className="text-yellow-400">🏆{p.first}</span>}
-                        {p.second > 0 && <span className="grayscale brightness-200 contrast-125">🏆{p.second}</span>}
-                        {p.third > 0 && <span className="sepia brightness-75">🏆{p.third}</span>}
+                      <span className="flex items-center gap-1 ml-2 shrink-0">
+                        {p.first > 0 && <span className="inline-flex items-center text-gold text-xs"><Trophy className="w-3 h-3 mr-px" />{p.first}</span>}
+                        {p.second > 0 && <span className="inline-flex items-center text-silver text-xs"><Trophy className="w-3 h-3 mr-px" />{p.second}</span>}
+                        {p.third > 0 && <span className="inline-flex items-center text-bronze text-xs"><Trophy className="w-3 h-3 mr-px" />{p.third}</span>}
                       </span>
                     );
                   })()
