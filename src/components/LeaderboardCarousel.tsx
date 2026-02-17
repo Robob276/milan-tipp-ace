@@ -139,6 +139,25 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
     };
   }, [predictions, profiles, results]);
 
+  // Calculate daily podium finishes per player (how often 1st, 2nd, 3rd in daily standings)
+  const dailyPodiums = useMemo(() => {
+    const podiums: Record<string, { first: number; second: number; third: number }> = {};
+    const playerIds = Object.keys(profiles);
+    playerIds.forEach(id => { podiums[id] = { first: 0, second: 0, third: 0 }; });
+
+    COMPETITION_DAYS.forEach((_, dayIdx) => {
+      const dayBoard = calculateLeaderboard('daily', dayIdx);
+      // Only count if at least one player scored > 0 (day has results)
+      if (dayBoard.every(p => p.score === 0)) return;
+      dayBoard.forEach(p => {
+        if (p.rank === 1) podiums[p.playerId].first++;
+        else if (p.rank === 2) podiums[p.playerId].second++;
+        else if (p.rank === 3) podiums[p.playerId].third++;
+      });
+    });
+    return podiums;
+  }, [calculateLeaderboard, profiles]);
+
   const viewInfo = getViewInfo(slideIndex);
   const leaderboard = calculateLeaderboard(viewInfo.mode, viewInfo.dayIndex);
 
@@ -254,6 +273,19 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
                   {player.name}
                   {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(Du)</span>}
                 </span>
+                {viewInfo.mode === 'current' && dailyPodiums[player.playerId] && (
+                  (() => {
+                    const p = dailyPodiums[player.playerId];
+                    if (p.first === 0 && p.second === 0 && p.third === 0) return null;
+                    return (
+                      <span className="text-xs text-muted-foreground ml-2 flex items-center gap-0.5 shrink-0">
+                        {p.first > 0 && <span>🏆{p.first}</span>}
+                        {p.second > 0 && <span>🥈{p.second}</span>}
+                        {p.third > 0 && <span>🥉{p.third}</span>}
+                      </span>
+                    );
+                  })()
+                )}
               </div>
               <div className="flex items-center gap-2">
                 {(player.correctGold > 0 || player.correctSilver > 0 || player.correctBronze > 0) && (
