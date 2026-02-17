@@ -255,7 +255,16 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
                   {isCurrentUser && <span className="ml-1 text-xs text-muted-foreground">(Du)</span>}
                 </span>
               </div>
-              <span className="text-xl font-bold text-foreground">{player.score}</span>
+              <div className="flex items-center gap-2">
+                {(player.correctGold > 0 || player.correctSilver > 0 || player.correctBronze > 0) && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    {player.correctGold > 0 && <span>🥇{player.correctGold}</span>}
+                    {player.correctSilver > 0 && <span>🥈{player.correctSilver}</span>}
+                    {player.correctBronze > 0 && <span>🥉{player.correctBronze}</span>}
+                  </span>
+                )}
+                <span className="text-xl font-bold text-foreground min-w-[2rem] text-right">{player.score}</span>
+              </div>
             </div>
           );
         })}
