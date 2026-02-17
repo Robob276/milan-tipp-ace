@@ -4,7 +4,7 @@ import { usePredictions } from '@/contexts/PredictionContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { olympicEvents } from '@/data/olympicEvents';
 import { getPlayerFlag, isImageFlag } from '@/lib/playerFlags';
-import { calculateEventScore } from '@/lib/medalUtils';
+import { calculateEventScore, isPredictionMatch } from '@/lib/medalUtils';
 
 interface LeaderboardCarouselProps {
   competitionId: string;
@@ -68,9 +68,12 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
     return (mode: ViewMode, dayIndex?: number) => {
       const playerIds = Object.keys(profiles);
 
-      const getScore = (playerId: string) => {
+      const getPlayerStats = (playerId: string) => {
         const playerPredictions = predictions[playerId] || {};
         let score = 0;
+        let correctGold = 0;
+        let correctSilver = 0;
+        let correctBronze = 0;
 
         Object.entries(playerPredictions).forEach(([eventIdStr, prediction]) => {
           const eventId = Number(eventIdStr);
@@ -80,30 +83,59 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
           const result = results[eventId];
           if (!result) return;
 
+          let include = false;
           if (mode === 'current') {
-            score += calculateEventScore(prediction, result);
+            include = true;
           } else if (mode === 'cumulative' && dayIndex !== undefined) {
-            const cutoffDate = COMPETITION_DAYS[dayIndex];
-            if (event.date <= cutoffDate) {
-              score += calculateEventScore(prediction, result);
-            }
+            include = event.date <= COMPETITION_DAYS[dayIndex];
           } else if (mode === 'daily' && dayIndex !== undefined) {
-            if (event.date === COMPETITION_DAYS[dayIndex]) {
-              score += calculateEventScore(prediction, result);
-            }
+            include = event.date === COMPETITION_DAYS[dayIndex];
+          }
+
+          if (include) {
+            score += calculateEventScore(prediction, result);
+            if (isPredictionMatch(prediction.gold, result.gold)) correctGold++;
+            if (isPredictionMatch(prediction.silver, result.silver)) correctSilver++;
+            if (isPredictionMatch(prediction.bronze, result.bronze)) correctBronze++;
           }
         });
 
-        return score;
+        return { score, correctGold, correctSilver, correctBronze };
       };
 
-      return playerIds
-        .map(playerId => ({
-          playerId,
-          name: profiles[playerId],
-          score: getScore(playerId),
-        }))
-        .sort((a, b) => b.score - a.score);
+      const entries = playerIds
+        .map(playerId => {
+          const stats = getPlayerStats(playerId);
+          return {
+            playerId,
+            name: profiles[playerId],
+            ...stats,
+          };
+        })
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          if (b.correctGold !== a.correctGold) return b.correctGold - a.correctGold;
+          if (b.correctSilver !== a.correctSilver) return b.correctSilver - a.correctSilver;
+          return b.correctBronze - a.correctBronze;
+        });
+
+      // Assign ranks (same rank for truly equal players)
+      return entries.map((entry, idx) => {
+        let rank = idx + 1;
+        if (idx > 0) {
+          const prev = entries[idx - 1];
+          if (
+            entry.score === prev.score &&
+            entry.correctGold === prev.correctGold &&
+            entry.correctSilver === prev.correctSilver &&
+            entry.correctBronze === prev.correctBronze
+          ) {
+            rank = (entries as any)[idx - 1]._rank;
+          }
+        }
+        (entry as any)._rank = rank;
+        return { ...entry, rank };
+      });
     };
   }, [predictions, profiles, results]);
 
@@ -200,12 +232,12 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
             >
               <div className="flex items-center gap-3">
                 <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                  index === 0 ? 'gradient-gold text-white' :
-                  index === 1 ? 'gradient-silver text-white' :
-                  index === 2 ? 'gradient-bronze text-white' :
+                  player.rank === 1 ? 'gradient-gold text-white' :
+                  player.rank === 2 ? 'gradient-silver text-white' :
+                  player.rank === 3 ? 'gradient-bronze text-white' :
                   'bg-muted text-muted-foreground'
                 }`}>
-                  {index + 1}
+                  {player.rank}
                 </span>
                 <span className="font-medium text-foreground flex items-center">
                   {getPlayerFlag(player.name) && (
