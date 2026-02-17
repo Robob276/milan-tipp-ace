@@ -134,7 +134,7 @@ export const olympicEvents: OlympicEvent[] = [
   
   // Dienstag, 17. Februar (7 Entscheidungen)
   { id: 75, date: "2026-02-17", time: "10:00", sport: "Nordische Kombination", discipline: "Einzel Großschanze/10 km", gender: "Männer", category: "Nordische Kombination" },
-  { id: 76, date: "2026-02-17", time: "13:00", sport: "Snowboard", discipline: "Slopestyle", gender: "Frauen", category: "Snowboard" },
+  { id: 76, date: "2026-02-18", time: "14:30", sport: "Snowboard", discipline: "Slopestyle", gender: "Frauen", category: "Snowboard" },
   { id: 77, date: "2026-02-17", time: "14:30", sport: "Biathlon", discipline: "Staffel 4x7,5 km", gender: "Männer", category: "Biathlon" },
   { id: 78, date: "2026-02-17", time: "14:30", sport: "Eisschnelllauf", discipline: "Teamverfolgung", gender: "Frauen", category: "Eisschnelllauf" },
   { id: 79, date: "2026-02-17", time: "15:30", sport: "Eisschnelllauf", discipline: "Teamverfolgung", gender: "Männer", category: "Eisschnelllauf" },
