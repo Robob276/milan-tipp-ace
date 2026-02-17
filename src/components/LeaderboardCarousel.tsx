@@ -279,9 +279,9 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
                     if (p.first === 0 && p.second === 0 && p.third === 0) return null;
                     return (
                       <span className="flex items-center gap-1 ml-2 shrink-0">
-                        {p.first > 0 && <span className="inline-flex items-center text-gold text-xs"><Trophy className="w-3 h-3 mr-px fill-gold" />{p.first}</span>}
-                        {p.second > 0 && <span className="inline-flex items-center text-silver text-xs"><Trophy className="w-3 h-3 mr-px fill-silver" />{p.second}</span>}
-                        {p.third > 0 && <span className="inline-flex items-center text-bronze text-xs"><Trophy className="w-3 h-3 mr-px fill-bronze" />{p.third}</span>}
+                        {p.first > 0 && <span className="inline-flex items-center text-xs">🏆<span className="text-gold font-semibold">{p.first}</span></span>}
+                        {p.second > 0 && <span className="inline-flex items-center text-xs">🏆<span className="text-silver font-semibold">{p.second}</span></span>}
+                        {p.third > 0 && <span className="inline-flex items-center text-xs">🏆<span className="text-bronze font-semibold">{p.third}</span></span>}
                       </span>
                     );
                   })()
