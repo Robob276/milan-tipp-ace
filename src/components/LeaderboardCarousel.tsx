@@ -280,7 +280,7 @@ const LeaderboardCarousel: React.FC<LeaderboardCarouselProps> = ({ competitionId
                     return (
                       <span className="text-xs text-muted-foreground ml-2 flex items-center gap-0.5 shrink-0">
                         {p.first > 0 && <span className="text-yellow-400">🏆{p.first}</span>}
-                        {p.second > 0 && <span className="grayscale brightness-150">🏆{p.second}</span>}
+                        {p.second > 0 && <span className="grayscale brightness-200 contrast-125">🏆{p.second}</span>}
                         {p.third > 0 && <span className="sepia brightness-75">🏆{p.third}</span>}
                       </span>
                     );
