@@ -146,7 +146,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 83, date: "2026-02-18", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Frauen", category: "Freestyle" },
   { id: 84, date: "2026-02-18", time: "11:45", sport: "Skilanglauf", discipline: "Teamsprint Freistil", gender: "Frauen", category: "Langlauf" },
   { id: 85, date: "2026-02-18", time: "12:30", sport: "Snowboard", discipline: "Slopestyle", gender: "Männer", category: "Snowboard" },
-  { id: 86, date: "2026-02-18", time: "13:15", sport: "Skilanglauf", discipline: "Teamsprint Freistil", gender: "Männer", category: "Langlauf" },
+  { id: 86, date: "2026-02-18", time: "12:15", sport: "Skilanglauf", discipline: "Teamsprint Freistil", gender: "Männer", category: "Langlauf", predictionDeadline: "2026-02-18T00:00:00" },
   { id: 87, date: "2026-02-18", time: "14:45", sport: "Biathlon", discipline: "Staffel 4x6 km", gender: "Frauen", category: "Biathlon" },
   { id: 88, date: "2026-02-18", time: "20:00", sport: "Short Track", discipline: "Staffel 3000 m", gender: "Frauen", category: "Short Track" },
   { id: 89, date: "2026-02-18", time: "20:30", sport: "Short Track", discipline: "500 m", gender: "Männer", category: "Short Track" },
