@@ -154,8 +154,8 @@ export const olympicEvents: OlympicEvent[] = [
   // Donnerstag, 19. Februar (7 Entscheidungen)
   { id: 90, date: "2026-02-19", time: "10:00", sport: "Nordische Kombination", discipline: "Teamsprint Großschanze/2x7,5 km", gender: "Männer", category: "Nordische Kombination" },
   { id: 91, date: "2026-02-19", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
-  { id: 92, date: "2026-02-19", time: "12:55", sport: "Skibergsteigen", discipline: "Sprint", gender: "Frauen", category: "Ski Mountaineering" },
-  { id: 93, date: "2026-02-19", time: "13:30", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering" },
+  { id: 92, date: "2026-02-19", time: "10:00", sport: "Skibergsteigen", discipline: "Sprint", gender: "Frauen", category: "Ski Mountaineering", predictionDeadline: "2026-02-19T00:00:00" },
+  { id: 93, date: "2026-02-19", time: "10:00", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering", predictionDeadline: "2026-02-19T00:00:00" },
   { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
   { id: 95, date: "2026-02-19", time: "19:00", sport: "Eiskunstlauf", discipline: "Kür", gender: "Frauen", category: "Eiskunstlauf" },
   { id: 96, date: "2026-02-19", time: "19:10", sport: "Eishockey", discipline: "Finale", gender: "Frauen", category: "Eishockey", predictionDeadline: "2026-02-04T19:00:00" },
