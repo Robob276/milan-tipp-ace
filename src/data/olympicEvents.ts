@@ -153,7 +153,7 @@ export const olympicEvents: OlympicEvent[] = [
   
   // Donnerstag, 19. Februar (7 Entscheidungen)
   { id: 90, date: "2026-02-19", time: "10:00", sport: "Nordische Kombination", discipline: "Teamsprint Großschanze/2x7,5 km", gender: "Männer", category: "Nordische Kombination" },
-  { id: 91, date: "2026-02-19", time: "11:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
+  { id: 91, date: "2026-02-20", time: "10:30", sport: "Freestyle", discipline: "Aerials", gender: "Männer", category: "Freestyle" },
   { id: 92, date: "2026-02-19", time: "10:00", sport: "Skibergsteigen", discipline: "Sprint", gender: "Frauen", category: "Ski Mountaineering", predictionDeadline: "2026-02-19T00:00:00" },
   { id: 93, date: "2026-02-19", time: "10:00", sport: "Skibergsteigen", discipline: "Sprint", gender: "Männer", category: "Ski Mountaineering", predictionDeadline: "2026-02-19T00:00:00" },
   { id: 94, date: "2026-02-19", time: "16:30", sport: "Eisschnelllauf", discipline: "1500 m", gender: "Männer", category: "Eisschnelllauf" },
