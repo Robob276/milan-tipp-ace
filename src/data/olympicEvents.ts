@@ -167,7 +167,7 @@ export const olympicEvents: OlympicEvent[] = [
   { id: 100, date: "2026-02-20", time: "19:30", sport: "Freestyle", discipline: "Halfpipe", gender: "Männer", category: "Freestyle" },
   { id: 101, date: "2026-02-20", time: "20:00", sport: "Short Track", discipline: "1500 m", gender: "Frauen", category: "Short Track" },
   { id: 102, date: "2026-02-20", time: "20:30", sport: "Short Track", discipline: "Staffel 5000 m", gender: "Männer", category: "Short Track" },
-  { id: 103, date: "2026-02-20", time: "21:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling", predictionDeadline: "2026-02-04T19:00:00" },
+  { id: 103, date: "2026-02-21", time: "19:00", sport: "Curling", discipline: "Finale", gender: "Männer", category: "Curling", predictionDeadline: "2026-02-04T19:00:00" },
   
   // Samstag, 21. Februar (9 Entscheidungen)
   { id: 104, date: "2026-02-21", time: "10:00", sport: "Skilanglauf", discipline: "50 km Massenstart Freistil", gender: "Männer", category: "Langlauf" },
