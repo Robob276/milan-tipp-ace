@@ -27,6 +27,7 @@ const COMPETITION_DAYS = [
   '2026-02-19',
   '2026-02-20',
   '2026-02-21',
+  '2026-02-22',
 ];
 
 const formatDateShort = (dateStr: string) => {
