@@ -28,12 +28,16 @@ import { isPredictionMatch } from '@/lib/medalUtils';
 
 // Historische Daten seit 2016
 const allTimeMedalStandings = [
-  { name: 'Robert B', gold: 2, silver: 2, bronze: 1, participations: 5 },
-  { name: 'Marcus G', gold: 2, silver: 1, bronze: 0, participations: 3 },
-  { name: 'Marcel K', gold: 1, silver: 1, bronze: 2, participations: 5 },
-  { name: 'Marcus B', gold: 0, silver: 1, bronze: 2, participations: 4 },
-  { name: 'Sebastian S', gold: 0, silver: 0, bronze: 0, participations: 5 },
+  { name: 'Robert B', gold: 3, silver: 2, bronze: 1, participations: 6 },
+  { name: 'Marcus G', gold: 2, silver: 2, bronze: 0, participations: 4 },
+  { name: 'Marcel K', gold: 1, silver: 1, bronze: 2, participations: 6 },
+  { name: 'Marcus B', gold: 0, silver: 1, bronze: 2, participations: 5 },
+  { name: 'Sebastian S', gold: 0, silver: 0, bronze: 1, participations: 6 },
+  { name: 'Aurore', gold: 0, silver: 0, bronze: 1, participations: 1 },
   { name: 'Domi N', gold: 0, silver: 0, bronze: 0, participations: 2 },
+  { name: 'Rainer', gold: 0, silver: 0, bronze: 0, participations: 1 },
+  { name: 'Hasenmatz', gold: 0, silver: 0, bronze: 0, participations: 1 },
+  { name: 'TillAnton', gold: 0, silver: 0, bronze: 0, participations: 1 },
 ].sort((a, b) => {
   if (b.gold !== a.gold) return b.gold - a.gold;
   if (b.silver !== a.silver) return b.silver - a.silver;
