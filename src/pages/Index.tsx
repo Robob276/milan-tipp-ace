@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PlayerProvider, usePlayer } from '@/contexts/PlayerContext';
 import { PredictionProvider } from '@/contexts/PredictionContext';
-import PlayerLoginPage from '@/components/PlayerLoginPage';
+
 import AdminLoginPage from '@/components/AdminLoginPage';
 import Dashboard from '@/components/Dashboard';
 import HomeScreen from '@/components/HomeScreen';
