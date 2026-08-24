@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PlayerProvider, usePlayer } from '@/contexts/PlayerContext';
 import { PredictionProvider } from '@/contexts/PredictionContext';
-import PlayerLoginPage from '@/components/PlayerLoginPage';
+
 import AdminLoginPage from '@/components/AdminLoginPage';
 import Dashboard from '@/components/Dashboard';
 import HomeScreen from '@/components/HomeScreen';
@@ -24,18 +24,13 @@ const AppContent = () => {
     );
   }
   
-  // Not authenticated - show login page first (new flow)
-  if (!isAuthenticated && loginMode !== 'admin') {
-    return <PlayerLoginPage onAdminLogin={() => setLoginMode('admin')} />;
-  }
-
-  // Admin login flow
+  // Admin login flow (nur noch optional erreichbar)
   if (loginMode === 'admin' && !isAuthenticated) {
     return <AdminLoginPage onBackToHome={() => setLoginMode(null)} />;
   }
 
-  // Authenticated - show event selection if no game selected
-  if (isAuthenticated && !selectedGame) {
+  // Kein Login mehr nötig – direkt ins Spiel
+  if (!selectedGame) {
     return (
       <HomeScreen 
         onSelectGame={(gameId, isArchived) => setSelectedGame({ id: gameId, isArchived: isArchived || false })}
@@ -43,21 +38,17 @@ const AppContent = () => {
     );
   }
 
-  // Authenticated with game selected - show dashboard
-  if (isAuthenticated && selectedGame) {
-    return (
-      <PredictionProvider>
-        <Dashboard 
-          onBackToHome={() => setSelectedGame(null)} 
-          isAdminMode={isAdmin}
-          competitionId={selectedGame.id}
-          isArchived={selectedGame.isArchived}
-        />
-      </PredictionProvider>
-    );
-  }
+  return (
+    <PredictionProvider>
+      <Dashboard 
+        onBackToHome={() => setSelectedGame(null)} 
+        isAdminMode={isAdmin}
+        competitionId={selectedGame.id}
+        isArchived={selectedGame.isArchived}
+      />
+    </PredictionProvider>
+  );
 
-  return <PlayerLoginPage onAdminLogin={() => setLoginMode('admin')} />;
 };
 
 const Index = () => {
