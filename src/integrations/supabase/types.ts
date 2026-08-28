@@ -71,29 +71,35 @@ export type Database = {
       players: {
         Row: {
           created_at: string
+          failed_pin_attempts: number
           id: string
           is_admin: boolean
           name: string
           pin: string | null
           pin_hash: string | null
+          pin_locked_until: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          failed_pin_attempts?: number
           id?: string
           is_admin?: boolean
           name: string
           pin?: string | null
           pin_hash?: string | null
+          pin_locked_until?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          failed_pin_attempts?: number
           id?: string
           is_admin?: boolean
           name?: string
           pin?: string | null
           pin_hash?: string | null
+          pin_locked_until?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -135,20 +141,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "players"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "predictions_player_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "players_admin"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "predictions_player_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "players_public"
             referencedColumns: ["id"]
           },
         ]
@@ -227,42 +219,7 @@ export type Database = {
       }
     }
     Views: {
-      players_admin: {
-        Row: {
-          has_pin: boolean | null
-          id: string | null
-          name: string | null
-        }
-        Insert: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Update: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Relationships: []
-      }
-      players_public: {
-        Row: {
-          has_pin: boolean | null
-          id: string | null
-          name: string | null
-        }
-        Insert: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Update: {
-          has_pin?: never
-          id?: string | null
-          name?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_delete_result: {
@@ -308,14 +265,6 @@ export type Database = {
           id: string
           name: string
         }[]
-      }
-      set_config: {
-        Args: {
-          is_local?: boolean
-          setting_name: string
-          setting_value: string
-        }
-        Returns: undefined
       }
       setup_player_pin: {
         Args: { new_pin: string; player_id: string }
